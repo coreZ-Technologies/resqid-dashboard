@@ -57,3 +57,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+nav::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,999 @@
+// app/(school)/school/students/page.jsx
+'use client';
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+    Users, Search, Filter, Plus, Download, Upload, ChevronLeft, ChevronRight,
+    Eye, Edit2, Trash2, X, Check, UserPlus, FileText,
+    GraduationCap, Mail, Phone, MapPin, Calendar, AlertCircle,
+    UploadCloud, File, Image, Loader2, School, BookOpen, ChevronDown,
+    MoreVertical, RefreshCw, FilterX
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS & MOCK DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CLASSES = [
+    'Nursery', 'LKG', 'UKG',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'
+];
+
+const SECTIONS = ['A', 'B', 'C', 'D'];
+
+// Generate 200+ mock students for demonstration
+const generateMockStudents = () => {
+    const students = [];
+    const names = [
+        'Aarav Sharma', 'Vihaan Gupta', 'Vivaan Kumar', 'Ananya Singh', 'Diya Reddy',
+        'Advik Patel', 'Kabir Mehta', 'Aadhya Nair', 'Sai Verma', 'Ishita Malhotra',
+        'Reyansh Joshi', 'Anaya Khanna', 'Shaurya Saxena', 'Myra Kapoor', 'Dhruv Sinha',
+        'Kiara Dutta', 'Arjun Thakur', 'Sara Khan', 'Rudra Rajput', 'Jiya Bhatia'
+    ];
+
+    for (let i = 1; i <= 250; i++) {
+        const classIndex = Math.floor(Math.random() * CLASSES.length);
+        const sectionIndex = Math.floor(Math.random() * SECTIONS.length);
+        students.push({
+            id: `STU${String(i).padStart(5, '0')}`,
+            name: names[Math.floor(Math.random() * names.length)],
+            rollNumber: `${Math.floor(Math.random() * 50) + 1}`,
+            class: CLASSES[classIndex],
+            section: SECTIONS[sectionIndex],
+            parentName: `Parent of Student ${i}`,
+            parentPhone: `+91 ${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+            email: `student${i}@school.com`,
+            address: `${Math.floor(Math.random() * 100)} Educational Street, City ${Math.floor(Math.random() * 10) + 1}`,
+            dateOfBirth: `201${Math.floor(Math.random() * 6)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            bloodGroup: ['A+', 'B+', 'O+', 'AB+'][Math.floor(Math.random() * 4)],
+            emergencyContact: `+91 ${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+            enrollmentDate: `202${Math.floor(Math.random() * 3)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-01`,
+            status: Math.random() > 0.05 ? 'Active' : 'Inactive',
+            photo: null,
+            gender: ['Male', 'Female'][Math.floor(Math.random() * 2)],
+        });
+    }
+    return students;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function SearchBar({ value, onChange, placeholder }) {
+    return (
+        <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder || "Search by name, ID, roll number, or parent name..."}
+                className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+            />
+        </div>
+    );
+}
+
+function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={cn(
+                    "flex items-center gap-2 px-3 h-10 rounded-lg border text-sm font-medium transition-all whitespace-nowrap",
+                    value
+                        ? "bg-blue-50 border-blue-200 text-blue-700"
+                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                )}
+            >
+                {Icon && <Icon size={14} />}
+                {value ? `${label}: ${value}` : label}
+                <ChevronDown size={14} className={cn("transition-transform", isOpen && "rotate-180")} />
+            </button>
+
+            {isOpen && (
+                <>
+                    <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-20 py-1 max-h-64 overflow-y-auto">
+                        <button
+                            onClick={() => {
+                                onChange('');
+                                setIsOpen(false);
+                            }}
+                            className={cn(
+                                "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
+                                !value && "text-blue-600 bg-blue-50"
+                            )}
+                        >
+                            All {label}s
+                        </button>
+                        {options.map((opt) => (
+                            <button
+                                key={opt}
+                                onClick={() => {
+                                    onChange(opt);
+                                    setIsOpen(false);
+                                }}
+                                className={cn(
+                                    "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
+                                    value === opt && "text-blue-600 bg-blue-50"
+                                )}
+                            >
+                                {opt}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems }) {
+    const getPageNumbers = () => {
+        const pages = [];
+        const maxVisible = 5;
+        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let end = Math.min(totalPages, start + maxVisible - 1);
+
+        if (end - start + 1 < maxVisible) {
+            start = Math.max(1, end - maxVisible + 1);
+        }
+
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+        return pages;
+    };
+
+    if (totalPages <= 1) return null;
+
+    return (
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 flex-wrap gap-3">
+            <div className="text-sm text-slate-500">
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} students
+            </div>
+            <div className="flex gap-1">
+                <button
+                    onClick={() => onPageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                >
+                    <ChevronLeft size={16} />
+                </button>
+                {getPageNumbers().map(page => (
+                    <button
+                        key={page}
+                        onClick={() => onPageChange(page)}
+                        className={cn(
+                            "w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+                            currentPage === page
+                                ? "bg-blue-600 text-white"
+                                : "hover:bg-slate-100 text-slate-600"
+                        )}
+                    >
+                        {page}
+                    </button>
+                ))}
+                <button
+                    onClick={() => onPageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function StudentTable({ students, onView, onEdit, onDelete }) {
+    if (students.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-medium text-slate-800 mb-1">No students found</h3>
+                <p className="text-sm text-slate-500">Try adjusting your filters or add a new student</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-200 sticky top-0">
+                    <tr>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Student</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Class/Section</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Roll No.</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Parent/Guardian</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                        <th className="text-right py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                    {students.map((student) => (
+                        <tr key={student.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700 font-semibold text-sm">
+                                        {student.photo ? (
+                                            <img src={student.photo} alt={student.name} className="w-full h-full rounded-full object-cover" />
+                                        ) : (
+                                            student.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                                        )}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-slate-800">{student.name}</p>
+                                        <p className="text-xs text-slate-400">ID: {student.id}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td className="py-3 px-4">
+                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
+                                    {student.class}-{student.section}
+                                </span>
+                            </td>
+                            <td className="py-3 px-4 text-sm text-slate-600">{student.rollNumber}</td>
+                            <td className="py-3 px-4">
+                                <p className="text-sm text-slate-800">{student.parentName}</p>
+                                <p className="text-xs text-slate-400">{student.relationship || 'Parent'}</p>
+                            </td>
+                            <td className="py-3 px-4">
+                                <p className="text-sm text-slate-600">{student.parentPhone}</p>
+                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{student.email}</p>
+                            </td>
+                            <td className="py-3 px-4">
+                                <span className={cn(
+                                    "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+                                    student.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                )}>
+                                    {student.status}
+                                </span>
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                                <div className="flex items-center justify-end gap-1">
+                                    <Link
+                                        href={`/school/students/${student.id}`}
+                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
+                                        title="View Details"
+                                    >
+                                        <Eye size={16} />
+                                    </Link>
+                                    <button
+                                        onClick={() => onEdit(student)}
+                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-green-600 transition-colors"
+                                        title="Edit"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(student)}
+                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors"
+                                        title="Delete"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function AddStudentModal({ isOpen, onClose, onSave, editingStudent }) {
+    const [formData, setFormData] = useState({
+        name: '',
+        class: '',
+        section: '',
+        rollNumber: '',
+        parentName: '',
+        parentPhone: '',
+        email: '',
+        dateOfBirth: '',
+        bloodGroup: '',
+        address: '',
+        emergencyContact: '',
+        relationship: 'Parent',
+        gender: 'Male',
+    });
+    const [uploadedFile, setUploadedFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        if (editingStudent) {
+            setFormData(editingStudent);
+        } else {
+            setFormData({
+                name: '',
+                class: '',
+                section: '',
+                rollNumber: '',
+                parentName: '',
+                parentPhone: '',
+                email: '',
+                dateOfBirth: '',
+                bloodGroup: '',
+                address: '',
+                emergencyContact: '',
+                relationship: 'Parent',
+                gender: 'Male',
+            });
+        }
+    }, [editingStudent]);
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.name) newErrors.name = 'Student name is required';
+        if (!formData.class) newErrors.class = 'Class is required';
+        if (!formData.section) newErrors.section = 'Section is required';
+        if (!formData.parentName) newErrors.parentName = 'Parent name is required';
+        if (!formData.parentPhone) newErrors.parentPhone = 'Parent phone is required';
+        return newErrors;
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setUploading(true);
+            // Simulate upload - replace with actual API call
+            setTimeout(() => {
+                setUploadedFile(file);
+                setUploading(false);
+            }, 1000);
+        }
+    };
+
+    const handleSubmit = () => {
+        const newErrors = validateForm();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        onSave({ ...formData, photo: uploadedFile });
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setFormData({
+            name: '',
+            class: '',
+            section: '',
+            rollNumber: '',
+            parentName: '',
+            parentPhone: '',
+            email: '',
+            dateOfBirth: '',
+            bloodGroup: '',
+            address: '',
+            emergencyContact: '',
+            relationship: 'Parent',
+            gender: 'Male',
+        });
+        setUploadedFile(null);
+        setErrors({});
+        onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <UserPlus className="w-5 h-5 text-blue-600" />
+                        <h2 className="text-xl font-semibold text-slate-800">
+                            {editingStudent ? 'Edit Student' : 'Add New Student'}
+                        </h2>
+                    </div>
+                    <button onClick={handleClose} className="p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                    {/* Photo Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Student Photo</label>
+                        <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                                {uploadedFile ? (
+                                    <img src={URL.createObjectURL(uploadedFile)} alt="Preview" className="w-full h-full object-cover" />
+                                ) : editingStudent?.photo ? (
+                                    <img src={editingStudent.photo} alt="Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <UploadCloud className="w-8 h-8 text-slate-400" />
+                                )}
+                            </div>
+                            <div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                    id="photo-upload"
+                                />
+                                <label
+                                    htmlFor="photo-upload"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                >
+                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    {uploading ? 'Uploading...' : 'Upload Photo'}
+                                </label>
+                                <p className="text-xs text-slate-400 mt-1">JPG, PNG (max 2MB)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Basic Info */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Student Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                className={cn(
+                                    "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all",
+                                    errors.name ? "border-red-400" : "border-slate-200 focus:border-blue-400"
+                                )}
+                                placeholder="Enter full name"
+                            />
+                            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                            <select
+                                value={formData.gender}
+                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                            >
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Roll Number</label>
+                            <input
+                                type="text"
+                                value={formData.rollNumber}
+                                onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                placeholder="Enter roll number"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Class <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.class}
+                                onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                            >
+                                <option value="">Select Class</option>
+                                {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Section <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.section}
+                                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                            >
+                                <option value="">Select Section</option>
+                                {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                            <input
+                                type="date"
+                                value={formData.dateOfBirth}
+                                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Blood Group</label>
+                            <select
+                                value={formData.bloodGroup}
+                                onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                            >
+                                <option value="">Select Blood Group</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Parent Info */}
+                    <div>
+                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <Users size={14} /> Parent/Guardian Information
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Parent Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.parentName}
+                                    onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                    placeholder="Enter parent name"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Relationship</label>
+                                <select
+                                    value={formData.relationship}
+                                    onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                >
+                                    <option value="Parent">Parent</option>
+                                    <option value="Guardian">Guardian</option>
+                                    <option value="Mother">Mother</option>
+                                    <option value="Father">Father</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Phone Number <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    value={formData.parentPhone}
+                                    onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                    placeholder="+91 XXXXXXXXXX"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                    placeholder="parent@example.com"
+                                />
+                            </div>
+
+                            <div className="col-span-2">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Emergency Contact</label>
+                                <input
+                                    type="tel"
+                                    value={formData.emergencyContact}
+                                    onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                                    placeholder="Alternate contact number"
+                                />
+                            </div>
+
+                            <div className="col-span-2">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <textarea
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    rows="2"
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
+                                    placeholder="Enter complete address"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
+                    <button
+                        onClick={handleClose}
+                        className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    >
+                        <Check size={16} />
+                        {editingStudent ? 'Update Student' : 'Add Student'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function BulkUploadModal({ isOpen, onClose, onUpload }) {
+    const [file, setFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
+    const handleUpload = async () => {
+        if (!file) return;
+        setUploading(true);
+        // Simulate upload - replace with actual API call
+        setTimeout(() => {
+            setUploading(false);
+            onUpload(file);
+            onClose();
+        }, 2000);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
+                <div className="p-6">
+                    <div className="text-center mb-4">
+                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                            <Upload className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <h2 className="text-xl font-semibold text-slate-800">Bulk Upload Students</h2>
+                        <p className="text-sm text-slate-500 mt-1">Upload CSV or Excel file with student data</p>
+                    </div>
+
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center mb-4">
+                        <input
+                            type="file"
+                            accept=".csv,.xlsx,.xls"
+                            onChange={(e) => setFile(e.target.files[0])}
+                            className="hidden"
+                            id="bulk-upload"
+                        />
+                        <label htmlFor="bulk-upload" className="cursor-pointer">
+                            <FileText className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                            <p className="text-sm text-slate-600">
+                                {file ? file.name : 'Click to upload or drag and drop'}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-1">CSV or Excel files only</p>
+                        </label>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button
+                            onClick={onClose}
+                            className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleUpload}
+                            disabled={!file || uploading}
+                            className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                        >
+                            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                            {uploading ? 'Uploading...' : 'Upload'}
+                        </button>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                        <button className="text-xs text-blue-600 hover:underline flex items-center justify-center gap-1 w-full">
+                            <Download size={12} />
+                            Download sample template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN PAGE COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function StudentsPage() {
+    const [students, setStudents] = useState([]);
+    const [filteredStudents, setFilteredStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedSection, setSelectedSection] = useState('');
+
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
+
+    // Modals
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+    const [editingStudent, setEditingStudent] = useState(null);
+
+    // Fetch students (replace with actual API call)
+    useEffect(() => {
+        const fetchStudents = async () => {
+            setLoading(true);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const mockData = generateMockStudents();
+            setStudents(mockData);
+            setFilteredStudents(mockData);
+            setLoading(false);
+        };
+        fetchStudents();
+    }, []);
+
+    // Apply filters
+    useEffect(() => {
+        let filtered = [...students];
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(s =>
+                s.name.toLowerCase().includes(query) ||
+                s.id.toLowerCase().includes(query) ||
+                s.parentName.toLowerCase().includes(query) ||
+                s.rollNumber.includes(query)
+            );
+        }
+
+        if (selectedClass) {
+            filtered = filtered.filter(s => s.class === selectedClass);
+        }
+
+        if (selectedSection) {
+            filtered = filtered.filter(s => s.section === selectedSection);
+        }
+
+        setFilteredStudents(filtered);
+        setCurrentPage(1);
+    }, [searchQuery, selectedClass, selectedSection, students]);
+
+    // Pagination
+    const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+    const paginatedStudents = filteredStudents.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    // Actions
+    const handleAddStudent = (newStudent) => {
+        const student = {
+            ...newStudent,
+            id: `STU${String(students.length + 1).padStart(5, '0')}`,
+            status: 'Active',
+            enrollmentDate: new Date().toISOString().split('T')[0],
+        };
+        setStudents([student, ...students]);
+        // TODO: Call API to save
+    };
+
+    const handleUpdateStudent = (updatedStudent) => {
+        setStudents(students.map(s =>
+            s.id === updatedStudent.id ? updatedStudent : s
+        ));
+        setEditingStudent(null);
+        // TODO: Call API to update
+    };
+
+    const handleBulkUpload = (file) => {
+        console.log('Bulk upload:', file);
+        // TODO: Process CSV/Excel file and upload to API
+    };
+
+    const handleEditStudent = (student) => {
+        setEditingStudent(student);
+        setIsAddModalOpen(true);
+    };
+
+    const handleDeleteStudent = (student) => {
+        if (confirm(`Are you sure you want to delete ${student.name}? This action cannot be undone.`)) {
+            setStudents(students.filter(s => s.id !== student.id));
+            // TODO: Call API to delete
+        }
+    };
+
+    const handleClearFilters = () => {
+        setSearchQuery('');
+        setSelectedClass('');
+        setSelectedSection('');
+    };
+
+    // Stats
+    const stats = [
+        { label: 'Total Students', value: students.length, icon: Users, color: 'blue' },
+        { label: 'Total Classes', value: new Set(students.map(s => s.class)).size, icon: BookOpen, color: 'green' },
+        { label: 'Active Students', value: students.filter(s => s.status === 'Active').length, icon: Check, color: 'emerald' },
+        { label: 'Sections', value: SECTIONS.length, icon: School, color: 'purple' },
+    ];
+
+    // Get unique classes for filter
+    const uniqueClasses = [...new Set(students.map(s => s.class))].sort((a, b) => {
+        const order = CLASSES;
+        return order.indexOf(a) - order.indexOf(b);
+    });
+
+    return (
+        <div className="min-h-screen bg-slate-50">
+            <div className="p-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-slate-800 mb-1">Student Management</h1>
+                    <p className="text-slate-500">Manage all students from Nursery to 12th grade</p>
+                </div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    {stats.map((stat) => {
+                        const Icon = stat.icon;
+                        return (
+                            <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-slate-500">{stat.label}</p>
+                                        <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                                    </div>
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-lg flex items-center justify-center",
+                                        stat.color === 'blue' && "bg-blue-100",
+                                        stat.color === 'green' && "bg-green-100",
+                                        stat.color === 'emerald' && "bg-emerald-100",
+                                        stat.color === 'purple' && "bg-purple-100"
+                                    )}>
+                                        <Icon className={cn(
+                                            "w-5 h-5",
+                                            stat.color === 'blue' && "text-blue-600",
+                                            stat.color === 'green' && "text-green-600",
+                                            stat.color === 'emerald' && "text-emerald-600",
+                                            stat.color === 'purple' && "text-purple-600"
+                                        )} />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Actions Bar */}
+                <div className="bg-white rounded-xl border border-slate-200 mb-6">
+                    <div className="p-4 border-b border-slate-200">
+                        <div className="flex flex-col lg:flex-row gap-3 justify-between">
+                            <SearchBar
+                                value={searchQuery}
+                                onChange={setSearchQuery}
+                                placeholder="Search by name, ID, roll number, or parent name..."
+                            />
+                            <div className="flex gap-2 flex-wrap">
+                                <FilterDropdown
+                                    label="Class"
+                                    options={uniqueClasses}
+                                    value={selectedClass}
+                                    onChange={setSelectedClass}
+                                    icon={GraduationCap}
+                                />
+                                <FilterDropdown
+                                    label="Section"
+                                    options={SECTIONS}
+                                    value={selectedSection}
+                                    onChange={setSelectedSection}
+                                    icon={School}
+                                />
+                                {(selectedClass || selectedSection || searchQuery) && (
+                                    <button
+                                        onClick={handleClearFilters}
+                                        className="flex items-center gap-2 px-3 h-10 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                    >
+                                        <FilterX size={14} />
+                                        Clear Filters
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsBulkModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 h-10 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                >
+                                    <Upload size={16} />
+                                    Bulk Upload
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setEditingStudent(null);
+                                        setIsAddModalOpen(true);
+                                    }}
+                                    className="flex items-center gap-2 px-4 h-10 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                                >
+                                    <Plus size={16} />
+                                    Add Student
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Results Summary */}
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500 flex justify-between items-center">
+                        <span>Showing {paginatedStudents.length} of {filteredStudents.length} students</span>
+                        <button
+                            onClick={() => fetchStudents()}
+                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                        >
+                            <RefreshCw size={12} />
+                            Refresh
+                        </button>
+                    </div>
+
+                    {/* Table */}
+                    {loading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                        </div>
+                    ) : (
+                        <StudentTable
+                            students={paginatedStudents}
+                            onView={(student) => window.location.href = `/school/students/${student.id}`}
+                            onEdit={handleEditStudent}
+                            onDelete={handleDeleteStudent}
+                        />
+                    )}
+
+                    {/* Pagination */}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        itemsPerPage={itemsPerPage}
+                        totalItems={filteredStudents.length}
+                    />
+                </div>
+            </div>
+
+            {/* Modals */}
+            <AddStudentModal
+                isOpen={isAddModalOpen}
+                onClose={() => {
+                    setIsAddModalOpen(false);
+                    setEditingStudent(null);
+                }}
+                onSave={editingStudent ? handleUpdateStudent : handleAddStudent}
+                editingStudent={editingStudent}
+            />
+
+            <BulkUploadModal
+                isOpen={isBulkModalOpen}
+                onClose={() => setIsBulkModalOpen(false)}
+                onUpload={handleBulkUpload}
+            />
+        </div>
+    );
+}
