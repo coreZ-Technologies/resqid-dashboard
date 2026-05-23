@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   Search, Filter, Phone, Mail, MapPin, ChevronRight,
   Users, MessageCircle, Bell, TrendingUp, MoreHorizontal,
@@ -113,7 +115,7 @@ const PARENTS = [
 const ENGAGEMENT_STYLE = {
   high:   { label: 'High',   dot: 'bg-emerald-400', text: 'text-emerald-400', badge: 'bg-emerald-400/10 border-emerald-400/20' },
   medium: { label: 'Medium', dot: 'bg-amber-400',   text: 'text-amber-400',   badge: 'bg-amber-400/10 border-amber-400/20' },
-  low:    { label: 'Low',    dot: 'bg-rose-400',     text: 'text-rose-400',     badge: 'bg-rose-400/10 border-rose-400/20' },
+  low:    { label: 'Low',    dot: 'bg-rose-400',     text: 'text-rose-400',   badge: 'bg-rose-400/10 border-rose-400/20' },
 }
 
 const STATUS_STYLE = {
@@ -164,7 +166,6 @@ function ParentCard({ parent, onClick, selected }) {
         </span>
       </div>
 
-      {/* Children chips */}
       <div className="flex flex-wrap gap-2 mb-4">
         {parent.children.map((child) => {
           const S = STATUS_STYLE[child.status]
@@ -210,7 +211,6 @@ function DetailPanel({ parent, onClose }) {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-      {/* Header */}
       <div className="bg-gradient-to-br from-sky-500 to-blue-600 p-6">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sky-200 text-[11px] font-medium uppercase tracking-widest">Parent Profile</span>
@@ -223,7 +223,7 @@ function DetailPanel({ parent, onClose }) {
           <div>
             <h3 className="text-white font-bold text-[16px]">{parent.name}</h3>
             <p className="text-sky-200 text-[12px]">Joined {parent.joinedDate}</p>
-            <span className={`inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/10 text-white border border-white/20`}>
+            <span className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/10 text-white border border-white/20">
               <span className={`w-1.5 h-1.5 rounded-full ${eng.dot}`} />
               {eng.label} Engagement
             </span>
@@ -232,7 +232,6 @@ function DetailPanel({ parent, onClose }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
-        {/* Contact */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Contact Info</p>
           <div className="space-y-2">
@@ -249,7 +248,6 @@ function DetailPanel({ parent, onClose }) {
           </div>
         </div>
 
-        {/* Children */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Children ({parent.children.length})</p>
           <div className="space-y-3">
@@ -282,7 +280,6 @@ function DetailPanel({ parent, onClose }) {
           </div>
         </div>
 
-        {/* Actions */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Quick Actions</p>
           <div className="grid grid-cols-2 gap-2">
@@ -303,7 +300,6 @@ function DetailPanel({ parent, onClose }) {
           </div>
         </div>
 
-        {/* Notification History */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Recent Notifications</p>
           <div className="space-y-2">
@@ -354,24 +350,31 @@ export default function ParentsPage() {
           <h1 className="text-[22px] font-bold text-slate-800">Parents</h1>
           <p className="text-slate-500 text-[13px] mt-0.5">Manage parent connections, notifications, and engagement</p>
         </div>
+
+        {/* ✅ FIXED: Both buttons now use Link for navigation */}
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-medium hover:bg-slate-50 transition-colors">
             <Download size={14} />
             Export
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 text-white text-[13px] font-medium hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200">
+
+          {/* ✅ THIS IS THE FIX — was a <button>, now a <Link> */}
+          <Link
+            href="/school/parents/add"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 text-white text-[13px] font-medium hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200"
+          >
             <UserPlus size={14} />
             Add Parent
-          </button>
+          </Link>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users}         label="Total Parents"        value={PARENTS.length}  sub={`${totalChildren} children linked`} color="bg-sky-500" />
-        <StatCard icon={Star}          label="High Engagement"      value={highEng}         sub="Active this week"                  color="bg-emerald-500" />
-        <StatCard icon={Bell}          label="Pending Notifications" value={pendingNotifs}   sub="Across all parents"                color="bg-violet-500" />
-        <StatCard icon={TrendingUp}    label="Avg. Attendance"      value="89%"             sub="Linked children"                   color="bg-amber-500" />
+        <StatCard icon={Users}      label="Total Parents"         value={PARENTS.length} sub={`${totalChildren} children linked`} color="bg-sky-500" />
+        <StatCard icon={Star}       label="High Engagement"       value={highEng}        sub="Active this week"                  color="bg-emerald-500" />
+        <StatCard icon={Bell}       label="Pending Notifications"  value={pendingNotifs}  sub="Across all parents"                color="bg-violet-500" />
+        <StatCard icon={TrendingUp} label="Avg. Attendance"       value="89%"            sub="Linked children"                   color="bg-amber-500" />
       </div>
 
       {/* Search + Filter */}
@@ -404,7 +407,6 @@ export default function ParentsPage() {
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Cards */}
         <div className="xl:col-span-2 space-y-4">
           {filtered.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 flex flex-col items-center justify-center text-center">
@@ -428,7 +430,6 @@ export default function ParentsPage() {
           )}
         </div>
 
-        {/* Detail Panel */}
         <div className="xl:col-span-1">
           <DetailPanel parent={selected} onClose={() => setSelected(null)} />
         </div>
