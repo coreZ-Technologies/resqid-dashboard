@@ -1,16 +1,15 @@
-// app/(school)/school/timetable/page.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     Calendar, Clock, Users, BookOpen, CheckCircle, XCircle,
     AlertCircle, RefreshCw, Download, Upload, Save, Eye,
     Edit2, Trash2, Plus, Search, Filter, ChevronLeft,
     ChevronRight, ChevronDown, Settings, Printer, Share2,
     GraduationCap, UserCheck, UserX, AlertTriangle, Check,
-    X, Loader2, GripVertical, Swap, Repeat, Calendar as CalendarIcon,
-    School, Bell, MessageCircle, Zap, Shield, Target, Activity,
-    Move, ArrowLeftRight
+    X, Loader2, GripVertical, ArrowLeftRight, Repeat,
+    Bell, MessageCircle, Zap, Shield, Target, Activity,
+    Move, LayoutGrid, List, Coffee, Sun, Lock, Unlock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -19,27 +18,87 @@ import { cn } from '@/lib/utils';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const PERIODS = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
-const TIME_SLOTS = [
-    '08:00 - 08:45', '08:45 - 09:30', '09:30 - 10:15',
-    '10:30 - 11:15', '11:15 - 12:00', '12:00 - 12:45',
-    '13:30 - 14:15', '14:15 - 15:00'
+
+// Day structure: periods + breaks in order
+const DAY_SLOTS = [
+    { id: 1, label: '1st Period', time: '08:00–08:45', type: 'PERIOD' },
+    { id: 2, label: '2nd Period', time: '08:45–09:30', type: 'PERIOD' },
+    { id: 3, label: '3rd Period', time: '09:30–10:15', type: 'PERIOD' },
+    { id: 'break1', label: 'Short Break', time: '10:15–10:30', type: 'BREAK' },
+    { id: 4, label: '4th Period', time: '10:30–11:15', type: 'PERIOD' },
+    { id: 5, label: '5th Period', time: '11:15–12:00', type: 'PERIOD' },
+    { id: 6, label: '6th Period', time: '12:00–12:45', type: 'PERIOD' },
+    { id: 'lunch', label: 'Lunch Break', time: '12:45–13:30', type: 'BREAK' },
+    { id: 7, label: '7th Period', time: '13:30–14:15', type: 'PERIOD' },
+    { id: 8, label: '8th Period', time: '14:15–15:00', type: 'PERIOD' },
 ];
+
+const PERIOD_SLOTS = DAY_SLOTS.filter(s => s.type === 'PERIOD');
 
 const SUBJECTS = [
     'Mathematics', 'Science', 'Physics', 'Chemistry', 'Biology',
     'English', 'Hindi', 'Sanskrit', 'Social Studies', 'History',
     'Geography', 'Computer Science', 'Physical Education', 'Arts',
-    'Music', 'Dance', 'Economics', 'Business Studies'
+    'Music', 'Economics', 'Business Studies',
 ];
 
 const TEACHERS = [
-    'Dr. Sharma', 'Mrs. Gupta', 'Mr. Kumar', 'Ms. Singh', 'Dr. Patel',
-    'Mrs. Nair', 'Mr. Reddy', 'Ms. Joshi', 'Dr. Verma', 'Mrs. Malhotra'
+    { name: 'Dr. Sharma', subjects: ['Mathematics', 'Physics'] },
+    { name: 'Mrs. Gupta', subjects: ['English', 'Hindi'] },
+    { name: 'Mr. Kumar', subjects: ['Chemistry', 'Science'] },
+    { name: 'Ms. Singh', subjects: ['Biology', 'Science'] },
+    { name: 'Dr. Patel', subjects: ['Computer Science', 'Mathematics'] },
+    { name: 'Mrs. Nair', subjects: ['History', 'Social Studies', 'Geography'] },
+    { name: 'Mr. Reddy', subjects: ['Physical Education'] },
+    { name: 'Ms. Joshi', subjects: ['Arts', 'Music'] },
+    { name: 'Dr. Verma', subjects: ['Economics', 'Business Studies'] },
+    { name: 'Mrs. Malhotra', subjects: ['Sanskrit', 'Hindi'] },
 ];
 
+const TEACHER_NAMES = TEACHERS.map(t => t.name);
+
+const SUBJECT_COLORS = {
+    'Mathematics': 'blue',
+    'Science': 'green',
+    'Physics': 'violet',
+    'Chemistry': 'orange',
+    'Biology': 'emerald',
+    'English': 'sky',
+    'Hindi': 'amber',
+    'Sanskrit': 'yellow',
+    'Social Studies': 'teal',
+    'History': 'rose',
+    'Geography': 'lime',
+    'Computer Science': 'indigo',
+    'Physical Education': 'red',
+    'Arts': 'pink',
+    'Music': 'fuchsia',
+    'Economics': 'cyan',
+    'Business Studies': 'slate',
+};
+
+const COLOR_MAP = {
+    blue: 'bg-blue-50 border-blue-200 text-blue-800',
+    green: 'bg-green-50 border-green-200 text-green-800',
+    violet: 'bg-violet-50 border-violet-200 text-violet-800',
+    orange: 'bg-orange-50 border-orange-200 text-orange-800',
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    sky: 'bg-sky-50 border-sky-200 text-sky-800',
+    amber: 'bg-amber-50 border-amber-200 text-amber-800',
+    yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+    teal: 'bg-teal-50 border-teal-200 text-teal-800',
+    rose: 'bg-rose-50 border-rose-200 text-rose-800',
+    lime: 'bg-lime-50 border-lime-200 text-lime-800',
+    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-800',
+    red: 'bg-red-50 border-red-200 text-red-800',
+    pink: 'bg-pink-50 border-pink-200 text-pink-800',
+    fuchsia: 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-800',
+    cyan: 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    slate: 'bg-slate-100 border-slate-200 text-slate-800',
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK DATA (Replace with actual API calls)
+// MOCK DATA
 // ─────────────────────────────────────────────────────────────────────────────
 
 const generateMockTimetable = () => {
@@ -50,16 +109,14 @@ const generateMockTimetable = () => {
         timetable[className] = {};
         DAYS.forEach(day => {
             timetable[className][day] = {};
-            PERIODS.forEach((period, idx) => {
-                const subject = SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)];
+            PERIOD_SLOTS.forEach(slot => {
                 const teacher = TEACHERS[Math.floor(Math.random() * TEACHERS.length)];
-                timetable[className][day][period] = {
+                const subject = teacher.subjects[Math.floor(Math.random() * teacher.subjects.length)];
+                timetable[className][day][slot.id] = {
                     subject,
-                    teacher,
-                    room: `Room ${Math.floor(Math.random() * 20) + 1}`,
-                    type: Math.random() > 0.7 ? 'Lab' : 'Theory',
-                    periodNumber: idx + 1,
-                    timeSlot: TIME_SLOTS[idx]
+                    teacher: teacher.name,
+                    room: `R${Math.floor(Math.random() * 20) + 101}`,
+                    isLab: Math.random() > 0.85,
                 };
             });
         });
@@ -68,737 +125,785 @@ const generateMockTimetable = () => {
 };
 
 const generateTeacherAvailability = () => {
-    const availability = {};
-    TEACHERS.forEach(teacher => {
-        availability[teacher] = {};
+    const avail = {};
+    TEACHER_NAMES.forEach(name => {
+        avail[name] = {};
         DAYS.forEach(day => {
-            availability[teacher][day] = {
-                available: Math.random() > 0.2,
-                maxClasses: Math.floor(Math.random() * 3) + 3,
-                preferredPeriods: [1, 2, 3, 4],
-                unavailablePeriods: Math.random() > 0.7 ? [5, 6] : []
+            avail[name][day] = {
+                available: Math.random() > 0.15,
+                maxPeriods: Math.floor(Math.random() * 3) + 4,
+                unavailablePeriods: Math.random() > 0.7
+                    ? [PERIOD_SLOTS[Math.floor(Math.random() * PERIOD_SLOTS.length)].id]
+                    : [],
             };
         });
     });
-    return availability;
+    return avail;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPONENTS
+// VALIDATION
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TimetableGrid({ timetable, className, onCellClick, viewType }) {
-    const getStatusColor = (cell) => {
-        if (!cell) return 'bg-slate-50';
-        if (cell.type === 'Lab') return 'bg-purple-50 border-purple-200';
-        return 'bg-white border-slate-200';
-    };
+const validateTimetable = (tt, availability) => {
+    const issues = [];
 
-    if (viewType === 'class') {
-        return (
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr>
-                            <th className="p-3 bg-slate-100 border border-slate-200 text-left text-sm font-semibold text-slate-700">Day/Period</th>
-                            {PERIODS.map((period, idx) => (
-                                <th key={period} className="p-3 bg-slate-100 border border-slate-200 text-center text-sm font-semibold text-slate-700">
-                                    {period}
-                                    <span className="block text-xs font-normal text-slate-400">{TIME_SLOTS[idx]}</span>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {DAYS.map(day => (
-                            <tr key={day}>
-                                <td className="p-3 bg-slate-50 border border-slate-200 font-medium text-slate-700">{day}</td>
-                                {PERIODS.map(period => {
-                                    const cell = timetable[className]?.[day]?.[period];
-                                    return (
-                                        <td
-                                            key={period}
-                                            onClick={() => onCellClick(className, day, period, cell)}
-                                            className={cn(
-                                                "p-2 border border-slate-200 cursor-pointer hover:bg-blue-50 transition-colors",
-                                                getStatusColor(cell)
-                                            )}
-                                        >
-                                            {cell ? (
-                                                <div className="text-center">
-                                                    <p className="font-medium text-slate-800 text-sm">{cell.subject}</p>
-                                                    <p className="text-xs text-slate-500">{cell.teacher}</p>
-                                                    <p className="text-xs text-slate-400">{cell.room}</p>
-                                                    {cell.type === 'Lab' && (
-                                                        <span className="inline-block mt-1 px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">Lab</span>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="text-center text-slate-300 text-sm">—</div>
-                                            )}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        );
+    // Build teacher load map
+    const teacherDayLoad = {};
+    const teacherPeriodMap = {}; // teacher -> day -> [periodIds]
+
+    for (const [cls, clsData] of Object.entries(tt)) {
+        for (const [day, dayData] of Object.entries(clsData)) {
+            for (const [periodId, cell] of Object.entries(dayData)) {
+                if (!cell?.teacher) continue;
+                const t = cell.teacher;
+                if (!teacherDayLoad[t]) teacherDayLoad[t] = {};
+                if (!teacherDayLoad[t][day]) teacherDayLoad[t][day] = 0;
+                teacherDayLoad[t][day]++;
+
+                if (!teacherPeriodMap[t]) teacherPeriodMap[t] = {};
+                if (!teacherPeriodMap[t][day]) teacherPeriodMap[t][day] = [];
+                teacherPeriodMap[t][day].push({ periodId, cls });
+            }
+        }
     }
 
-    if (viewType === 'teacher') {
-        return (
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr>
-                            <th className="p-3 bg-slate-100 border border-slate-200 text-left text-sm font-semibold text-slate-700">Teacher</th>
-                            {DAYS.map(day => (
-                                <th key={day} className="p-3 bg-slate-100 border border-slate-200 text-center text-sm font-semibold text-slate-700">{day}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {TEACHERS.map(teacher => {
-                            const teacherSchedule = [];
-                            DAYS.forEach(day => {
-                                let classes = [];
-                                for (const [cls, clsData] of Object.entries(timetable)) {
-                                    for (const [period, cell] of Object.entries(clsData[day] || {})) {
-                                        if (cell?.teacher === teacher) {
-                                            classes.push(`${cls} - ${period} (${cell.subject})`);
-                                        }
-                                    }
-                                }
-                                teacherSchedule.push(classes);
-                            });
-
-                            return (
-                                <tr key={teacher}>
-                                    <td className="p-3 bg-slate-50 border border-slate-200 font-medium text-slate-700">{teacher}</td>
-                                    {teacherSchedule.map((schedule, idx) => (
-                                        <td key={idx} className="p-2 border border-slate-200 align-top">
-                                            {schedule.length > 0 ? (
-                                                <div className="space-y-1">
-                                                    {schedule.map((cls, cIdx) => (
-                                                        <div key={cIdx} className="text-xs p-1 bg-blue-50 rounded">
-                                                            {cls}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-center text-slate-300 text-xs">—</div>
-                                            )}
-                                        </td>
-                                    ))}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        );
+    // Check overload
+    for (const [teacher, days] of Object.entries(teacherDayLoad)) {
+        for (const [day, count] of Object.entries(days)) {
+            const max = availability[teacher]?.[day]?.maxPeriods ?? 6;
+            if (count > max) {
+                issues.push({
+                    id: `overload_${teacher}_${day}`,
+                    severity: 'error',
+                    message: `${teacher} overloaded on ${day}`,
+                    details: `${count} periods assigned, max is ${max}`,
+                    canFix: true,
+                });
+            }
+        }
     }
 
-    return null;
-}
+    // Check teacher marked unavailable but still assigned
+    for (const [teacher, days] of Object.entries(teacherPeriodMap)) {
+        for (const [day, slots] of Object.entries(days)) {
+            if (availability[teacher]?.[day]?.available === false) {
+                issues.push({
+                    id: `unavail_${teacher}_${day}`,
+                    severity: 'error',
+                    message: `${teacher} marked absent on ${day} but has ${slots.length} class(es)`,
+                    details: slots.map(s => `${s.cls} P${s.periodId}`).join(', '),
+                    canFix: true,
+                });
+            }
 
-function ValidationPanel({ validationResults, onFix }) {
-    const getStatusIcon = (status) => {
-        if (status === 'valid') return <CheckCircle className="w-4 h-4 text-green-600" />;
-        if (status === 'warning') return <AlertCircle className="w-4 h-4 text-amber-600" />;
-        return <XCircle className="w-4 h-4 text-red-600" />;
-    };
+            const unavailPeriods = availability[teacher]?.[day]?.unavailablePeriods ?? [];
+            for (const { periodId, cls } of slots) {
+                if (unavailPeriods.includes(Number(periodId))) {
+                    issues.push({
+                        id: `unavail_period_${teacher}_${day}_${periodId}`,
+                        severity: 'warning',
+                        message: `${teacher} unavailable period ${periodId} on ${day}`,
+                        details: `Assigned to ${cls}`,
+                        canFix: true,
+                    });
+                }
+            }
+        }
+    }
+
+    return issues;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUB-COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Modal({ isOpen, onClose, title, icon: Icon, iconColor = 'text-blue-600', children, maxWidth = 'max-w-md' }) {
+    useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                <Shield size={18} className="text-blue-600" />
-                Timetable Validation
-            </h3>
-
-            <div className="space-y-3">
-                {validationResults.map((result, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                        {getStatusIcon(result.status)}
-                        <div className="flex-1">
-                            <p className="text-sm font-medium text-slate-700">{result.message}</p>
-                            {result.details && (
-                                <p className="text-xs text-slate-400 mt-1">{result.details}</p>
-                            )}
-                        </div>
-                        {result.canFix && (
-                            <button
-                                onClick={() => onFix(result.id)}
-                                className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Fix
-                            </button>
-                        )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div className={cn('relative bg-white rounded-2xl shadow-2xl w-full', maxWidth)}>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5">
+                        {Icon && <Icon className={cn('w-5 h-5', iconColor)} />}
+                        <h2 className="text-lg font-semibold text-slate-800">{title}</h2>
                     </div>
-                ))}
-            </div>
-
-            {validationResults.length === 0 && (
-                <div className="text-center py-6">
-                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
-                    <p className="text-sm text-slate-600">All constraints satisfied!</p>
-                    <p className="text-xs text-slate-400 mt-1">Timetable is ready for publishing</p>
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
-            )}
+                <div className="p-6">{children}</div>
+            </div>
         </div>
     );
 }
 
-function TeacherSwapModal({ isOpen, onClose, onSwap, timetable, className, day, period, currentCell }) {
-    const [selectedTeacher, setSelectedTeacher] = useState('');
-    const [swapWithClass, setSwapWithClass] = useState('');
-    const [swapWithPeriod, setSwapWithPeriod] = useState('');
-    const [swapWithDay, setSwapWithDay] = useState('');
-    const [availableTeachers, setAvailableTeachers] = useState([]);
+function CellCard({ cell, isSelected, onClick }) {
+    if (!cell) {
+        return (
+            <div
+                onClick={onClick}
+                className="h-full min-h-[72px] flex items-center justify-center cursor-pointer rounded-lg border border-dashed border-slate-200 text-slate-300 hover:border-blue-300 hover:text-blue-300 transition-colors text-xs"
+            >
+                <Plus size={14} />
+            </div>
+        );
+    }
+
+    const color = SUBJECT_COLORS[cell.subject] ?? 'slate';
+    const colorClasses = COLOR_MAP[color] ?? COLOR_MAP.slate;
+
+    return (
+        <div
+            onClick={onClick}
+            className={cn(
+                'min-h-[72px] p-2 rounded-lg border cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 group',
+                colorClasses,
+                isSelected && 'ring-2 ring-blue-500 ring-offset-1 shadow-md'
+            )}
+        >
+            <p className="font-semibold text-xs leading-tight truncate">{cell.subject}</p>
+            <p className="text-[11px] opacity-70 mt-0.5 truncate">{cell.teacher}</p>
+            <div className="flex items-center gap-1 mt-1.5">
+                <span className="text-[10px] opacity-60 font-medium">{cell.room}</span>
+                {cell.isLab && (
+                    <span className="text-[9px] font-semibold uppercase tracking-wide bg-black/10 px-1 py-0.5 rounded">Lab</span>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function ClassTimetableGrid({ timetable, className, selectedCell, onCellClick }) {
+    const classData = timetable[className] ?? {};
+
+    return (
+        <div className="overflow-x-auto -mx-1">
+            <table className="w-full border-separate border-spacing-1" style={{ minWidth: 900 }}>
+                <thead>
+                    <tr>
+                        <th className="w-28 text-left py-2 px-2">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Day</span>
+                        </th>
+                        {DAY_SLOTS.map(slot => (
+                            <th key={slot.id} className={cn(
+                                'text-center py-2 px-1',
+                                slot.type === 'BREAK' ? 'w-16' : 'w-28'
+                            )}>
+                                {slot.type === 'BREAK' ? (
+                                    <div className="flex flex-col items-center gap-0.5">
+                                        <Coffee size={12} className="text-slate-300" />
+                                        <span className="text-[10px] text-slate-300 font-medium">{slot.label.split(' ')[0]}</span>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p className="text-xs font-semibold text-slate-600">{slot.label}</p>
+                                        <p className="text-[10px] text-slate-400 mt-0.5">{slot.time}</p>
+                                    </div>
+                                )}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {DAYS.map(day => (
+                        <tr key={day}>
+                            <td className="py-1 px-2">
+                                <span className="text-xs font-semibold text-slate-700">{day.slice(0, 3).toUpperCase()}</span>
+                                <span className="text-[10px] text-slate-400 block">{day.slice(3)}</span>
+                            </td>
+                            {DAY_SLOTS.map(slot => {
+                                if (slot.type === 'BREAK') {
+                                    return (
+                                        <td key={slot.id} className="py-1">
+                                            <div className="h-[72px] bg-slate-50 rounded-lg border border-dashed border-slate-200 flex items-center justify-center">
+                                                <div className="text-[10px] text-slate-300 text-center leading-tight">
+                                                    {slot.time.split('–').map((t, i) => <div key={i}>{t}</div>)}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    );
+                                }
+                                const cell = classData[day]?.[slot.id];
+                                const isSelected = selectedCell?.className === className &&
+                                    selectedCell?.day === day &&
+                                    selectedCell?.periodId === slot.id;
+                                return (
+                                    <td key={slot.id} className="py-1">
+                                        <CellCard
+                                            cell={cell}
+                                            isSelected={isSelected}
+                                            onClick={() => onCellClick(className, day, slot.id, cell)}
+                                        />
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function TeacherTimetableGrid({ timetable }) {
+    // Pre-compute: teacher → day → [{periodId, cls, subject, room}]
+    const teacherSchedule = useMemo(() => {
+        const map = {};
+        TEACHER_NAMES.forEach(t => { map[t] = {}; DAYS.forEach(d => { map[t][d] = []; }); });
+
+        for (const [cls, clsData] of Object.entries(timetable)) {
+            for (const [day, dayData] of Object.entries(clsData)) {
+                for (const [periodId, cell] of Object.entries(dayData)) {
+                    if (cell?.teacher && map[cell.teacher]) {
+                        map[cell.teacher][day].push({ periodId: Number(periodId), cls, subject: cell.subject, room: cell.room });
+                    }
+                }
+            }
+        }
+        // Sort periods
+        Object.values(map).forEach(days => Object.values(days).forEach(arr => arr.sort((a, b) => a.periodId - b.periodId)));
+        return map;
+    }, [timetable]);
+
+    return (
+        <div className="overflow-x-auto -mx-1">
+            <table className="w-full border-separate border-spacing-1" style={{ minWidth: 700 }}>
+                <thead>
+                    <tr>
+                        <th className="w-36 text-left py-2 px-2">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Teacher</span>
+                        </th>
+                        {DAYS.map(d => (
+                            <th key={d} className="text-center py-2 px-1">
+                                <p className="text-xs font-semibold text-slate-600">{d.slice(0, 3).toUpperCase()}</p>
+                                <p className="text-[10px] text-slate-400">{d.slice(3)}</p>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {TEACHER_NAMES.map(teacher => (
+                        <tr key={teacher}>
+                            <td className="py-1 px-2 align-top">
+                                <p className="text-xs font-semibold text-slate-700 leading-tight">{teacher}</p>
+                            </td>
+                            {DAYS.map(day => {
+                                const slots = teacherSchedule[teacher]?.[day] ?? [];
+                                return (
+                                    <td key={day} className="py-1 align-top">
+                                        {slots.length === 0 ? (
+                                            <div className="min-h-[48px] flex items-center justify-center rounded-lg bg-slate-50 border border-dashed border-slate-200">
+                                                <span className="text-[10px] text-slate-300">Free</span>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                {slots.map(s => {
+                                                    const color = SUBJECT_COLORS[s.subject] ?? 'slate';
+                                                    return (
+                                                        <div key={s.periodId} className={cn(
+                                                            'px-2 py-1.5 rounded-lg border text-[11px]',
+                                                            COLOR_MAP[color] ?? COLOR_MAP.slate
+                                                        )}>
+                                                            <span className="font-semibold">P{s.periodId}</span>
+                                                            <span className="opacity-60 mx-1">·</span>
+                                                            <span>{s.cls}</span>
+                                                            <span className="block opacity-60 truncate">{s.subject}</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function ValidationPanel({ issues, onFix }) {
+    const errors = issues.filter(i => i.severity === 'error');
+    const warnings = issues.filter(i => i.severity === 'warning');
+
+    if (issues.length === 0) {
+        return (
+            <div className="text-center py-8">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="text-sm font-semibold text-slate-700">All constraints satisfied</p>
+                <p className="text-xs text-slate-400 mt-1">Timetable is ready to approve</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+            {errors.map(issue => (
+                <div key={issue.id} className="flex items-start gap-3 p-3 bg-red-50 border border-red-100 rounded-xl">
+                    <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-red-800 leading-tight">{issue.message}</p>
+                        {issue.details && <p className="text-xs text-red-500 mt-0.5">{issue.details}</p>}
+                    </div>
+                    {issue.canFix && (
+                        <button onClick={() => onFix(issue.id)} className="shrink-0 text-xs px-2 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Fix
+                        </button>
+                    )}
+                </div>
+            ))}
+            {warnings.map(issue => (
+                <div key={issue.id} className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                    <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-amber-800 leading-tight">{issue.message}</p>
+                        {issue.details && <p className="text-xs text-amber-500 mt-0.5">{issue.details}</p>}
+                    </div>
+                    {issue.canFix && (
+                        <button onClick={() => onFix(issue.id)} className="shrink-0 text-xs px-2 py-1 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
+                            Fix
+                        </button>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// ─── SWAP MODAL ───────────────────────────────────────────────────────────────
+
+function SwapModal({ isOpen, onClose, onSwap, timetable, selection }) {
+    // Operation: 'replace' (assign different teacher) | 'swap' (swap with another slot)
+    const [mode, setMode] = useState('replace');
+    const [newTeacher, setNewTeacher] = useState('');
+    const [targetClass, setTargetClass] = useState('');
+    const [targetDay, setTargetDay] = useState('');
+    const [targetPeriod, setTargetPeriod] = useState('');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (isOpen && currentCell) {
-            const available = TEACHERS.filter(t => t !== currentCell.teacher);
-            setAvailableTeachers(available);
+        if (isOpen) {
+            setMode('replace');
+            setNewTeacher('');
+            setTargetClass('');
+            setTargetDay('');
+            setTargetPeriod('');
         }
-    }, [isOpen, currentCell]);
+    }, [isOpen]);
 
-    const handleSwap = async () => {
+    const targetCell = timetable[targetClass]?.[targetDay]?.[Number(targetPeriod)];
+
+    const canSubmit = mode === 'replace'
+        ? !!newTeacher && newTeacher !== selection?.cell?.teacher
+        : !!targetClass && !!targetDay && !!targetPeriod;
+
+    const handleSubmit = async () => {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        onSwap({
-            className,
-            day,
-            period,
-            currentTeacher: currentCell.teacher,
-            newTeacher: selectedTeacher,
-            swapWithClass,
-            swapWithDay,
-            swapWithPeriod
-        });
-
+        await new Promise(r => setTimeout(r, 800));
+        onSwap({ mode, newTeacher, targetClass, targetDay, targetPeriod: Number(targetPeriod) });
         setLoading(false);
         onClose();
     };
 
-    if (!isOpen) return null;
+    const otherTeachers = TEACHER_NAMES.filter(t => t !== selection?.cell?.teacher);
+    const classes = Object.keys(timetable);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <Swap className="w-5 h-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold text-slate-800">Swap Teacher</h2>
-                        </div>
-                        <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="p-3 bg-slate-50 rounded-lg">
-                            <p className="text-sm text-slate-500">Current Assignment</p>
-                            <p className="font-medium text-slate-800">{currentCell?.subject}</p>
-                            <p className="text-sm text-slate-600">Teacher: {currentCell?.teacher}</p>
-                            <p className="text-xs text-slate-400">Class {className} | {day} | {period} Period</p>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Swap With Teacher</label>
-                            <select
-                                value={selectedTeacher}
-                                onChange={(e) => setSelectedTeacher(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200"
-                            >
-                                <option value="">Select Teacher</option>
-                                {availableTeachers.map(teacher => (
-                                    <option key={teacher} value={teacher}>{teacher}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 h-px bg-slate-200" />
-                            <span className="text-xs text-slate-400">OR</span>
-                            <div className="flex-1 h-px bg-slate-200" />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Swap with another class period</label>
-                            <select
-                                value={swapWithClass}
-                                onChange={(e) => setSwapWithClass(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 mb-2"
-                            >
-                                <option value="">Select Class</option>
-                                {Object.keys(timetable).map(cls => (
-                                    <option key={cls} value={cls}>{cls}</option>
-                                ))}
-                            </select>
-
-                            <div className="grid grid-cols-2 gap-2">
-                                <select
-                                    value={swapWithDay}
-                                    onChange={(e) => setSwapWithDay(e.target.value)}
-                                    className="px-3 py-2 rounded-lg border border-slate-200"
-                                    disabled={!swapWithClass}
-                                >
-                                    <option value="">Select Day</option>
-                                    {DAYS.map(d => (
-                                        <option key={d} value={d}>{d}</option>
-                                    ))}
-                                </select>
-
-                                <select
-                                    value={swapWithPeriod}
-                                    onChange={(e) => setSwapWithPeriod(e.target.value)}
-                                    className="px-3 py-2 rounded-lg border border-slate-200"
-                                    disabled={!swapWithDay}
-                                >
-                                    <option value="">Select Period</option>
-                                    {PERIODS.map(p => (
-                                        <option key={p} value={p}>{p}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 pt-4">
-                            <button
-                                onClick={onClose}
-                                className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSwap}
-                                disabled={!selectedTeacher && (!swapWithClass || !swapWithDay || !swapWithPeriod)}
-                                className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                                {loading ? <Loader2 size={16} className="animate-spin" /> : <ArrowLeftRight size={16} />}
-                                {loading ? 'Swapping...' : 'Swap'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function BulkRescheduleModal({ isOpen, onClose, onReschedule }) {
-    const [rescheduleType, setRescheduleType] = useState('auto');
-    const [selectedTeacher, setSelectedTeacher] = useState('');
-    const [dateRange, setDateRange] = useState({ start: '', end: '' });
-    const [loading, setLoading] = useState(false);
-
-    const handleReschedule = async () => {
-        setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        onReschedule({ type: rescheduleType, teacher: selectedTeacher, dateRange });
-        setLoading(false);
-        onClose();
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <Repeat className="w-5 h-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold text-slate-800">Bulk Reschedule</h2>
-                        </div>
-                        <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Reschedule Type</label>
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
-                                    <input
-                                        type="radio"
-                                        value="auto"
-                                        checked={rescheduleType === 'auto'}
-                                        onChange={(e) => setRescheduleType(e.target.value)}
-                                        className="w-4 h-4 text-blue-600"
-                                    />
-                                    <div>
-                                        <p className="font-medium text-slate-700">Auto-Optimize</p>
-                                        <p className="text-xs text-slate-400">AI-powered timetable optimization</p>
-                                    </div>
-                                </label>
-                                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
-                                    <input
-                                        type="radio"
-                                        value="teacher"
-                                        checked={rescheduleType === 'teacher'}
-                                        onChange={(e) => setRescheduleType(e.target.value)}
-                                        className="w-4 h-4 text-blue-600"
-                                    />
-                                    <div>
-                                        <p className="font-medium text-slate-700">Teacher Leave Coverage</p>
-                                        <p className="text-xs text-slate-400">Reschedule classes for absent teacher</p>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        {rescheduleType === 'teacher' && (
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Select Teacher</label>
-                                <select
-                                    value={selectedTeacher}
-                                    onChange={(e) => setSelectedTeacher(e.target.value)}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
-                                >
-                                    <option value="">Select Teacher</option>
-                                    {TEACHERS.map(teacher => (
-                                        <option key={teacher} value={teacher}>{teacher}</option>
-                                    ))}
-                                </select>
-                            </div>
+        <Modal isOpen={isOpen} onClose={onClose} title="Manage Slot" icon={ArrowLeftRight}>
+            {selection && (
+                <>
+                    {/* Current slot info */}
+                    <div className="mb-5 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Selected Slot</p>
+                        <p className="font-semibold text-slate-800">{selection.cell?.subject ?? '—'}</p>
+                        <p className="text-sm text-slate-500 mt-0.5">
+                            {selection.className} · {selection.day} · Period {selection.periodId}
+                        </p>
+                        {selection.cell?.teacher && (
+                            <p className="text-sm text-slate-500">Teacher: <span className="font-medium text-slate-700">{selection.cell.teacher}</span></p>
                         )}
+                    </div>
 
-                        <div className="flex gap-3 pt-4">
+                    {/* Mode toggle */}
+                    <div className="flex gap-2 mb-5">
+                        {[{ key: 'replace', label: 'Change Teacher' }, { key: 'swap', label: 'Swap Slots' }].map(opt => (
                             <button
-                                onClick={onClose}
-                                className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+                                key={opt.key}
+                                onClick={() => setMode(opt.key)}
+                                className={cn(
+                                    'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
+                                    mode === opt.key
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                )}
                             >
-                                Cancel
+                                {opt.label}
                             </button>
-                            <button
-                                onClick={handleReschedule}
-                                disabled={loading || (rescheduleType === 'teacher' && !selectedTeacher)}
-                                className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                                {loading ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
-                                {loading ? 'Rescheduling...' : 'Start Reschedule'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function TeacherAvailabilityModal({ isOpen, onClose, onUpdate, teacherAvailability }) {
-    const [availability, setAvailability] = useState(teacherAvailability);
-    const [selectedTeacher, setSelectedTeacher] = useState(TEACHERS[0]);
-
-    const handleUpdate = () => {
-        onUpdate(availability);
-        onClose();
-    };
-
-    if (!isOpen) return null;
-
-    const currentTeacherData = availability[selectedTeacher] || {};
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <UserCheck className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-xl font-semibold text-slate-800">Teacher Availability</h2>
-                    </div>
-                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="p-6">
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Select Teacher</label>
-                        <select
-                            value={selectedTeacher}
-                            onChange={(e) => setSelectedTeacher(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200"
-                        >
-                            {TEACHERS.map(teacher => (
-                                <option key={teacher} value={teacher}>{teacher}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="space-y-4">
-                        {DAYS.map(day => (
-                            <div key={day} className="border rounded-lg p-4">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="font-semibold text-slate-700">{day}</h3>
-                                    <label className="flex items-center gap-2">
-                                        <span className="text-sm text-slate-500">Available</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={currentTeacherData[day]?.available !== false}
-                                            onChange={(e) => {
-                                                setAvailability(prev => ({
-                                                    ...prev,
-                                                    [selectedTeacher]: {
-                                                        ...prev[selectedTeacher],
-                                                        [day]: {
-                                                            ...prev[selectedTeacher]?.[day],
-                                                            available: e.target.checked
-                                                        }
-                                                    }
-                                                }));
-                                            }}
-                                            className="w-4 h-4 text-blue-600 rounded"
-                                        />
-                                    </label>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm text-slate-500 mb-2">Max Classes Per Day</label>
-                                    <input
-                                        type="range"
-                                        min="1"
-                                        max="8"
-                                        value={currentTeacherData[day]?.maxClasses || 4}
-                                        onChange={(e) => {
-                                            setAvailability(prev => ({
-                                                ...prev,
-                                                [selectedTeacher]: {
-                                                    ...prev[selectedTeacher],
-                                                    [day]: {
-                                                        ...prev[selectedTeacher]?.[day],
-                                                        maxClasses: parseInt(e.target.value)
-                                                    }
-                                                }
-                                            }));
-                                        }}
-                                        className="w-full"
-                                    />
-                                    <div className="flex justify-between text-xs text-slate-400 mt-1">
-                                        <span>1</span><span>2</span><span>3</span><span>4</span>
-                                        <span>5</span><span>6</span><span>7</span><span>8</span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-3">
-                                    <label className="block text-sm text-slate-500 mb-2">Unavailable Periods</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {PERIODS.map((period, idx) => (
-                                            <button
-                                                key={period}
-                                                onClick={() => {
-                                                    const current = currentTeacherData[day]?.unavailablePeriods || [];
-                                                    const updated = current.includes(idx + 1)
-                                                        ? current.filter(p => p !== idx + 1)
-                                                        : [...current, idx + 1];
-                                                    setAvailability(prev => ({
-                                                        ...prev,
-                                                        [selectedTeacher]: {
-                                                            ...prev[selectedTeacher],
-                                                            [day]: {
-                                                                ...prev[selectedTeacher]?.[day],
-                                                                unavailablePeriods: updated
-                                                            }
-                                                        }
-                                                    }));
-                                                }}
-                                                className={cn(
-                                                    "px-2 py-1 rounded text-xs font-medium transition-colors",
-                                                    currentTeacherData[day]?.unavailablePeriods?.includes(idx + 1)
-                                                        ? "bg-red-100 text-red-700 border border-red-200"
-                                                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                                )}
-                                            >
-                                                {period}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
                         ))}
                     </div>
 
-                    <div className="flex gap-3 pt-6">
-                        <button
-                            onClick={onClose}
-                            className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                        >
+                    {mode === 'replace' && (
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">New Teacher</label>
+                                <select
+                                    value={newTeacher}
+                                    onChange={e => setNewTeacher(e.target.value)}
+                                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select teacher…</option>
+                                    {otherTeachers.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </div>
+                            <p className="text-xs text-slate-400">
+                                This writes a <span className="font-semibold">DayOverride</span> — base timetable is untouched.
+                            </p>
+                        </div>
+                    )}
+
+                    {mode === 'swap' && (
+                        <div className="space-y-3">
+                            <p className="text-xs text-slate-500">Pick the slot to swap with. Both slots will exchange teachers.</p>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Class</label>
+                                <select value={targetClass} onChange={e => { setTargetClass(e.target.value); setTargetDay(''); setTargetPeriod(''); }} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select class…</option>
+                                    {classes.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Day</label>
+                                    <select value={targetDay} onChange={e => { setTargetDay(e.target.value); setTargetPeriod(''); }} disabled={!targetClass} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                                        <option value="">Day…</option>
+                                        {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Period</label>
+                                    <select value={targetPeriod} onChange={e => setTargetPeriod(e.target.value)} disabled={!targetDay} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                                        <option value="">Period…</option>
+                                        {PERIOD_SLOTS.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            {targetCell && (
+                                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm">
+                                    <span className="font-semibold text-blue-800">{targetCell.subject}</span>
+                                    <span className="text-blue-600"> · {targetCell.teacher}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="flex gap-3 mt-6">
+                        <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors">
                             Cancel
                         </button>
                         <button
-                            onClick={handleUpdate}
-                            className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                            onClick={handleSubmit}
+                            disabled={!canSubmit || loading}
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 text-sm font-medium transition-colors flex items-center justify-center gap-2"
                         >
-                            Save Changes
+                            {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowLeftRight size={15} />}
+                            {loading ? 'Applying…' : mode === 'replace' ? 'Change Teacher' : 'Swap Slots'}
                         </button>
                     </div>
+                </>
+            )}
+        </Modal>
+    );
+}
+
+// ─── SWAP (LONG-TERM) MODAL ───────────────────────────────────────────────────
+
+function LongTermSwapModal({ isOpen, onClose, onSwap }) {
+    const [teacher, setTeacher] = useState('');
+    const [replacement, setReplacement] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const canSubmit = teacher && replacement && replacement !== teacher && startDate && endDate && endDate >= startDate;
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        await new Promise(r => setTimeout(r, 1000));
+        onSwap({ teacher, replacement, startDate, endDate });
+        setLoading(false);
+        onClose();
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Long-term Teacher Swap" icon={Repeat} iconColor="text-violet-600">
+            <div className="space-y-4">
+                <div className="p-3 bg-violet-50 border border-violet-200 rounded-xl">
+                    <p className="text-xs text-violet-700">
+                        <span className="font-semibold">SWAP</span> — replaces a teacher for a defined date range. Writes to <code className="bg-violet-100 px-1 rounded">SwapAssignment</code>, auto-reverts on end date.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Absent Teacher</label>
+                        <select value={teacher} onChange={e => setTeacher(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                            <option value="">Select…</option>
+                            {TEACHER_NAMES.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Replacement</label>
+                        <select value={replacement} onChange={e => setReplacement(e.target.value)} disabled={!teacher} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50">
+                            <option value="">Select…</option>
+                            {TEACHER_NAMES.filter(t => t !== teacher).map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Start Date</label>
+                        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">End Date</label>
+                        <input type="date" value={endDate} min={startDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                    </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                    <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium">Cancel</button>
+                    <button onClick={handleSubmit} disabled={!canSubmit || loading} className="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-40 text-sm font-medium flex items-center justify-center gap-2">
+                        {loading ? <Loader2 size={15} className="animate-spin" /> : <Repeat size={15} />}
+                        {loading ? 'Creating SWAP…' : 'Create SWAP'}
+                    </button>
                 </div>
             </div>
-        </div>
+        </Modal>
+    );
+}
+
+// ─── AVAILABILITY MODAL ───────────────────────────────────────────────────────
+
+function AvailabilityModal({ isOpen, onClose, onUpdate, availability }) {
+    const [local, setLocal] = useState(availability);
+    const [selected, setSelected] = useState(TEACHER_NAMES[0]);
+
+    useEffect(() => { setLocal(availability); }, [availability]);
+
+    const data = local[selected] ?? {};
+
+    const toggle = (day, field, val) => setLocal(prev => ({
+        ...prev,
+        [selected]: { ...prev[selected], [day]: { ...prev[selected]?.[day], [field]: val } }
+    }));
+
+    const togglePeriod = (day, periodId) => {
+        const curr = local[selected]?.[day]?.unavailablePeriods ?? [];
+        const next = curr.includes(periodId) ? curr.filter(p => p !== periodId) : [...curr, periodId];
+        toggle(day, 'unavailablePeriods', next);
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Teacher Availability" icon={UserCheck} maxWidth="max-w-2xl">
+            <div className="flex gap-4">
+                {/* Teacher list */}
+                <div className="w-40 shrink-0 space-y-1 overflow-y-auto max-h-[60vh] pr-1">
+                    {TEACHER_NAMES.map(t => (
+                        <button
+                            key={t}
+                            onClick={() => setSelected(t)}
+                            className={cn(
+                                'w-full text-left px-3 py-2 rounded-xl text-sm transition-colors',
+                                selected === t ? 'bg-blue-600 text-white font-semibold' : 'text-slate-600 hover:bg-slate-100'
+                            )}
+                        >
+                            {t}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Day matrix */}
+                <div className="flex-1 overflow-y-auto max-h-[60vh] space-y-3 pr-1">
+                    {DAYS.map(day => {
+                        const dayData = data[day] ?? { available: true, maxPeriods: 6, unavailablePeriods: [] };
+                        return (
+                            <div key={day} className="border border-slate-200 rounded-xl p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-semibold text-slate-700">{day}</span>
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <span className="text-xs text-slate-500">Available</span>
+                                        <div
+                                            onClick={() => toggle(day, 'available', !dayData.available)}
+                                            className={cn(
+                                                'w-9 h-5 rounded-full transition-colors relative cursor-pointer',
+                                                dayData.available ? 'bg-green-500' : 'bg-slate-300'
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                'w-3.5 h-3.5 bg-white rounded-full absolute top-0.5 transition-transform shadow',
+                                                dayData.available ? 'translate-x-4' : 'translate-x-0.5'
+                                            )} />
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {dayData.available && (
+                                    <>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-xs text-slate-500 w-24 shrink-0">Max periods: <span className="font-semibold text-slate-700">{dayData.maxPeriods ?? 6}</span></span>
+                                            <input
+                                                type="range" min={1} max={8}
+                                                value={dayData.maxPeriods ?? 6}
+                                                onChange={e => toggle(day, 'maxPeriods', Number(e.target.value))}
+                                                className="flex-1 accent-blue-600"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap gap-1">
+                                            {PERIOD_SLOTS.map(slot => {
+                                                const blocked = (dayData.unavailablePeriods ?? []).includes(slot.id);
+                                                return (
+                                                    <button
+                                                        key={slot.id}
+                                                        onClick={() => togglePeriod(day, slot.id)}
+                                                        className={cn(
+                                                            'px-2 py-1 rounded-lg text-xs font-medium transition-colors',
+                                                            blocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                        )}
+                                                    >
+                                                        P{slot.id}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <div className="flex gap-3 mt-5 pt-5 border-t border-slate-100">
+                <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium">Cancel</button>
+                <button onClick={() => { onUpdate(local); onClose(); }} className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium flex items-center justify-center gap-2">
+                    <Save size={15} />
+                    Save Changes
+                </button>
+            </div>
+        </Modal>
     );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE COMPONENT
+// MAIN PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function TimetablePage() {
     const [timetable, setTimetable] = useState({});
-    const [teacherAvailability, setTeacherAvailability] = useState({});
+    const [availability, setAvailability] = useState({});
     const [loading, setLoading] = useState(true);
-    const [selectedClass, setSelectedClass] = useState('10-A');
-    const [viewType, setViewType] = useState('class');
-    const [selectedCell, setSelectedCell] = useState(null);
-    const [showSwapModal, setShowSwapModal] = useState(false);
-    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
-    const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
-    const [validationResults, setValidationResults] = useState([]);
     const [generating, setGenerating] = useState(false);
+    const [approving, setApproving] = useState(false);
+    const [approved, setApproved] = useState(false);
 
-    const classes = Object.keys(timetable);
+    const [viewType, setViewType] = useState('class'); // 'class' | 'teacher'
+    const [selectedClass, setSelectedClass] = useState('10-A');
+    const [selectedCell, setSelectedCell] = useState(null);
 
-    // Fetch data
+    const [showSwapModal, setShowSwapModal] = useState(false);
+    const [showLongTermModal, setShowLongTermModal] = useState(false);
+    const [showAvailModal, setShowAvailModal] = useState(false);
+
+    const classes = useMemo(() => Object.keys(timetable), [timetable]);
+
+    const issues = useMemo(() => validateTimetable(timetable, availability), [timetable, availability]);
+    const errorCount = issues.filter(i => i.severity === 'error').length;
+    const warnCount = issues.filter(i => i.severity === 'warning').length;
+
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const mockTimetable = generateMockTimetable();
-            const mockAvailability = generateTeacherAvailability();
-            setTimetable(mockTimetable);
-            setTeacherAvailability(mockAvailability);
-            setValidationResults(validateTimetable(mockTimetable, mockAvailability));
+            await new Promise(r => setTimeout(r, 900));
+            setTimetable(generateMockTimetable());
+            setAvailability(generateTeacherAvailability());
             setLoading(false);
-        };
-        fetchData();
+        })();
     }, []);
 
-    // Validation function
-    const validateTimetable = (tt, availability) => {
-        const issues = [];
-
-        // Check for teacher overload
-        const teacherLoad = {};
-        for (const [cls, clsData] of Object.entries(tt)) {
-            for (const [day, dayData] of Object.entries(clsData)) {
-                for (const [period, cell] of Object.entries(dayData)) {
-                    if (cell?.teacher) {
-                        if (!teacherLoad[cell.teacher]) teacherLoad[cell.teacher] = {};
-                        if (!teacherLoad[cell.teacher][day]) teacherLoad[cell.teacher][day] = 0;
-                        teacherLoad[cell.teacher][day]++;
-
-                        if (teacherLoad[cell.teacher][day] > (availability[cell.teacher]?.[day]?.maxClasses || 5)) {
-                            issues.push({
-                                id: `overload_${cell.teacher}_${day}`,
-                                status: 'error',
-                                message: `Teacher ${cell.teacher} has ${teacherLoad[cell.teacher][day]} classes on ${day}`,
-                                details: `Maximum allowed: ${availability[cell.teacher]?.[day]?.maxClasses || 5}`,
-                                canFix: true
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        // Check for empty periods
-        for (const [cls, clsData] of Object.entries(tt)) {
-            for (const [day, dayData] of Object.entries(clsData)) {
-                for (const [period, cell] of Object.entries(dayData)) {
-                    if (!cell || !cell.subject) {
-                        issues.push({
-                            id: `empty_${cls}_${day}_${period}`,
-                            status: 'warning',
-                            message: `Empty period in ${cls} on ${day} ${period} period`,
-                            details: 'No class scheduled',
-                            canFix: true
-                        });
-                    }
-                }
-            }
-        }
-
-        return issues;
-    };
-
-    // Generate new timetable
-    const handleGenerateTimetable = async () => {
+    const handleGenerate = async () => {
         setGenerating(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const newTimetable = generateMockTimetable();
-        setTimetable(newTimetable);
-        setValidationResults(validateTimetable(newTimetable, teacherAvailability));
+        setApproved(false);
+        await new Promise(r => setTimeout(r, 1800));
+        setTimetable(generateMockTimetable());
         setGenerating(false);
     };
 
-    // Swap teachers
-    const handleSwapTeachers = (swapData) => {
-        const newTimetable = JSON.parse(JSON.stringify(timetable));
+    const handleApprove = async () => {
+        if (errorCount > 0) return;
+        setApproving(true);
+        await new Promise(r => setTimeout(r, 1000));
+        setApproved(true);
+        setApproving(false);
+    };
 
-        if (swapData.swapWithClass && swapData.swapWithPeriod && swapData.swapWithDay) {
-            // Swap with another class period
-            const targetCell = newTimetable[swapData.swapWithClass]?.[swapData.swapWithDay]?.[swapData.swapWithPeriod];
-            const currentCell = newTimetable[swapData.className]?.[swapData.day]?.[swapData.period];
+    const handleCellClick = useCallback((className, day, periodId, cell) => {
+        if (approved) return; // locked
+        setSelectedCell({ className, day, periodId, cell });
+        setShowSwapModal(true);
+    }, [approved]);
 
-            if (targetCell && currentCell) {
-                const tempTeacher = currentCell.teacher;
-                currentCell.teacher = targetCell.teacher;
-                targetCell.teacher = tempTeacher;
+    const handleSlotAction = useCallback(({ mode, newTeacher, targetClass, targetDay, targetPeriod }) => {
+        setTimetable(prev => {
+            const next = JSON.parse(JSON.stringify(prev));
+            const { className, day, periodId } = selectedCell;
+
+            if (mode === 'replace') {
+                if (next[className]?.[day]?.[periodId]) {
+                    next[className][day][periodId].teacher = newTeacher;
+                }
+            } else {
+                // swap
+                const cellA = next[className]?.[day]?.[periodId];
+                const cellB = next[targetClass]?.[targetDay]?.[targetPeriod];
+                if (cellA && cellB) {
+                    const tmp = cellA.teacher;
+                    cellA.teacher = cellB.teacher;
+                    cellB.teacher = tmp;
+                }
             }
-        } else if (swapData.newTeacher) {
-            // Direct teacher swap
-            const cell = newTimetable[swapData.className]?.[swapData.day]?.[swapData.period];
-            if (cell) {
-                cell.teacher = swapData.newTeacher;
-            }
-        }
+            return next;
+        });
+    }, [selectedCell]);
 
-        setTimetable(newTimetable);
-        setValidationResults(validateTimetable(newTimetable, teacherAvailability));
-    };
-
-    // Bulk reschedule
-    const handleBulkReschedule = (rescheduleData) => {
-        console.log('Rescheduling:', rescheduleData);
-        alert(`Reschedule initiated!\nType: ${rescheduleData.type}\n${rescheduleData.teacher ? `Teacher: ${rescheduleData.teacher}` : ''}`);
-    };
-
-    // Update teacher availability
-    const handleUpdateAvailability = (newAvailability) => {
-        setTeacherAvailability(newAvailability);
-        setValidationResults(validateTimetable(timetable, newAvailability));
-    };
-
-    // Fix validation issue
-    const handleFixIssue = (issueId) => {
-        console.log('Fixing issue:', issueId);
-        alert(`Auto-fix for ${issueId} will be applied.`);
-    };
-
-    // Handle cell click for teacher swap
-    const handleCellClick = (className, day, period, cell) => {
-        if (cell) {
-            setSelectedCell({ className, day, period, cell });
-            setShowSwapModal(true);
-        }
-    };
+    const handleFixIssue = useCallback((id) => {
+        console.log('Auto-fix:', id);
+    }, []);
 
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className="text-slate-500">Loading timetable...</p>
+                    <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-3" />
+                    <p className="text-slate-500 text-sm">Loading timetable…</p>
                 </div>
             </div>
         );
@@ -806,201 +911,248 @@ export default function TimetablePage() {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <div className="p-6">
-                {/* Header */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+            <div className="max-w-screen-2xl mx-auto p-6 space-y-5">
+
+                {/* ── Header ── */}
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800 mb-1">Timetable Management</h1>
-                        <p className="text-slate-500">Create, validate, and manage school timetable</p>
+                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Timetable Management</h1>
+                        <p className="text-slate-500 text-sm mt-0.5">Generate, validate, and manage school timetables</p>
                     </div>
-                    <div className="flex gap-2">
+
+                    <div className="flex flex-wrap gap-2">
                         <button
-                            onClick={() => setShowAvailabilityModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+                            onClick={() => setShowAvailModal(true)}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors shadow-sm"
                         >
-                            <UserCheck size={16} />
-                            Teacher Availability
+                            <UserCheck size={15} />
+                            Availability
                         </button>
                         <button
-                            onClick={() => setShowRescheduleModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+                            onClick={() => setShowLongTermModal(true)}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors shadow-sm"
                         >
-                            <Repeat size={16} />
-                            Bulk Reschedule
+                            <Repeat size={15} />
+                            Long-term Swap
                         </button>
                         <button
-                            onClick={handleGenerateTimetable}
-                            disabled={generating}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            onClick={handleGenerate}
+                            disabled={generating || approved}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors shadow-sm disabled:opacity-40"
                         >
-                            {generating ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-                            {generating ? 'Generating...' : 'Generate New'}
+                            {generating ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                            {generating ? 'Generating…' : 'Regenerate'}
+                        </button>
+                        <button
+                            onClick={handleApprove}
+                            disabled={errorCount > 0 || approving || approved}
+                            className={cn(
+                                'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm',
+                                approved
+                                    ? 'bg-green-600 text-white cursor-default'
+                                    : errorCount > 0
+                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                            )}
+                        >
+                            {approving ? <Loader2 size={15} className="animate-spin" /> : approved ? <Lock size={15} /> : <CheckCircle size={15} />}
+                            {approving ? 'Approving…' : approved ? 'Approved & Locked' : 'Approve Timetable'}
                         </button>
                     </div>
                 </div>
 
-                {/* Controls Bar */}
-                <div className="bg-white rounded-xl border border-slate-200 mb-6">
-                    <div className="p-4 border-b border-slate-200">
-                        <div className="flex flex-col lg:flex-row gap-3">
-                            <div className="flex gap-2">
+                {/* ── Status bar ── */}
+                {(errorCount > 0 || warnCount > 0 || approved) && (
+                    <div className={cn(
+                        'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium',
+                        approved ? 'bg-green-50 border-green-200 text-green-800'
+                            : errorCount > 0 ? 'bg-red-50 border-red-200 text-red-800'
+                                : 'bg-amber-50 border-amber-200 text-amber-800'
+                    )}>
+                        {approved
+                            ? <><Lock size={15} /> Timetable is approved and locked. Edit access disabled.</>
+                            : errorCount > 0
+                                ? <><XCircle size={15} /> {errorCount} error{errorCount > 1 ? 's' : ''} must be resolved before approving.{warnCount > 0 ? ` ${warnCount} warning${warnCount > 1 ? 's' : ''}.` : ''}</>
+                                : <><AlertCircle size={15} /> {warnCount} warning{warnCount > 1 ? 's' : ''}. No hard errors — ready to approve.</>
+                        }
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 xl:grid-cols-4 gap-5">
+                    {/* ── Main grid ── */}
+                    <div className="xl:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        {/* Controls */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-5 py-3.5 border-b border-slate-100">
+                            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
                                 <button
                                     onClick={() => setViewType('class')}
                                     className={cn(
-                                        "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                                        viewType === 'class'
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
+                                        viewType === 'class' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                     )}
                                 >
+                                    <LayoutGrid size={14} />
                                     Class View
                                 </button>
                                 <button
                                     onClick={() => setViewType('teacher')}
                                     className={cn(
-                                        "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                                        viewType === 'teacher'
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
+                                        viewType === 'teacher' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                     )}
                                 >
+                                    <Users size={14} />
                                     Teacher View
                                 </button>
                             </div>
 
-                            {viewType === 'class' && classes.length > 0 && (
-                                <select
-                                    value={selectedClass}
-                                    onChange={(e) => setSelectedClass(e.target.value)}
-                                    className="px-3 py-2 rounded-lg border border-slate-200 text-sm"
-                                >
+                            {viewType === 'class' && (
+                                <div className="flex gap-1 flex-wrap">
                                     {classes.map(cls => (
-                                        <option key={cls} value={cls}>{cls}</option>
+                                        <button
+                                            key={cls}
+                                            onClick={() => setSelectedClass(cls)}
+                                            className={cn(
+                                                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                                selectedClass === cls
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                            )}
+                                        >
+                                            {cls}
+                                        </button>
                                     ))}
-                                </select>
+                                </div>
                             )}
 
-                            <div className="flex-1" />
-
-                            <div className="flex gap-2">
-                                <button className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
-                                    <Printer size={16} />
-                                    Print
+                            <div className="sm:ml-auto flex gap-2">
+                                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 text-sm transition-colors">
+                                    <Printer size={13} /> Print
                                 </button>
-                                <button className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
-                                    <Download size={16} />
-                                    Export
+                                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 text-sm transition-colors">
+                                    <Download size={13} /> Export
                                 </button>
                             </div>
                         </div>
+
+                        {/* Grid */}
+                        <div className="p-4">
+                            {viewType === 'class' ? (
+                                <ClassTimetableGrid
+                                    timetable={timetable}
+                                    className={selectedClass}
+                                    selectedCell={selectedCell}
+                                    onCellClick={handleCellClick}
+                                />
+                            ) : (
+                                <TeacherTimetableGrid timetable={timetable} />
+                            )}
+                        </div>
+
+                        {!approved && viewType === 'class' && (
+                            <div className="px-5 pb-4">
+                                <p className="text-xs text-slate-400 flex items-center gap-1.5">
+                                    <Edit2 size={11} /> Click any cell to change teacher or swap slots
+                                </p>
+                            </div>
+                        )}
+                        {approved && (
+                            <div className="px-5 pb-4">
+                                <p className="text-xs text-slate-400 flex items-center gap-1.5">
+                                    <Lock size={11} /> Timetable locked — editing disabled
+                                </p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Timetable Grid */}
-                    <div className="p-4">
-                        <TimetableGrid
-                            timetable={timetable}
-                            className={selectedClass}
-                            onCellClick={handleCellClick}
-                            viewType={viewType}
-                        />
-                    </div>
-                </div>
-
-                {/* Validation Panel */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                        <ValidationPanel
-                            validationResults={validationResults}
-                            onFix={handleFixIssue}
-                        />
-                    </div>
-
+                    {/* ── Sidebar ── */}
                     <div className="space-y-4">
-                        {/* Quick Stats */}
-                        <div className="bg-white rounded-xl border border-slate-200 p-4">
-                            <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                                <Activity size={18} className="text-green-600" />
-                                Quick Stats
+                        {/* Stats */}
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <Activity size={15} className="text-blue-600" /> Overview
                             </h3>
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-500">Total Classes</span>
-                                    <span className="font-semibold text-slate-800">{classes.length}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-500">Total Teachers</span>
-                                    <span className="font-semibold text-slate-800">{TEACHERS.length}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-500">Periods per Day</span>
-                                    <span className="font-semibold text-slate-800">8</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-500">Working Days</span>
-                                    <span className="font-semibold text-slate-800">6</span>
-                                </div>
-                                <div className="flex justify-between items-center pt-2 border-t border-slate-200">
-                                    <span className="text-sm text-slate-500">Validation Status</span>
+                            <div className="space-y-2.5">
+                                {[
+                                    { label: 'Classes', value: classes.length },
+                                    { label: 'Teachers', value: TEACHER_NAMES.length },
+                                    { label: 'Periods / Day', value: PERIOD_SLOTS.length },
+                                    { label: 'Working Days', value: DAYS.length },
+                                ].map(({ label, value }) => (
+                                    <div key={label} className="flex justify-between items-center">
+                                        <span className="text-sm text-slate-500">{label}</span>
+                                        <span className="text-sm font-semibold text-slate-800">{value}</span>
+                                    </div>
+                                ))}
+                                <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
+                                    <span className="text-sm text-slate-500">Status</span>
                                     <span className={cn(
-                                        "text-xs font-medium px-2 py-1 rounded-full",
-                                        validationResults.filter(r => r.status === 'error').length === 0
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-red-100 text-red-700"
+                                        'text-xs font-semibold px-2.5 py-1 rounded-full',
+                                        approved ? 'bg-green-100 text-green-700'
+                                            : errorCount > 0 ? 'bg-red-100 text-red-700'
+                                                : warnCount > 0 ? 'bg-amber-100 text-amber-700'
+                                                    : 'bg-green-100 text-green-700'
                                     )}>
-                                        {validationResults.filter(r => r.status === 'error').length} Issues Found
+                                        {approved ? 'Approved' : errorCount > 0 ? `${errorCount} Errors` : warnCount > 0 ? `${warnCount} Warnings` : 'Valid'}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quick Actions */}
-                        <div className="bg-white rounded-xl border border-slate-200 p-4">
-                            <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                                <Zap size={18} className="text-amber-600" />
-                                Quick Actions
+                        {/* Validation */}
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <Shield size={15} className="text-blue-600" /> Validation
+                                {issues.length > 0 && (
+                                    <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                        {issues.length}
+                                    </span>
+                                )}
                             </h3>
-                            <div className="space-y-2">
-                                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors">
-                                    <Bell size={16} />
-                                    Notify Changes
-                                </button>
-                                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors">
-                                    <Eye size={16} />
-                                    Preview Changes
-                                </button>
-                                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors">
-                                    <Download size={16} />
-                                    Download as PDF
-                                </button>
+                            <ValidationPanel issues={issues} onFix={handleFixIssue} />
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <Zap size={15} className="text-amber-500" /> Quick Actions
+                            </h3>
+                            <div className="space-y-1.5">
+                                {[
+                                    { icon: Bell, label: 'Notify Teachers', color: 'text-blue-600' },
+                                    { icon: Eye, label: 'Preview PDF', color: 'text-slate-600' },
+                                    { icon: Download, label: 'Download as PDF', color: 'text-slate-600' },
+                                    { icon: Upload, label: 'Import from Excel', color: 'text-green-600' },
+                                ].map(({ icon: Icon, label, color }) => (
+                                    <button key={label} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors text-sm text-left">
+                                        <Icon size={14} className={color} />
+                                        {label}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Modals */}
-            <TeacherSwapModal
+            {/* ── Modals ── */}
+            <SwapModal
                 isOpen={showSwapModal}
-                onClose={() => setShowSwapModal(false)}
-                onSwap={handleSwapTeachers}
+                onClose={() => { setShowSwapModal(false); setSelectedCell(null); }}
+                onSwap={handleSlotAction}
                 timetable={timetable}
-                className={selectedCell?.className}
-                day={selectedCell?.day}
-                period={selectedCell?.period}
-                currentCell={selectedCell?.cell}
+                selection={selectedCell}
             />
-
-            <BulkRescheduleModal
-                isOpen={showRescheduleModal}
-                onClose={() => setShowRescheduleModal(false)}
-                onReschedule={handleBulkReschedule}
+            <LongTermSwapModal
+                isOpen={showLongTermModal}
+                onClose={() => setShowLongTermModal(false)}
+                onSwap={(data) => console.log('SWAP created:', data)}
             />
-
-            <TeacherAvailabilityModal
-                isOpen={showAvailabilityModal}
-                onClose={() => setShowAvailabilityModal(false)}
-                onUpdate={handleUpdateAvailability}
-                teacherAvailability={teacherAvailability}
+            <AvailabilityModal
+                isOpen={showAvailModal}
+                onClose={() => setShowAvailModal(false)}
+                onUpdate={setAvailability}
+                availability={availability}
             />
         </div>
     );

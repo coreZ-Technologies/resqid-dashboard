@@ -1,14 +1,10 @@
-// app/(school)/school/attendance/page.jsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
-    Calendar, Users, Search, Filter, Download, ChevronLeft, ChevronRight,
-    CheckCircle, XCircle, Clock, Eye, TrendingUp, TrendingDown,
-    PieChart, BarChart3, Activity, UserCheck, UserX,
-    Calendar as CalendarIcon, FilterX, RefreshCw, Loader2,
-    ChevronDown, Printer, Mail, MessageCircle, AlertCircle,
-    GraduationCap, BookOpen, School, Plus, Minus, Settings
+    Calendar, Users, Search, Download, CheckCircle, XCircle,
+    Clock, TrendingUp, TrendingDown, UserX, FilterX, RefreshCw,
+    Loader2, MessageCircle, School, X, Save, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,730 +20,708 @@ const CLASSES = [
 const SECTIONS = ['A', 'B', 'C', 'D'];
 
 const ATTENDANCE_STATUS = {
-    PRESENT: { label: 'Present', color: 'green', icon: CheckCircle, value: 'present' },
-    ABSENT: { label: 'Absent', color: 'red', icon: XCircle, value: 'absent' },
-    LATE: { label: 'Late', color: 'amber', icon: Clock, value: 'late' },
-    HOLIDAY: { label: 'Holiday', color: 'blue', icon: Calendar, value: 'holiday' },
-    LEAVE: { label: 'Leave', color: 'purple', icon: UserX, value: 'leave' }
+    present: { label: 'Present', icon: CheckCircle },
+    absent: { label: 'Absent', icon: XCircle },
+    late: { label: 'Late', icon: Clock },
+    leave: { label: 'Leave', icon: UserX },
+};
+
+const STATUS_STYLES = {
+    present: 'bg-green-50 text-green-700 border-green-200',
+    absent: 'bg-red-50 text-red-700 border-red-200',
+    late: 'bg-amber-50 text-amber-700 border-amber-200',
+    leave: 'bg-purple-50 text-purple-700 border-purple-200',
+};
+
+const STATUS_BUTTON_ACTIVE = {
+    present: 'bg-green-100 text-green-700 ring-1 ring-green-300',
+    absent: 'bg-red-100 text-red-700 ring-1 ring-red-300',
+    late: 'bg-amber-100 text-amber-700 ring-1 ring-amber-300',
+    leave: 'bg-purple-100 text-purple-700 ring-1 ring-purple-300',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK DATA (Replace with actual API calls)
+// MOCK DATA — generated once, outside React, never regenerated on render
 // ─────────────────────────────────────────────────────────────────────────────
 
-const generateMockStudents = (className, section) => {
-    const students = [];
-    const firstNames = ['Aarav', 'Vihaan', 'Vivaan', 'Ananya', 'Diya', 'Advik', 'Kabir', 'Aadhya', 'Sai', 'Ishita', 'Reyansh', 'Anaya', 'Shaurya', 'Myra', 'Dhruv', 'Kiara', 'Arjun', 'Sara', 'Rudra', 'Jiya'];
-    const lastNames = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Kumar', 'Joshi', 'Nair', 'Reddy', 'Patel', 'Malhotra'];
+const FIRST_NAMES = ['Aarav', 'Vihaan', 'Vivaan', 'Ananya', 'Diya', 'Advik', 'Kabir', 'Aadhya', 'Sai', 'Ishita', 'Reyansh', 'Anaya', 'Shaurya', 'Myra', 'Dhruv', 'Kiara', 'Arjun', 'Sara', 'Rudra', 'Jiya'];
+const LAST_NAMES = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Kumar', 'Joshi', 'Nair', 'Reddy', 'Patel', 'Malhotra'];
 
-    for (let i = 1; i <= 35; i++) {
-        const statuses = ['present', 'absent', 'late', 'leave'];
-        const weights = [0.85, 0.05, 0.05, 0.05];
-        let random = Math.random();
-        let cumulative = 0;
-        let status = 'present';
-        for (let j = 0; j < weights.length; j++) {
-            cumulative += weights[j];
-            if (random < cumulative) {
-                status = statuses[j];
-                break;
-            }
-        }
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-        students.push({
-            id: `STU${String(i).padStart(4, '0')}`,
-            name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
-            rollNumber: i,
-            className: className,
-            section: section,
-            status: status,
-            attendancePercentage: Math.floor(Math.random() * 30) + 70,
-            lastAttendance: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-            parentPhone: `+91 ${Math.floor(Math.random() * 9000000000) + 1000000000}`,
-            parentEmail: `parent${i}@example.com`
-        });
-    }
-    return students;
-};
+const generateStudents = (className, section) =>
+    Array.from({ length: 35 }, (_, i) => {
+        const r = Math.random();
+        const status = r < 0.05 ? 'absent' : r < 0.10 ? 'late' : r < 0.15 ? 'leave' : 'present';
+        return {
+            id: `STU${String(i + 1).padStart(4, '0')}`,
+            name: `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+            roll: i + 1,
+            status,
+            pct: rnd(70, 99),
+            phone: `+91 ${rnd(7000000000, 9999999999)}`,
+            email: `parent${i + 1}@example.com`,
+            className,
+            section,
+        };
+    });
 
-const generateMockAttendanceData = () => {
-    const data = [];
-    for (const className of CLASSES) {
-        for (const section of SECTIONS) {
-            data.push({
-                class: className,
-                section: section,
-                students: generateMockStudents(className, section),
-                totalStudents: 35,
-                present: Math.floor(Math.random() * 30) + 25,
-                absent: Math.floor(Math.random() * 5) + 1,
-                late: Math.floor(Math.random() * 3),
-                leave: Math.floor(Math.random() * 2),
-                percentage: Math.floor(Math.random() * 20) + 75
-            });
-        }
-    }
-    return data;
-};
+const generateAttendanceData = () =>
+    CLASSES.flatMap(cls =>
+        SECTIONS.map(sec => {
+            const students = generateStudents(cls, sec);
+            const present = students.filter(s => s.status === 'present').length;
+            const absent = students.filter(s => s.status === 'absent').length;
+            const late = students.filter(s => s.status === 'late').length;
+            const leave = students.filter(s => s.status === 'leave').length;
+            return {
+                cls, sec, students,
+                present, absent, late, leave,
+                total: students.length,
+                pct: Math.round((present / students.length) * 100),
+            };
+        })
+    );
 
-const generateMonthlyStats = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months.map(month => ({
-        month,
-        percentage: Math.floor(Math.random() * 15) + 80,
-        total: Math.floor(Math.random() * 500) + 800
-    }));
-};
+const generateMonthlyStats = () =>
+    ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        .map(month => ({ month, pct: rnd(78, 97) }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPONENTS
+// HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-function StatCard({ title, value, icon: Icon, color, trend, subtitle }) {
+const pctColor = (p) =>
+    p >= 85
+        ? { pill: 'bg-green-100 text-green-700', bar: 'bg-green-500' }
+        : p >= 70
+            ? { pill: 'bg-amber-100 text-amber-700', bar: 'bg-amber-500' }
+            : { pill: 'bg-red-100 text-red-700', bar: 'bg-red-500' };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAT CARD — memo: never re-renders unless props change
+// ─────────────────────────────────────────────────────────────────────────────
+
+const StatCard = memo(function StatCard({ title, value, icon: Icon, iconBg, iconColor, trend, subtitle }) {
     return (
-        <div className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-2">
-                <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", color)}>
-                    <Icon className="w-5 h-5 text-white" />
+        <div className="bg-white rounded-2xl border border-slate-100 p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', iconBg)}>
+                    <Icon className={cn('w-4 h-4', iconColor)} />
                 </div>
-                {trend && (
-                    <div className={cn(
-                        "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
-                        trend > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                {trend !== 0 && (
+                    <span className={cn(
+                        'inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full',
+                        trend > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                     )}>
-                        {trend > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                        {trend > 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                         {Math.abs(trend)}%
-                    </div>
+                    </span>
                 )}
             </div>
-            <p className="text-2xl font-bold text-slate-800">{value}</p>
-            <p className="text-sm text-slate-500 mt-1">{title}</p>
-            {subtitle && <p className="text-xs text-slate-400 mt-1">{subtitle}</p>}
+            <div>
+                <p className="text-3xl font-semibold tracking-tight text-slate-900">{value}</p>
+                <p className="text-sm font-medium text-slate-700 mt-0.5">{title}</p>
+                {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+            </div>
         </div>
     );
-}
+});
 
-function ClassCard({ data, onViewDetails }) {
-    const statusColor = data.percentage >= 85 ? 'green' : data.percentage >= 70 ? 'amber' : 'red';
+// ─────────────────────────────────────────────────────────────────────────────
+// CLASS CARD — memo: skips re-render when other cards change
+// ─────────────────────────────────────────────────────────────────────────────
 
+const ClassCard = memo(function ClassCard({ data, onViewDetails }) {
+    const colors = pctColor(data.pct);
     return (
-        <div className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => onViewDetails(data)}>
-            <div className="flex items-center justify-between mb-3">
+        <div
+            className="bg-white rounded-2xl border border-slate-100 p-4 hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer group"
+            onClick={() => onViewDetails(data)}
+        >
+            <div className="flex items-start justify-between mb-3">
                 <div>
-                    <h3 className="font-semibold text-slate-800">Class {data.class}-{data.section}</h3>
-                    <p className="text-xs text-slate-400">{data.totalStudents} Students</p>
+                    <h3 className="text-sm font-semibold text-slate-800 group-hover:text-blue-700 transition-colors">
+                        Class {data.cls}–{data.sec}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">{data.total} students</p>
                 </div>
-                <div className={cn(
-                    "px-2 py-1 rounded-full text-xs font-medium",
-                    statusColor === 'green' && "bg-green-100 text-green-700",
-                    statusColor === 'amber' && "bg-amber-100 text-amber-700",
-                    statusColor === 'red' && "bg-red-100 text-red-700"
-                )}>
-                    {data.percentage}%
-                </div>
+                <span className={cn('text-[11px] font-semibold px-2.5 py-0.5 rounded-full', colors.pill)}>
+                    {data.pct}%
+                </span>
             </div>
 
-            <div className="mb-3">
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                        className={cn(
-                            "h-full rounded-full transition-all",
-                            statusColor === 'green' && "bg-green-500",
-                            statusColor === 'amber' && "bg-amber-500",
-                            statusColor === 'red' && "bg-red-500"
-                        )}
-                        style={{ width: `${data.percentage}%` }}
-                    />
-                </div>
+            <div className="h-1 bg-slate-100 rounded-full overflow-hidden mb-4">
+                <div className={cn('h-full rounded-full', colors.bar)} style={{ width: `${data.pct}%` }} />
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div>
-                    <p className="text-green-600 font-semibold">{data.present}</p>
-                    <p className="text-slate-400">Present</p>
+            <div className="grid grid-cols-3 divide-x divide-slate-100 text-center">
+                <div className="pr-2">
+                    <p className="text-sm font-semibold text-green-600">{data.present}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Present</p>
                 </div>
-                <div>
-                    <p className="text-red-600 font-semibold">{data.absent}</p>
-                    <p className="text-slate-400">Absent</p>
+                <div className="px-2">
+                    <p className="text-sm font-semibold text-red-600">{data.absent}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Absent</p>
                 </div>
-                <div>
-                    <p className="text-amber-600 font-semibold">{data.late + data.leave}</p>
-                    <p className="text-slate-400">Late/Leave</p>
+                <div className="pl-2">
+                    <p className="text-sm font-semibold text-amber-600">{data.late + data.leave}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Late / Leave</p>
                 </div>
             </div>
         </div>
     );
-}
+});
 
-function StudentAttendanceTable({ students, classInfo, onUpdateStatus, onSave }) {
-    const [localStudents, setLocalStudents] = useState(students);
+// ─────────────────────────────────────────────────────────────────────────────
+// MONTHLY CHART — memo
+// ─────────────────────────────────────────────────────────────────────────────
+
+const MonthlyChart = memo(function MonthlyChart({ data }) {
+    const max = useMemo(() => Math.max(...data.map(d => d.pct)), [data]);
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+            <div className="flex items-center justify-between mb-5">
+                <h3 className="text-sm font-semibold text-slate-800">Monthly attendance trend</h3>
+                <select className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600 bg-white">
+                    <option>2024–2025</option>
+                    <option>2023–2024</option>
+                </select>
+            </div>
+            <div className="flex items-end gap-1.5 h-36">
+                {data.map((d, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer">
+                        <span className="text-[9px] font-medium text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {d.pct}%
+                        </span>
+                        <div
+                            className="w-full bg-blue-500 rounded-t-md group-hover:bg-blue-600 transition-colors"
+                            style={{ height: `${Math.round((d.pct / max) * 100)}%`, minHeight: 4 }}
+                        />
+                        <span className="text-[9px] text-slate-400">{d.month}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STUDENT ROW — memo: each row only re-renders if that student's status changed
+// ─────────────────────────────────────────────────────────────────────────────
+
+const StudentRow = memo(function StudentRow({ student, status, onUpdateStatus }) {
+    const cfg = ATTENDANCE_STATUS[status];
+    const Icon = cfg.icon;
+    return (
+        <tr className="hover:bg-slate-50/70 transition-colors">
+            <td className="py-3 px-4 text-slate-400 text-xs">{student.roll}</td>
+            <td className="py-3 px-4">
+                <p className="font-medium text-slate-800 text-sm leading-tight">{student.name}</p>
+                <p className="text-[10px] text-slate-400">{student.id}</p>
+            </td>
+            <td className="py-3 px-4">
+                <span className={cn(
+                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border',
+                    STATUS_STYLES[status]
+                )}>
+                    <Icon size={11} />
+                    {cfg.label}
+                </span>
+            </td>
+            <td className="py-3 px-4">
+                <div className="flex gap-1.5">
+                    {Object.entries(ATTENDANCE_STATUS).map(([key, config]) => {
+                        const BtnIcon = config.icon;
+                        return (
+                            <button
+                                key={key}
+                                onClick={() => onUpdateStatus(student.id, key)}
+                                title={config.label}
+                                className={cn(
+                                    'p-1.5 rounded-lg transition-all',
+                                    status === key
+                                        ? STATUS_BUTTON_ACTIVE[key]
+                                        : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                                )}
+                            >
+                                <BtnIcon size={13} />
+                            </button>
+                        );
+                    })}
+                </div>
+            </td>
+        </tr>
+    );
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ATTENDANCE MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+
+function AttendanceModal({ classData, onClose, onSave }) {
+    // Shallow status-only map — much cheaper than deep-cloning 35 student objects
+    const [statusMap, setStatusMap] = useState(() => {
+        const m = {};
+        classData.students.forEach(s => { m[s.id] = s.status; });
+        return m;
+    });
     const [hasChanges, setHasChanges] = useState(false);
 
-    const updateStudentStatus = (studentId, newStatus) => {
-        setLocalStudents(prev => prev.map(s =>
-            s.id === studentId ? { ...s, status: newStatus } : s
-        ));
+    const updateStatus = useCallback((id, status) => {
+        setStatusMap(prev => ({ ...prev, [id]: status }));
         setHasChanges(true);
-    };
+    }, []);
+
+    const counts = useMemo(() => {
+        const c = { present: 0, absent: 0, late: 0, leave: 0 };
+        Object.values(statusMap).forEach(s => c[s]++);
+        return c;
+    }, [statusMap]);
+
+    const pct = Math.round((counts.present / classData.students.length) * 100);
 
     const handleSave = () => {
-        onSave(localStudents);
+        const updated = classData.students.map(s => ({ ...s, status: statusMap[s.id] }));
+        onSave(updated);
         setHasChanges(false);
     };
 
-    const getStatusColor = (status) => {
-        const colors = {
-            present: 'bg-green-100 text-green-700 border-green-200',
-            absent: 'bg-red-100 text-red-700 border-red-200',
-            late: 'bg-amber-100 text-amber-700 border-amber-200',
-            leave: 'bg-purple-100 text-purple-700 border-purple-200'
-        };
-        return colors[status] || colors.present;
-    };
-
-    const presentCount = localStudents.filter(s => s.status === 'present').length;
-    const attendancePercentage = ((presentCount / localStudents.length) * 100).toFixed(1);
-
     return (
-        <div>
-            <div className="flex items-center justify-between mb-4">
-                <div>
-                    <h3 className="text-lg font-semibold text-slate-800">
-                        Class {classInfo.class}-{classInfo.section} Attendance
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                        Today's Attendance: {presentCount}/{localStudents.length} ({attendancePercentage}%)
-                    </p>
-                </div>
-                {hasChanges && (
-                    <button
-                        onClick={handleSave}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                    >
-                        <CheckCircle size={16} />
-                        Save Changes
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+
+            <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl flex flex-col border border-slate-200" style={{ height: '80vh', overflow: 'hidden' }}>
+                {/* Header */}
+                <div className="flex items-start justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+                    <div>
+                        <h2 className="text-base font-semibold text-slate-900">
+                            Class {classData.cls}–{classData.sec}
+                        </h2>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                            {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                    </div>
+                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                        <X size={16} />
                     </button>
-                )}
-            </div>
+                </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                        <tr>
-                            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Roll No</th>
-                            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Student Name</th>
-                            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Parent Contact</th>
-                            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Attendance Status</th>
-                            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {localStudents.map((student) => (
-                            <tr key={student.id} className="hover:bg-slate-50 transition-colors">
-                                <td className="py-3 px-4 text-sm text-slate-600">{student.rollNumber}</td>
-                                <td className="py-3 px-4">
-                                    <div>
-                                        <p className="font-medium text-slate-800">{student.name}</p>
-                                        <p className="text-xs text-slate-400">ID: {student.id}</p>
-                                    </div>
-                                </td>
-                                <td className="py-3 px-4">
-                                    <p className="text-sm text-slate-600">{student.parentPhone}</p>
-                                    <p className="text-xs text-slate-400">{student.parentEmail}</p>
-                                </td>
-                                <td className="py-3 px-4">
-                                    <span className={cn(
-                                        "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border",
-                                        getStatusColor(student.status)
-                                    )}>
-                                        {ATTENDANCE_STATUS[student.status.toUpperCase()]?.label || student.status}
-                                    </span>
-                                </td>
-                                <td className="py-3 px-4">
-                                    <div className="flex gap-2">
-                                        {Object.entries(ATTENDANCE_STATUS).map(([key, config]) => {
-                                            if (key === 'HOLIDAY') return null;
-                                            const Icon = config.icon;
-                                            return (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => updateStudentStatus(student.id, config.value)}
-                                                    className={cn(
-                                                        "p-1.5 rounded-lg transition-colors",
-                                                        student.status === config.value
-                                                            ? `bg-${config.color}-100 text-${config.color}-600`
-                                                            : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                                                    )}
-                                                    title={config.label}
-                                                >
-                                                    <Icon size={14} />
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-}
-
-function AttendanceChart({ data }) {
-    return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-800">Monthly Attendance Trend</h3>
-                <select className="text-sm border border-slate-200 rounded-lg px-2 py-1">
-                    <option>2024-2025</option>
-                    <option>2023-2024</option>
-                </select>
-            </div>
-            <div className="h-64 relative">
-                <div className="flex h-full items-end gap-2">
-                    {data.map((month, idx) => (
-                        <div key={idx} className="flex-1 flex flex-col items-center gap-2">
-                            <div
-                                className="w-full bg-blue-500 rounded-t-lg transition-all hover:bg-blue-600 cursor-pointer"
-                                style={{ height: `${month.percentage}%` }}
-                            />
-                            <span className="text-xs text-slate-500 rotate-45 origin-left">{month.month}</span>
-                            <span className="text-xs font-semibold text-slate-700">{month.percentage}%</span>
+                {/* Summary chips */}
+                <div className="flex gap-3 px-6 py-3 border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
+                    {[
+                        { label: 'Present', val: counts.present, color: 'text-green-600' },
+                        { label: 'Absent', val: counts.absent, color: 'text-red-600' },
+                        { label: 'Late', val: counts.late, color: 'text-amber-600' },
+                        { label: 'Leave', val: counts.leave, color: 'text-purple-600' },
+                    ].map(({ label, val, color }) => (
+                        <div key={label} className="bg-white rounded-xl border border-slate-100 px-4 py-2 text-center min-w-[72px]">
+                            <p className={cn('text-xl font-semibold', color)}>{val}</p>
+                            <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
                         </div>
                     ))}
+                    <div className="bg-white rounded-xl border border-slate-100 px-4 py-2 text-center min-w-[72px] ml-auto">
+                        <p className={cn('text-xl font-semibold', pct >= 85 ? 'text-green-600' : pct >= 70 ? 'text-amber-600' : 'text-red-600')}>{pct}%</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Attendance</p>
+                    </div>
+                </div>
+
+                {/* Scrollable table — isolated scroll region, GPU-promoted */}
+                <div
+                    className="overflow-y-auto flex-1"
+                    style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', willChange: 'transform' }}
+                >
+                    <table className="w-full text-sm">
+                        <thead className="sticky top-0 bg-white border-b border-slate-100 z-10">
+                            <tr>
+                                <th className="text-left py-3 px-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider w-12">#</th>
+                                <th className="text-left py-3 px-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Student</th>
+                                <th className="text-left py-3 px-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                <th className="text-left py-3 px-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Mark as</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {classData.students.map(student => (
+                                <StudentRow
+                                    key={student.id}
+                                    student={student}
+                                    status={statusMap[student.id]}
+                                    onUpdateStatus={updateStatus}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
+                    <p className="text-xs text-slate-400">
+                        {counts.present} of {classData.students.length} present · {pct}%
+                    </p>
+                    <button
+                        onClick={handleSave}
+                        disabled={!hasChanges}
+                        className={cn(
+                            'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all',
+                            hasChanges
+                                ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                        )}
+                    >
+                        <Save size={14} />
+                        Save changes
+                    </button>
                 </div>
             </div>
         </div>
     );
 }
 
-function ClassFilter({ selectedClass, setSelectedClass, selectedSection, setSelectedSection }) {
-    const [isOpen, setIsOpen] = useState(false);
+// ─────────────────────────────────────────────────────────────────────────────
+// CLASS SELECTOR — inline pill-style tabs instead of dropdown
+// Nursery/LKG/UKG + 1–12 in a horizontally-scrollable row,
+// sections appear inline once a class is selected
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ClassSelector = memo(function ClassSelector({
+    selectedClass, setSelectedClass,
+    selectedSection, setSelectedSection,
+}) {
+    const handleClassClick = useCallback((cls) => {
+        if (selectedClass === cls) {
+            setSelectedClass('');
+            setSelectedSection('');
+        } else {
+            setSelectedClass(cls);
+            setSelectedSection('');
+        }
+    }, [selectedClass, setSelectedClass, setSelectedSection]);
+
+    const handleSectionClick = useCallback((sec) => {
+        setSelectedSection(prev => prev === sec ? '' : sec);
+    }, [setSelectedSection]);
 
     return (
-        <div className="relative">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-                <Filter size={14} />
-                {selectedClass ? `Class ${selectedClass}${selectedSection ? `-${selectedSection}` : ''}` : 'All Classes'}
-                <ChevronDown size={14} className={cn("transition-transform", isOpen && "rotate-180")} />
-            </button>
+        <div className="flex flex-col gap-2">
+            {/* Class pills — scrollable on mobile */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+                <button
+                    onClick={() => { setSelectedClass(''); setSelectedSection(''); }}
+                    className={cn(
+                        'flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                        !selectedClass
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    )}
+                >
+                    All
+                </button>
+                {CLASSES.map(cls => (
+                    <button
+                        key={cls}
+                        onClick={() => handleClassClick(cls)}
+                        className={cn(
+                            'flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                            selectedClass === cls
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        )}
+                    >
+                        {cls === 'Nursery' ? 'Nurs.' : cls === 'LKG' ? 'LKG' : cls === 'UKG' ? 'UKG' : `Cls ${cls}`}
+                    </button>
+                ))}
+            </div>
 
-            {isOpen && (
-                <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-lg z-20 p-2">
+            {/* Section pills — only shown when a class is selected */}
+            {selectedClass && (
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-slate-400 font-medium mr-1">Section:</span>
+                    <button
+                        onClick={() => setSelectedSection('')}
+                        className={cn(
+                            'px-2.5 py-1 rounded-md text-xs font-medium transition-all',
+                            !selectedSection
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        )}
+                    >
+                        All
+                    </button>
+                    {SECTIONS.map(sec => (
                         <button
-                            onClick={() => {
-                                setSelectedClass('');
-                                setSelectedSection('');
-                                setIsOpen(false);
-                            }}
+                            key={sec}
+                            onClick={() => handleSectionClick(sec)}
                             className={cn(
-                                "w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-slate-50",
-                                !selectedClass && "bg-blue-50 text-blue-600"
+                                'px-2.5 py-1 rounded-md text-xs font-medium transition-all',
+                                selectedSection === sec
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                             )}
                         >
-                            All Classes
+                            {sec}
                         </button>
-                        <div className="border-t border-slate-100 my-1" />
-                        {CLASSES.map(className => (
-                            <div key={className}>
-                                <button
-                                    onClick={() => {
-                                        setSelectedClass(className);
-                                        setSelectedSection('');
-                                    }}
-                                    className={cn(
-                                        "w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-slate-50",
-                                        selectedClass === className && !selectedSection && "bg-blue-50 text-blue-600"
-                                    )}
-                                >
-                                    Class {className}
-                                </button>
-                                {selectedClass === className && (
-                                    <div className="pl-4 space-y-1">
-                                        {SECTIONS.map(section => (
-                                            <button
-                                                key={section}
-                                                onClick={() => {
-                                                    setSelectedSection(section);
-                                                    setIsOpen(false);
-                                                }}
-                                                className={cn(
-                                                    "w-full text-left px-3 py-1 rounded-lg text-sm hover:bg-slate-50",
-                                                    selectedSection === section && "bg-blue-50 text-blue-600"
-                                                )}
-                                            >
-                                                Section {section}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </>
+                    ))}
+                </div>
             )}
         </div>
     );
-}
-
-function DateRangePicker({ startDate, endDate, onStartChange, onEndChange }) {
-    return (
-        <div className="flex items-center gap-2">
-            <div className="relative">
-                <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => onStartChange(e.target.value)}
-                    className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm"
-                />
-            </div>
-            <span className="text-slate-400">to</span>
-            <div className="relative">
-                <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => onEndChange(e.target.value)}
-                    className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm"
-                />
-            </div>
-        </div>
-    );
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE COMPONENT
+// MAIN PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function AttendancePage() {
-    const [attendanceData, setAttendanceData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
+    const [allData, setAllData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [startDate, setStartDate] = useState(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
-    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-    const [viewMode, setViewMode] = useState('grid'); // grid, list, detailed
-    const [selectedClassData, setSelectedClassData] = useState(null);
-    const [showDetailedView, setShowDetailedView] = useState(false);
+    const [viewMode, setViewMode] = useState('grid');
+    const [modalData, setModalData] = useState(null);
     const [monthlyStats, setMonthlyStats] = useState([]);
-
-    // Filters
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Fetch attendance data
+    // Load data once
     useEffect(() => {
-        const fetchAttendance = async () => {
+        const load = async () => {
             setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const data = generateMockAttendanceData();
-            setAttendanceData(data);
-            setFilteredData(data);
+            await new Promise(r => setTimeout(r, 800));
+            setAllData(generateAttendanceData());
             setMonthlyStats(generateMonthlyStats());
             setLoading(false);
         };
-        fetchAttendance();
+        load();
     }, []);
 
-    // Apply filters
-    useEffect(() => {
-        let filtered = [...attendanceData];
-
-        if (selectedClass) {
-            filtered = filtered.filter(c => c.class === selectedClass);
-        }
-
-        if (selectedSection) {
-            filtered = filtered.filter(c => c.section === selectedSection);
-        }
-
+    // Derived filtered data — useMemo avoids recalculating on unrelated state changes
+    const filteredData = useMemo(() => {
+        let f = allData;
+        if (selectedClass) f = f.filter(c => c.cls === selectedClass);
+        if (selectedSection) f = f.filter(c => c.sec === selectedSection);
         if (searchQuery) {
-            filtered = filtered.filter(c =>
-                c.class.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                c.section.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            const q = searchQuery.toLowerCase();
+            f = f.filter(c => `class ${c.cls} ${c.sec} section ${c.sec}`.toLowerCase().includes(q));
         }
+        return f;
+    }, [allData, selectedClass, selectedSection, searchQuery]);
 
-        setFilteredData(filtered);
-    }, [selectedClass, selectedSection, searchQuery, attendanceData]);
+    // Aggregates from filteredData
+    const { totalStudents, totalPresent, totalAbsent, totalLate, overallPct } = useMemo(() => {
+        const totalStudents = allData.reduce((s, c) => s + c.total, 0);
+        const totalPresent = allData.reduce((s, c) => s + c.present, 0);
+        const totalAbsent = allData.reduce((s, c) => s + c.absent, 0);
+        const totalLate = allData.reduce((s, c) => s + c.late, 0);
+        const overallPct = totalStudents > 0 ? Math.round((totalPresent / totalStudents) * 100) : 0;
+        return { totalStudents, totalPresent, totalAbsent, totalLate, overallPct };
+    }, [allData]);
 
-    // Calculate statistics
-    const totalStudents = attendanceData.reduce((sum, c) => sum + c.totalStudents, 0);
-    const totalPresent = attendanceData.reduce((sum, c) => sum + c.present, 0);
-    const totalAbsent = attendanceData.reduce((sum, c) => sum + c.absent, 0);
-    const totalLate = attendanceData.reduce((sum, c) => sum + c.late, 0);
-    const overallPercentage = ((totalPresent / totalStudents) * 100).toFixed(1);
+    const stats = useMemo(() => [
+        { title: 'Total students', value: totalStudents, icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', trend: 5, subtitle: 'Across all classes' },
+        { title: 'Present today', value: totalPresent, icon: CheckCircle, iconBg: 'bg-green-50', iconColor: 'text-green-600', trend: 3, subtitle: `${overallPct}% overall` },
+        { title: 'Absent today', value: totalAbsent, icon: XCircle, iconBg: 'bg-red-50', iconColor: 'text-red-600', trend: -2, subtitle: `${totalLate} late arrivals` },
+        { title: 'Classes shown', value: filteredData.length, icon: School, iconBg: 'bg-purple-50', iconColor: 'text-purple-600', trend: 0, subtitle: 'Active today' },
+    ], [totalStudents, totalPresent, totalAbsent, totalLate, overallPct, filteredData.length]);
 
-    const stats = [
-        { title: 'Total Students', value: totalStudents, icon: Users, color: 'bg-blue-600', trend: 5, subtitle: 'Across all classes' },
-        { title: 'Present Today', value: totalPresent, icon: CheckCircle, color: 'bg-green-600', trend: 3, subtitle: `${overallPercentage}% attendance` },
-        { title: 'Absent Today', value: totalAbsent, icon: XCircle, color: 'bg-red-600', trend: -2, subtitle: `${totalLate} late arrivals` },
-        { title: 'Classes Today', value: filteredData.length, icon: School, color: 'bg-purple-600', trend: 0, subtitle: 'Active classes' }
-    ];
+    const handleSaveAttendance = useCallback((updatedStudents) => {
+        setAllData(prev => prev.map(c => {
+            if (c.cls !== modalData?.cls || c.sec !== modalData?.sec) return c;
+            const present = updatedStudents.filter(s => s.status === 'present').length;
+            const absent = updatedStudents.filter(s => s.status === 'absent').length;
+            const late = updatedStudents.filter(s => s.status === 'late').length;
+            const leave = updatedStudents.filter(s => s.status === 'leave').length;
+            return { ...c, students: updatedStudents, present, absent, late, leave, pct: Math.round((present / c.total) * 100) };
+        }));
+        // TODO: POST /api/attendance
+    }, [modalData]);
 
-    const handleViewDetails = (classData) => {
-        setSelectedClassData(classData);
-        setShowDetailedView(true);
-    };
-
-    const handleUpdateAttendance = (updatedStudents) => {
-        // Update local state
-        if (selectedClassData) {
-            const updatedClassData = {
-                ...selectedClassData,
-                students: updatedStudents,
-                present: updatedStudents.filter(s => s.status === 'present').length,
-                absent: updatedStudents.filter(s => s.status === 'absent').length,
-                late: updatedStudents.filter(s => s.status === 'late').length,
-                leave: updatedStudents.filter(s => s.status === 'leave').length,
-                percentage: ((updatedStudents.filter(s => s.status === 'present').length / updatedStudents.length) * 100).toFixed(1)
-            };
-
-            setAttendanceData(prev => prev.map(c =>
-                c.class === updatedClassData.class && c.section === updatedClassData.section ? updatedClassData : c
-            ));
-            setSelectedClassData(updatedClassData);
-        }
-
-        // TODO: API call to save attendance
-        console.log('Attendance updated:', updatedStudents);
-    };
-
-    const handleExport = () => {
-        // TODO: Export attendance data to CSV/Excel
-        console.log('Exporting attendance data...');
-    };
-
-    const handleSendReminders = () => {
-        // TODO: Send reminders to parents of absent students
-        console.log('Sending reminders...');
-    };
-
-    const handleClearFilters = () => {
+    const clearFilters = useCallback(() => {
         setSelectedClass('');
         setSelectedSection('');
         setSearchQuery('');
-    };
+    }, []);
+
+    const handleViewDetails = useCallback((data) => setModalData(data), []);
+    const hasFilters = selectedClass || selectedSection || searchQuery;
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <div className="p-6">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="min-h-screen bg-slate-50/60">
+            <div className="max-w-screen-xl mx-auto p-6 space-y-5">
+
+                {/* ── Header ── */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800 mb-1">Attendance Management</h1>
-                        <p className="text-slate-500">Track and manage student attendance across all classes</p>
+                        <h1 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-blue-600" />
+                            Attendance
+                        </h1>
+                        <p className="text-sm text-slate-400 mt-0.5">Track and manage student attendance across all classes</p>
                     </div>
                     <div className="flex gap-2">
-                        <button
-                            onClick={handleExport}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
-                        >
-                            <Download size={16} />
-                            Export Report
+                        <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                            <Download size={14} />
+                            Export report
                         </button>
-                        <button
-                            onClick={handleSendReminders}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                        >
-                            <MessageCircle size={16} />
-                            Send Reminders
+                        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200">
+                            <MessageCircle size={14} />
+                            Send reminders
                         </button>
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {stats.map((stat, idx) => (
-                        <StatCard key={idx} {...stat} />
-                    ))}
+                {/* ── Stat Cards ── */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    {stats.map((stat, i) => <StatCard key={i} {...stat} />)}
                 </div>
 
-                {/* Filters Bar */}
-                <div className="bg-white rounded-xl border border-slate-200 mb-6">
-                    <div className="p-4 border-b border-slate-200">
-                        <div className="flex flex-col lg:flex-row gap-3">
-                            <div className="flex-1">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Search by class or section..."
-                                        className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 text-sm"
-                                    />
-                                </div>
-                            </div>
+                {/* ── Class Selector ── */}
+                <div className="bg-white rounded-2xl border border-slate-100 px-4 py-3">
+                    <ClassSelector
+                        selectedClass={selectedClass}
+                        setSelectedClass={setSelectedClass}
+                        selectedSection={selectedSection}
+                        setSelectedSection={setSelectedSection}
+                    />
+                </div>
 
-                            <ClassFilter
-                                selectedClass={selectedClass}
-                                setSelectedClass={setSelectedClass}
-                                selectedSection={selectedSection}
-                                setSelectedSection={setSelectedSection}
+                {/* ── Toolbar + Content ── */}
+                <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+
+                    {/* Search / view toggle row */}
+                    <div className="p-3 border-b border-slate-100 flex flex-wrap gap-2 items-center">
+                        <div className="relative flex-1 min-w-[180px]">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                placeholder="Search class or section…"
+                                className="w-full pl-9 pr-3 h-9 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition"
                             />
-
-                            <DateRangePicker
-                                startDate={startDate}
-                                endDate={endDate}
-                                onStartChange={setStartDate}
-                                onEndChange={setEndDate}
-                            />
-
-                            <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
-                                        viewMode === 'grid' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
-                                    )}
-                                >
-                                    Grid View
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
-                                        viewMode === 'list' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
-                                    )}
-                                >
-                                    List View
-                                </button>
-                            </div>
-
-                            {(selectedClass || selectedSection || searchQuery) && (
-                                <button
-                                    onClick={handleClearFilters}
-                                    className="flex items-center gap-2 px-3 h-10 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50"
-                                >
-                                    <FilterX size={14} />
-                                    Clear
-                                </button>
-                            )}
                         </div>
+
+                        <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={e => setSelectedDate(e.target.value)}
+                                className="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-200 transition"
+                            />
+                        </div>
+
+                        <div className="flex bg-slate-100 p-0.5 rounded-xl gap-0.5 ml-auto">
+                            {['grid', 'list'].map(v => (
+                                <button
+                                    key={v}
+                                    onClick={() => setViewMode(v)}
+                                    className={cn(
+                                        'px-3 py-1.5 rounded-[10px] text-xs font-medium transition-all capitalize',
+                                        viewMode === v
+                                            ? 'bg-white text-slate-800 shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-700'
+                                    )}
+                                >
+                                    {v}
+                                </button>
+                            ))}
+                        </div>
+
+                        {hasFilters && (
+                            <button
+                                onClick={clearFilters}
+                                className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-slate-200 text-xs text-slate-500 hover:bg-slate-50 transition-colors"
+                            >
+                                <FilterX size={12} />
+                                Clear
+                            </button>
+                        )}
                     </div>
 
-                    {/* Results Count */}
-                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500 flex justify-between items-center">
-                        <span>Showing {filteredData.length} classes</span>
-                        <button className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700">
-                            <RefreshCw size={12} />
-                            Refresh Data
+                    {/* Meta bar */}
+                    <div className="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+                        <p className="text-xs text-slate-400">Showing {filteredData.length} classes</p>
+                        <button
+                            onClick={() => setAllData(generateAttendanceData())}
+                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                            <RefreshCw size={11} />
+                            Refresh
                         </button>
                     </div>
 
                     {/* Content */}
                     {loading ? (
-                        <div className="flex items-center justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                        <div className="flex items-center justify-center py-16">
+                            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
                         </div>
                     ) : viewMode === 'grid' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-                            {filteredData.map((classData, idx) => (
-                                <ClassCard key={idx} data={classData} onViewDetails={handleViewDetails} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
+                            {filteredData.map((d) => (
+                                <ClassCard
+                                    key={`${d.cls}-${d.sec}`}
+                                    data={d}
+                                    onViewDetails={handleViewDetails}
+                                />
                             ))}
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-slate-50 border-b border-slate-200">
+                            <table className="w-full text-sm">
+                                <thead className="bg-slate-50 border-b border-slate-100">
                                     <tr>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Class</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Section</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Total Students</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Present</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Absent</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Attendance %</th>
-                                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                                        {['Class', 'Section', 'Students', 'Present', 'Absent', 'Attendance', ''].map((h, i) => (
+                                            <th key={i} className="text-left py-3 px-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
+                                        ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {filteredData.map((classData, idx) => (
-                                        <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                            <td className="py-3 px-4 font-medium text-slate-800">{classData.class}</td>
-                                            <td className="py-3 px-4 text-slate-600">{classData.section}</td>
-                                            <td className="py-3 px-4 text-slate-600">{classData.totalStudents}</td>
-                                            <td className="py-3 px-4 text-green-600 font-medium">{classData.present}</td>
-                                            <td className="py-3 px-4 text-red-600 font-medium">{classData.absent}</td>
-                                            <td className="py-3 px-4">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                                        <div
-                                                            className={cn(
-                                                                "h-full rounded-full",
-                                                                classData.percentage >= 85 ? "bg-green-500" : classData.percentage >= 70 ? "bg-amber-500" : "bg-red-500"
-                                                            )}
-                                                            style={{ width: `${classData.percentage}%` }}
-                                                        />
+                                <tbody className="divide-y divide-slate-50">
+                                    {filteredData.map((d) => {
+                                        const colors = pctColor(d.pct);
+                                        return (
+                                            <tr key={`${d.cls}-${d.sec}`} className="hover:bg-slate-50/70 transition-colors">
+                                                <td className="py-3 px-4 font-medium text-slate-800">Class {d.cls}</td>
+                                                <td className="py-3 px-4 text-slate-500">{d.sec}</td>
+                                                <td className="py-3 px-4 text-slate-500">{d.total}</td>
+                                                <td className="py-3 px-4 font-medium text-green-600">{d.present}</td>
+                                                <td className="py-3 px-4 font-medium text-red-600">{d.absent}</td>
+                                                <td className="py-3 px-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-16 h-1 bg-slate-200 rounded-full overflow-hidden">
+                                                            <div className={cn('h-full rounded-full', colors.bar)} style={{ width: `${d.pct}%` }} />
+                                                        </div>
+                                                        <span className="text-xs text-slate-600">{d.pct}%</span>
                                                     </div>
-                                                    <span className="text-sm text-slate-600">{classData.percentage}%</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <button
-                                                    onClick={() => handleViewDetails(classData)}
-                                                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                                                >
-                                                    View Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <button
+                                                        onClick={() => handleViewDetails(d)}
+                                                        className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                                                    >
+                                                        View <ChevronRight size={12} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
                     )}
                 </div>
 
-                {/* Monthly Trend Chart */}
-                <div className="bg-white rounded-xl border border-slate-200 p-4">
-                    <AttendanceChart data={monthlyStats} />
-                </div>
+                {/* ── Monthly Chart ── */}
+                <MonthlyChart data={monthlyStats} />
             </div>
 
-            {/* Detailed View Modal */}
-            {showDetailedView && selectedClassData && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setShowDetailedView(false)} />
-                    <div className="relative bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-xl font-semibold text-slate-800">
-                                    Class {selectedClassData.class}-{selectedClassData.section} Attendance
-                                </h2>
-                                <p className="text-sm text-slate-500 mt-1">
-                                    {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                                </p>
-                            </div>
-                            <button onClick={() => setShowDetailedView(false)} className="p-1 rounded-lg hover:bg-slate-100">
-                                <XCircle size={20} />
-                            </button>
-                        </div>
-
-                        <div className="p-6">
-                            <StudentAttendanceTable
-                                students={selectedClassData.students}
-                                classInfo={selectedClassData}
-                                onUpdateStatus={(studentId, status) => {
-                                    const updated = selectedClassData.students.map(s =>
-                                        s.id === studentId ? { ...s, status } : s
-                                    );
-                                    handleUpdateAttendance(updated);
-                                }}
-                                onSave={handleUpdateAttendance}
-                            />
-                        </div>
-                    </div>
-                </div>
+            {/* ── Attendance Modal ── */}
+            {modalData && (
+                <AttendanceModal
+                    classData={modalData}
+                    onClose={() => setModalData(null)}
+                    onSave={handleSaveAttendance}
+                />
             )}
         </div>
     );
