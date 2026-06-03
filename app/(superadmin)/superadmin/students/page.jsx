@@ -37,7 +37,7 @@ const STATUSES = {
 const generateMockStudents = (count = 200) => {
   const firstNames = ['Aarav', 'Vihaan', 'Vivaan', 'Ananya', 'Diya', 'Sai', 'Ishaan', 'Myra', 'Kabir', 'Aadhya', 'James', 'Emma', 'Liam', 'Sophia', 'Noah', 'Olivia', 'Ethan', 'Ava', 'Mason', 'Isabella'];
   const lastNames = ['Sharma', 'Verma', 'Patel', 'Kumar', 'Singh', 'Reddy', 'Gupta', 'Joshi', 'Nair', 'Malhotra', 'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
-  
+
   const students = [];
   for (let i = 0; i < count; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -49,7 +49,7 @@ const generateMockStudents = (count = 200) => {
     const status = STATUSES[statusKey];
     const enrollmentDate = new Date(2023 + Math.random() * 2, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
     const lastActive = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-    
+
     students.push({
       id: `STU${String(i + 1).padStart(5, '0')}`,
       name,
@@ -88,11 +88,11 @@ function StatusBadge({ status }) {
 
 function StudentDetailModal({ student, isOpen, onClose }) {
   if (!student) return null;
-  
+
   const formatDate = (iso) => new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric'
   });
-  
+
   return (
     <div className={cn('fixed inset-0 z-50 flex items-center justify-center p-4 transition-all', isOpen ? 'visible' : 'invisible')}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
@@ -117,7 +117,7 @@ function StudentDetailModal({ student, isOpen, onClose }) {
               <div className="mt-2"><StatusBadge status={student.status} /></div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl">
             <div><p className="text-xs text-slate-500 uppercase">School</p><p className="text-sm font-medium text-slate-800 mt-1">{student.school}</p></div>
             <div><p className="text-xs text-slate-500 uppercase">Class</p><p className="text-sm font-medium text-slate-800 mt-1">{student.className}</p></div>
@@ -126,7 +126,7 @@ function StudentDetailModal({ student, isOpen, onClose }) {
             <div><p className="text-xs text-slate-500 uppercase">Enrollment Date</p><p className="text-sm text-slate-700 mt-1">{formatDate(student.enrollmentDate)}</p></div>
             <div><p className="text-xs text-slate-500 uppercase">Last Active</p><p className="text-sm text-slate-700 mt-1">{formatDate(student.lastActive)}</p></div>
           </div>
-          
+
           <div>
             <h4 className="text-sm font-semibold text-slate-700 mb-3">Contact Information</h4>
             <div className="space-y-2">
@@ -138,7 +138,7 @@ function StudentDetailModal({ student, isOpen, onClose }) {
               <div className="flex items-center gap-2 text-sm"><Phone size={14} className="text-slate-400" />{student.parentPhone}</div>
             </div>
           </div>
-          
+
           <div className="flex gap-3 pt-4 border-t border-slate-100">
             <button className="flex-1 py-2 rounded-xl bg-blue-600 text-white font-medium">Edit Student</button>
             <button className="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 font-medium">View Attendance</button>
@@ -157,7 +157,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
   };
   const pages = getPages();
-  
+
   return (
     <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200">
       <p className="text-sm text-slate-500">Page {currentPage} of {totalPages}</p>
@@ -193,9 +193,9 @@ export default function StudentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  
+
   const itemsPerPage = 10;
-  
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -205,7 +205,7 @@ export default function StudentsPage() {
     };
     loadData();
   }, []);
-  
+
   // Apply filters
   useEffect(() => {
     let result = [...students];
@@ -219,7 +219,7 @@ export default function StudentsPage() {
     setFiltered(result);
     setCurrentPage(1);
   }, [students, search, schoolFilter, classFilter, statusFilter]);
-  
+
   // Stats
   const stats = useMemo(() => {
     const total = students.length;
@@ -228,15 +228,15 @@ export default function StudentsPage() {
     const schoolsCount = new Set(students.map(s => s.school)).size;
     return { total, active, avgAttendance, schoolsCount };
   }, [students]);
-  
+
   // Pagination
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  
+
   const handleExport = () => {
     console.log('Export students data');
   };
-  
+
   const handleRefresh = () => {
     setLoading(true);
     setTimeout(() => {
@@ -244,7 +244,7 @@ export default function StudentsPage() {
       setLoading(false);
     }, 500);
   };
-  
+
   if (loading && students.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -255,11 +255,11 @@ export default function StudentsPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-screen-2xl mx-auto p-6 space-y-5">
-        
+
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div>
@@ -275,7 +275,7 @@ export default function StudentsPage() {
             </button>
           </div>
         </div>
-        
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex items-center gap-3">
@@ -295,7 +295,7 @@ export default function StudentsPage() {
             <div><p className="text-xs text-slate-500 uppercase">Schools</p><p className="text-2xl font-bold text-slate-800">{stats.schoolsCount}</p></div>
           </div>
         </div>
-        
+
         {/* Filters */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
           <div className="flex flex-wrap gap-3 items-end">
@@ -335,7 +335,7 @@ export default function StudentsPage() {
             </button>
           </div>
         </div>
-        
+
         {/* Students Table */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -397,13 +397,13 @@ export default function StudentsPage() {
           </div>
           {filtered.length > 0 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
         </div>
-        
+
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 flex items-center justify-center gap-2">
           <GraduationCap size={12} /> Showing {filtered.length} students across {stats.schoolsCount} schools
         </div>
       </div>
-      
+
       <StudentDetailModal student={selectedStudent} isOpen={detailModalOpen} onClose={() => setDetailModalOpen(false)} />
     </div>
   );

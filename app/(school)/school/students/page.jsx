@@ -1,13 +1,11 @@
 // app/(school)/school/students/page.jsx
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
-    Users, Search, Filter, Plus, Download, Upload, ChevronLeft, ChevronRight,
-    Eye, Edit2, Trash2, X, Check, UserPlus, FileText,
-    GraduationCap, Mail, Phone, MapPin, Calendar, AlertCircle,
-    UploadCloud, File, Image, Loader2, School, BookOpen, ChevronDown,
-    MoreVertical, RefreshCw, FilterX
+    Users, Search, Plus, Upload, ChevronLeft, ChevronRight,
+    Eye, Edit2, Trash2, GraduationCap, Mail, Phone,
+    Loader2, School, BookOpen, ChevronDown, RefreshCw, FilterX, Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -192,7 +190,7 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
     );
 }
 
-function StudentTable({ students, onView, onEdit, onDelete }) {
+function StudentTable({ students, onDelete }) {
     if (students.length === 0) {
         return (
             <div className="text-center py-12">
@@ -268,13 +266,13 @@ function StudentTable({ students, onView, onEdit, onDelete }) {
                                     >
                                         <Eye size={16} />
                                     </Link>
-                                    <button
-                                        onClick={() => onEdit(student)}
+                                    <Link
+                                        href={`/school/students/${student.id}/edit`}
                                         className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-green-600 transition-colors"
                                         title="Edit"
                                     >
                                         <Edit2 size={16} />
-                                    </button>
+                                    </Link>
                                     <button
                                         onClick={() => onDelete(student)}
                                         className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors"
@@ -288,431 +286,6 @@ function StudentTable({ students, onView, onEdit, onDelete }) {
                     ))}
                 </tbody>
             </table>
-        </div>
-    );
-}
-
-function AddStudentModal({ isOpen, onClose, onSave, editingStudent }) {
-    const [formData, setFormData] = useState({
-        name: '',
-        class: '',
-        section: '',
-        rollNumber: '',
-        parentName: '',
-        parentPhone: '',
-        email: '',
-        dateOfBirth: '',
-        bloodGroup: '',
-        address: '',
-        emergencyContact: '',
-        relationship: 'Parent',
-        gender: 'Male',
-    });
-    const [uploadedFile, setUploadedFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
-    const [errors, setErrors] = useState({});
-
-    useEffect(() => {
-        if (editingStudent) {
-            setFormData(editingStudent);
-        } else {
-            setFormData({
-                name: '',
-                class: '',
-                section: '',
-                rollNumber: '',
-                parentName: '',
-                parentPhone: '',
-                email: '',
-                dateOfBirth: '',
-                bloodGroup: '',
-                address: '',
-                emergencyContact: '',
-                relationship: 'Parent',
-                gender: 'Male',
-            });
-        }
-    }, [editingStudent]);
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.name) newErrors.name = 'Student name is required';
-        if (!formData.class) newErrors.class = 'Class is required';
-        if (!formData.section) newErrors.section = 'Section is required';
-        if (!formData.parentName) newErrors.parentName = 'Parent name is required';
-        if (!formData.parentPhone) newErrors.parentPhone = 'Parent phone is required';
-        return newErrors;
-    };
-
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setUploading(true);
-            // Simulate upload - replace with actual API call
-            setTimeout(() => {
-                setUploadedFile(file);
-                setUploading(false);
-            }, 1000);
-        }
-    };
-
-    const handleSubmit = () => {
-        const newErrors = validateForm();
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-        onSave({ ...formData, photo: uploadedFile });
-        handleClose();
-    };
-
-    const handleClose = () => {
-        setFormData({
-            name: '',
-            class: '',
-            section: '',
-            rollNumber: '',
-            parentName: '',
-            parentPhone: '',
-            email: '',
-            dateOfBirth: '',
-            bloodGroup: '',
-            address: '',
-            emergencyContact: '',
-            relationship: 'Parent',
-            gender: 'Male',
-        });
-        setUploadedFile(null);
-        setErrors({});
-        onClose();
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <UserPlus className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-xl font-semibold text-slate-800">
-                            {editingStudent ? 'Edit Student' : 'Add New Student'}
-                        </h2>
-                    </div>
-                    <button onClick={handleClose} className="p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="p-6 space-y-6">
-                    {/* Photo Upload */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Student Photo</label>
-                        <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
-                                {uploadedFile ? (
-                                    <img src={URL.createObjectURL(uploadedFile)} alt="Preview" className="w-full h-full object-cover" />
-                                ) : editingStudent?.photo ? (
-                                    <img src={editingStudent.photo} alt="Preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <UploadCloud className="w-8 h-8 text-slate-400" />
-                                )}
-                            </div>
-                            <div>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                    id="photo-upload"
-                                />
-                                <label
-                                    htmlFor="photo-upload"
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
-                                >
-                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                                    {uploading ? 'Uploading...' : 'Upload Photo'}
-                                </label>
-                                <p className="text-xs text-slate-400 mt-1">JPG, PNG (max 2MB)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Basic Info */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Student Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className={cn(
-                                    "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all",
-                                    errors.name ? "border-red-400" : "border-slate-200 focus:border-blue-400"
-                                )}
-                                placeholder="Enter full name"
-                            />
-                            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
-                            <select
-                                value={formData.gender}
-                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Roll Number</label>
-                            <input
-                                type="text"
-                                value={formData.rollNumber}
-                                onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                placeholder="Enter roll number"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Class <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.class}
-                                onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            >
-                                <option value="">Select Class</option>
-                                {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Section <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.section}
-                                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            >
-                                <option value="">Select Section</option>
-                                {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
-                            <input
-                                type="date"
-                                value={formData.dateOfBirth}
-                                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Blood Group</label>
-                            <select
-                                value={formData.bloodGroup}
-                                onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            >
-                                <option value="">Select Blood Group</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Parent Info */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <Users size={14} /> Parent/Guardian Information
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Parent Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.parentName}
-                                    onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                    placeholder="Enter parent name"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Relationship</label>
-                                <select
-                                    value={formData.relationship}
-                                    onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                >
-                                    <option value="Parent">Parent</option>
-                                    <option value="Guardian">Guardian</option>
-                                    <option value="Mother">Mother</option>
-                                    <option value="Father">Father</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Phone Number <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="tel"
-                                    value={formData.parentPhone}
-                                    onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                    placeholder="+91 XXXXXXXXXX"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                    placeholder="parent@example.com"
-                                />
-                            </div>
-
-                            <div className="col-span-2">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Emergency Contact</label>
-                                <input
-                                    type="tel"
-                                    value={formData.emergencyContact}
-                                    onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                                    placeholder="Alternate contact number"
-                                />
-                            </div>
-
-                            <div className="col-span-2">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
-                                <textarea
-                                    value={formData.address}
-                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    rows="2"
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
-                                    placeholder="Enter complete address"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
-                    <button
-                        onClick={handleClose}
-                        className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleSubmit}
-                        className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors flex items-center gap-2"
-                    >
-                        <Check size={16} />
-                        {editingStudent ? 'Update Student' : 'Add Student'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function BulkUploadModal({ isOpen, onClose, onUpload }) {
-    const [file, setFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
-
-    const handleUpload = async () => {
-        if (!file) return;
-        setUploading(true);
-        // Simulate upload - replace with actual API call
-        setTimeout(() => {
-            setUploading(false);
-            onUpload(file);
-            onClose();
-        }, 2000);
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
-                <div className="p-6">
-                    <div className="text-center mb-4">
-                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                            <Upload className="w-8 h-8 text-blue-600" />
-                        </div>
-                        <h2 className="text-xl font-semibold text-slate-800">Bulk Upload Students</h2>
-                        <p className="text-sm text-slate-500 mt-1">Upload CSV or Excel file with student data</p>
-                    </div>
-
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center mb-4">
-                        <input
-                            type="file"
-                            accept=".csv,.xlsx,.xls"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            className="hidden"
-                            id="bulk-upload"
-                        />
-                        <label htmlFor="bulk-upload" className="cursor-pointer">
-                            <FileText className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                            <p className="text-sm text-slate-600">
-                                {file ? file.name : 'Click to upload or drag and drop'}
-                            </p>
-                            <p className="text-xs text-slate-400 mt-1">CSV or Excel files only</p>
-                        </label>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <button
-                            onClick={onClose}
-                            className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleUpload}
-                            disabled={!file || uploading}
-                            className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                        >
-                            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                            {uploading ? 'Uploading...' : 'Upload'}
-                        </button>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                        <button className="text-xs text-blue-600 hover:underline flex items-center justify-center gap-1 w-full">
-                            <Download size={12} />
-                            Download sample template
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
@@ -735,22 +308,18 @@ export default function StudentsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
-    // Modals
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
-    const [editingStudent, setEditingStudent] = useState(null);
-
     // Fetch students (replace with actual API call)
+    const fetchStudents = async () => {
+        setLoading(true);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const mockData = generateMockStudents();
+        setStudents(mockData);
+        setFilteredStudents(mockData);
+        setLoading(false);
+    };
+
     useEffect(() => {
-        const fetchStudents = async () => {
-            setLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const mockData = generateMockStudents();
-            setStudents(mockData);
-            setFilteredStudents(mockData);
-            setLoading(false);
-        };
         fetchStudents();
     }, []);
 
@@ -788,35 +357,6 @@ export default function StudentsPage() {
     );
 
     // Actions
-    const handleAddStudent = (newStudent) => {
-        const student = {
-            ...newStudent,
-            id: `STU${String(students.length + 1).padStart(5, '0')}`,
-            status: 'Active',
-            enrollmentDate: new Date().toISOString().split('T')[0],
-        };
-        setStudents([student, ...students]);
-        // TODO: Call API to save
-    };
-
-    const handleUpdateStudent = (updatedStudent) => {
-        setStudents(students.map(s =>
-            s.id === updatedStudent.id ? updatedStudent : s
-        ));
-        setEditingStudent(null);
-        // TODO: Call API to update
-    };
-
-    const handleBulkUpload = (file) => {
-        console.log('Bulk upload:', file);
-        // TODO: Process CSV/Excel file and upload to API
-    };
-
-    const handleEditStudent = (student) => {
-        setEditingStudent(student);
-        setIsAddModalOpen(true);
-    };
-
     const handleDeleteStudent = (student) => {
         if (confirm(`Are you sure you want to delete ${student.name}? This action cannot be undone.`)) {
             setStudents(students.filter(s => s.id !== student.id));
@@ -920,23 +460,20 @@ export default function StudentsPage() {
                                 )}
                             </div>
                             <div className="flex gap-2">
-                                <button
-                                    onClick={() => setIsBulkModalOpen(true)}
+                                <Link
+                                    href="/school/students/add?mode=bulk"
                                     className="flex items-center gap-2 px-4 h-10 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
                                 >
                                     <Upload size={16} />
-                                    Bulk Upload
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setEditingStudent(null);
-                                        setIsAddModalOpen(true);
-                                    }}
+                                    Bulk Import
+                                </Link>
+                                <Link
+                                    href="/school/students/add"
                                     className="flex items-center gap-2 px-4 h-10 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
                                 >
                                     <Plus size={16} />
                                     Add Student
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -945,7 +482,7 @@ export default function StudentsPage() {
                     <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500 flex justify-between items-center">
                         <span>Showing {paginatedStudents.length} of {filteredStudents.length} students</span>
                         <button
-                            onClick={() => fetchStudents()}
+                            onClick={fetchStudents}
                             className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
                         >
                             <RefreshCw size={12} />
@@ -961,8 +498,6 @@ export default function StudentsPage() {
                     ) : (
                         <StudentTable
                             students={paginatedStudents}
-                            onView={(student) => window.location.href = `/school/students/${student.id}`}
-                            onEdit={handleEditStudent}
                             onDelete={handleDeleteStudent}
                         />
                     )}
@@ -977,23 +512,6 @@ export default function StudentsPage() {
                     />
                 </div>
             </div>
-
-            {/* Modals */}
-            <AddStudentModal
-                isOpen={isAddModalOpen}
-                onClose={() => {
-                    setIsAddModalOpen(false);
-                    setEditingStudent(null);
-                }}
-                onSave={editingStudent ? handleUpdateStudent : handleAddStudent}
-                editingStudent={editingStudent}
-            />
-
-            <BulkUploadModal
-                isOpen={isBulkModalOpen}
-                onClose={() => setIsBulkModalOpen(false)}
-                onUpload={handleBulkUpload}
-            />
         </div>
     );
 }
