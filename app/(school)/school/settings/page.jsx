@@ -32,8 +32,8 @@ const NOTIFICATION_PREFS = [
         label: 'Emergency alerts',
         desc: 'SOS triggers, drill notifications',
         icon: AlertTriangle,
-        color: 'bg-red-50',
-        iconCls: 'text-red-500',
+        color: 'bg-rose-50',
+        iconCls: 'text-rose-500',
         channels: { email: true, sms: true, push: true },
     },
     {
@@ -41,8 +41,8 @@ const NOTIFICATION_PREFS = [
         label: 'Attendance reports',
         desc: 'Daily summary & anomalies',
         icon: CheckCircle2,
-        color: 'bg-green-50',
-        iconCls: 'text-green-500',
+        color: 'bg-emerald-50',
+        iconCls: 'text-emerald-500',
         channels: { email: true, sms: false, push: true },
     },
     {
@@ -50,8 +50,8 @@ const NOTIFICATION_PREFS = [
         label: 'New registrations',
         desc: 'Student & parent sign-ups',
         icon: Users,
-        color: 'bg-blue-50',
-        iconCls: 'text-blue-500',
+        color: 'bg-violet-50',
+        iconCls: 'text-violet-500',
         channels: { email: true, sms: false, push: false },
     },
     {
@@ -77,8 +77,8 @@ const NOTIFICATION_PREFS = [
         label: 'Login activity',
         desc: 'New sessions, suspicious access',
         icon: ShieldCheck,
-        color: 'bg-slate-100',
-        iconCls: 'text-slate-500',
+        color: 'bg-gray-100',
+        iconCls: 'text-gray-500',
         channels: { email: true, sms: false, push: true },
     },
 ]
@@ -121,7 +121,7 @@ const TABS = [
     { id: 'billing', label: 'Billing', Icon: CreditCard },
 ]
 
-// ─── Shared primitives ─────────────────────────────────────────────────────────
+// ─── Shared primitives (Notion style) ─────────────────────────────────────────
 
 function Toggle({ checked, onChange }) {
     return (
@@ -131,7 +131,7 @@ function Toggle({ checked, onChange }) {
             onClick={() => onChange(!checked)}
             className={cn(
                 'relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0',
-                checked ? 'bg-blue-600' : 'bg-slate-200'
+                checked ? 'bg-violet-600' : 'bg-gray-200'
             )}
         >
             <span className={cn(
@@ -144,7 +144,7 @@ function Toggle({ checked, onChange }) {
 
 function Card({ children, className }) {
     return (
-        <div className={cn('bg-white border border-slate-200 rounded-xl overflow-hidden', className)}>
+        <div className={cn('bg-white border border-violet-100 rounded-md overflow-hidden', className)}>
             {children}
         </div>
     )
@@ -152,13 +152,13 @@ function Card({ children, className }) {
 
 function CardHeader({ title, icon: Icon, action, desc }) {
     return (
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
             <div>
-                <span className="flex items-center gap-2 text-[13px] font-semibold text-slate-800">
-                    {Icon && <Icon size={15} className="text-blue-500" />}
+                <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                    {Icon && <Icon size={15} className="text-violet-600" />}
                     {title}
                 </span>
-                {desc && <p className="text-[11px] text-slate-400 mt-0.5">{desc}</p>}
+                {desc && <p className="text-[11px] text-gray-500 mt-0.5">{desc}</p>}
             </div>
             {action}
         </div>
@@ -168,7 +168,7 @@ function CardHeader({ title, icon: Icon, action, desc }) {
 function Field({ label, value, editable, editing, onChange }) {
     return (
         <div>
-            <label className="block text-[10.5px] font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+            <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 {label}
             </label>
             <input
@@ -176,10 +176,10 @@ function Field({ label, value, editable, editing, onChange }) {
                 readOnly={!editing || !editable}
                 onChange={e => onChange?.(e.target.value)}
                 className={cn(
-                    'w-full h-[36px] px-3 rounded-lg border text-[13px] text-slate-800 outline-none transition-all',
+                    'w-full h-9 px-3 rounded-md border text-sm text-gray-800 outline-none transition-all',
                     editing && editable
-                        ? 'border-slate-300 bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100'
-                        : 'border-slate-200 bg-slate-50 text-slate-500 cursor-default'
+                        ? 'border-gray-300 bg-white focus:border-violet-300 focus:ring-1 focus:ring-violet-100'
+                        : 'border-gray-200 bg-gray-50 text-gray-500 cursor-default'
                 )}
             />
         </div>
@@ -189,14 +189,14 @@ function Field({ label, value, editable, editing, onChange }) {
 function SelectField({ label, value, options, editable, editing, onChange }) {
     return (
         <div>
-            <label className="block text-[10.5px] font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+            <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 {label}
             </label>
             {editing && editable ? (
                 <select
                     value={value}
                     onChange={e => onChange?.(e.target.value)}
-                    className="w-full h-[36px] px-3 rounded-lg border border-slate-300 bg-white text-[13px] text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full h-9 px-3 rounded-md border border-gray-300 bg-white text-sm text-gray-800 outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 transition-all"
                 >
                     {options.map(o => <option key={o}>{o}</option>)}
                 </select>
@@ -204,7 +204,7 @@ function SelectField({ label, value, options, editable, editing, onChange }) {
                 <input
                     value={value}
                     readOnly
-                    className="w-full h-[36px] px-3 rounded-lg border border-slate-200 bg-slate-50 text-[13px] text-slate-500 cursor-default outline-none"
+                    className="w-full h-9 px-3 rounded-md border border-gray-200 bg-gray-50 text-sm text-gray-500 cursor-default outline-none"
                 />
             )}
         </div>
@@ -217,7 +217,7 @@ function SaveRow({ editing, saved, onEdit, onCancel, onSave }) {
             <div className="flex justify-end pt-1">
                 <button
                     onClick={onEdit}
-                    className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-slate-600 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all"
+                    className="flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all"
                 >
                     <Edit2 size={12} /> Edit
                 </button>
@@ -228,13 +228,13 @@ function SaveRow({ editing, saved, onEdit, onCancel, onSave }) {
         <div className="flex justify-end gap-2 pt-1">
             <button
                 onClick={onCancel}
-                className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-slate-600 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-all"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all"
             >
                 <X size={12} /> Cancel
             </button>
             <button
                 onClick={onSave}
-                className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium text-white bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 transition-all"
             >
                 <Check size={12} /> {saved ? 'Saved!' : 'Save changes'}
             </button>
@@ -274,17 +274,17 @@ function SchoolProfileTab() {
 
                     {/* Logo upload */}
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-xl bg-blue-100 border-2 border-blue-200 flex items-center justify-center text-blue-700 text-xl font-bold shrink-0">
+                        <div className="w-16 h-16 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600 text-xl font-bold shrink-0">
                             SP
                         </div>
                         {editing ? (
-                            <button className="flex items-center gap-2 h-[32px] px-3 rounded-lg text-[12px] font-medium text-slate-600 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all">
+                            <button className="flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all">
                                 <Upload size={12} /> Upload logo
                             </button>
                         ) : (
                             <div>
-                                <p className="text-[12.5px] font-medium text-slate-700">School logo</p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">PNG or JPG, max 2MB</p>
+                                <p className="text-xs font-medium text-gray-700">School logo</p>
+                                <p className="text-[10px] text-gray-500 mt-0.5">PNG or JPG, max 2MB</p>
                             </div>
                         )}
                     </div>
@@ -347,12 +347,12 @@ function DigestCard() {
     return (
         <Card>
             <CardHeader title="Digest & summary" icon={Mail} desc="Scheduled email summaries" />
-            <div className="divide-y divide-slate-50 px-5">
+            <div className="divide-y divide-gray-100 px-5">
                 {DIGEST_ITEMS.map(({ label, desc }, i) => (
                     <div key={i} className="flex items-center justify-between py-3">
                         <div>
-                            <p className="text-[12.5px] font-medium text-slate-800">{label}</p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">{desc}</p>
+                            <p className="text-xs font-medium text-gray-800">{label}</p>
+                            <p className="text-[10px] text-gray-500 mt-0.5">{desc}</p>
                         </div>
                         <Toggle checked={on[i]} onChange={v => setOn(prev => ({ ...prev, [i]: v }))} />
                     </div>
@@ -393,25 +393,25 @@ function NotificationsTab() {
                 />
                 {/* Channel headers */}
                 <div className="px-5 pt-4">
-                    <div className="grid grid-cols-[1fr_80px_80px_80px] gap-2 pb-2 border-b border-slate-100">
-                        <span className="text-[10.5px] font-medium text-slate-400 uppercase tracking-wide">Event</span>
+                    <div className="grid grid-cols-[1fr_80px_80px_80px] gap-2 pb-2 border-b border-gray-200">
+                        <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Event</span>
                         {CHANNELS.map(({ key, label }) => (
-                            <span key={key} className="text-[10.5px] font-medium text-slate-400 uppercase tracking-wide text-center">
+                            <span key={key} className="text-[10px] font-medium text-gray-500 uppercase tracking-wide text-center">
                                 {label}
                             </span>
                         ))}
                     </div>
 
-                    <div className="divide-y divide-slate-50">
+                    <div className="divide-y divide-gray-100">
                         {NOTIFICATION_PREFS.map(({ id, label, desc, icon: Icon, color, iconCls }) => (
                             <div key={id} className="grid grid-cols-[1fr_80px_80px_80px] gap-2 items-center py-3">
                                 <div className="flex items-center gap-3">
-                                    <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0', color)}>
+                                    <div className={cn('w-7 h-7 rounded-md flex items-center justify-center shrink-0', color)}>
                                         <Icon size={13} className={iconCls} />
                                     </div>
                                     <div>
-                                        <p className="text-[12.5px] font-medium text-slate-800">{label}</p>
-                                        <p className="text-[11px] text-slate-400">{desc}</p>
+                                        <p className="text-xs font-medium text-gray-800">{label}</p>
+                                        <p className="text-[10px] text-gray-500">{desc}</p>
                                     </div>
                                 </div>
                                 {CHANNELS.map(({ key }) => (
@@ -427,9 +427,9 @@ function NotificationsTab() {
                     </div>
                 </div>
 
-                <div className="px-5 py-4 bg-blue-50 border-t border-blue-100 flex items-center gap-2">
-                    <Info size={13} className="text-blue-500 shrink-0" />
-                    <p className="text-[11.5px] text-blue-700">
+                <div className="px-5 py-3 bg-violet-50 border-t border-violet-200 flex items-center gap-2">
+                    <Info size={13} className="text-violet-500 shrink-0" />
+                    <p className="text-[11px] text-violet-700">
                         SMS notifications consume credits from your MSG91 balance. <a href="#" className="underline font-medium">Check balance</a>
                     </p>
                 </div>
@@ -472,19 +472,19 @@ function SecurityTab() {
     function pwField(key, label) {
         return (
             <div>
-                <label className="block text-[10.5px] font-medium text-slate-500 uppercase tracking-wide mb-1.5">{label}</label>
+                <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1.5">{label}</label>
                 <div className="relative">
                     <input
                         type={showPw[key] ? 'text' : 'password'}
                         value={pwForm[key]}
                         onChange={e => setPwForm(prev => ({ ...prev, [key]: e.target.value }))}
                         placeholder="••••••••"
-                        className="w-full h-[36px] px-3 pr-9 rounded-lg border border-slate-300 bg-white text-[13px] text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                        className="w-full h-9 px-3 pr-9 rounded-md border border-gray-300 bg-white text-sm text-gray-800 outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 transition-all"
                     />
                     <button
                         type="button"
                         onClick={() => setShowPw(prev => ({ ...prev, [key]: !prev[key] }))}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                         {showPw[key] ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
@@ -508,7 +508,7 @@ function SecurityTab() {
                     <div className="flex justify-end">
                         <button
                             onClick={handlePasswordSave}
-                            className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all"
+                            className="flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium text-white bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 transition-all"
                         >
                             <Lock size={12} /> {pwSaved ? 'Password updated!' : 'Update password'}
                         </button>
@@ -519,18 +519,18 @@ function SecurityTab() {
             {/* 2FA + login alerts */}
             <Card>
                 <CardHeader title="Access controls" icon={ShieldCheck} />
-                <div className="divide-y divide-slate-50 px-5">
+                <div className="divide-y divide-gray-100 px-5">
                     <div className="flex items-center justify-between py-3.5">
                         <div>
-                            <p className="text-[12.5px] font-medium text-slate-800">Two-factor authentication</p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">Secure your account with OTP on login</p>
+                            <p className="text-xs font-medium text-gray-800">Two-factor authentication</p>
+                            <p className="text-[10px] text-gray-500 mt-0.5">Secure your account with OTP on login</p>
                         </div>
                         <Toggle checked={twoFA} onChange={setTwoFA} />
                     </div>
                     <div className="flex items-center justify-between py-3.5">
                         <div>
-                            <p className="text-[12.5px] font-medium text-slate-800">Login activity alerts</p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">Get notified on new or suspicious logins</p>
+                            <p className="text-xs font-medium text-gray-800">Login activity alerts</p>
+                            <p className="text-[10px] text-gray-500 mt-0.5">Get notified on new or suspicious logins</p>
                         </div>
                         <Toggle checked={loginAlerts} onChange={setLoginAlerts} />
                     </div>
@@ -545,34 +545,34 @@ function SecurityTab() {
                     action={
                         <button
                             onClick={revokeAll}
-                            className="text-[11px] font-medium text-red-500 hover:text-red-700"
+                            className="text-[10px] font-medium text-rose-600 hover:text-rose-700"
                         >
                             Revoke all
                         </button>
                     }
                 />
-                <div className="divide-y divide-slate-50 px-5">
+                <div className="divide-y divide-gray-100 px-5">
                     {sessions.map(({ Icon, device, meta, current, id }) => (
                         <div key={id} className="flex items-center gap-3 py-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                                <Icon size={15} className="text-blue-500" />
+                            <div className="w-8 h-8 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+                                <Icon size={15} className="text-gray-500" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[12.5px] font-medium text-slate-800 flex items-center gap-1.5">
+                                <p className="text-xs font-medium text-gray-800 flex items-center gap-1.5">
                                     {device}
                                     {current && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-100 border border-green-200 text-[10px] font-medium text-green-700">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-medium text-emerald-700">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                             Current
                                         </span>
                                     )}
                                 </p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">{meta}</p>
+                                <p className="text-[10px] text-gray-500 mt-0.5">{meta}</p>
                             </div>
                             {!current && (
                                 <button
                                     onClick={() => revoke(id)}
-                                    className="text-[11px] font-medium text-slate-500 hover:text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-50 transition-all border border-slate-200 hover:border-red-200"
+                                    className="text-[10px] font-medium text-gray-500 hover:text-rose-600 px-2 py-1 rounded-md hover:bg-rose-50 transition-all border border-gray-200 hover:border-rose-200"
                                 >
                                     Revoke
                                 </button>
@@ -582,12 +582,12 @@ function SecurityTab() {
                 </div>
 
                 {/* Danger zone */}
-                <div className="mx-5 mb-5 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-4">
+                <div className="mx-5 mb-5 p-4 bg-rose-50 border border-rose-200 rounded-md flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-[13px] font-semibold text-red-800">Danger zone</p>
-                        <p className="text-[11.5px] text-red-600 mt-0.5">Permanently delete this admin account</p>
+                        <p className="text-xs font-semibold text-rose-800">Danger zone</p>
+                        <p className="text-[10px] text-rose-600 mt-0.5">Permanently delete this admin account</p>
                     </div>
-                    <button className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-red-600 bg-white border border-red-200 hover:bg-red-100 transition-all shrink-0">
+                    <button className="flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-medium text-rose-600 bg-white border border-rose-200 hover:bg-rose-50 transition-all shrink-0">
                         <Trash2 size={12} /> Delete account
                     </button>
                 </div>
@@ -614,46 +614,46 @@ function BillingTab() {
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[20px] font-bold text-slate-900">{BILLING_PLAN.name}</span>
-                                <span className="px-2 py-0.5 rounded-full bg-blue-100 border border-blue-200 text-[11px] font-medium text-blue-700">Active</span>
+                                <span className="text-lg font-bold text-gray-800">{BILLING_PLAN.name}</span>
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-medium text-emerald-700">Active</span>
                             </div>
-                            <p className="text-[13px] text-slate-500 mt-0.5">
-                                <span className="text-[18px] font-bold text-slate-800">{BILLING_PLAN.price}</span> {BILLING_PLAN.cycle}
+                            <p className="text-xs text-gray-500 mt-0.5">
+                                <span className="text-lg font-bold text-gray-800">{BILLING_PLAN.price}</span> {BILLING_PLAN.cycle}
                             </p>
-                            <p className="text-[11px] text-slate-400 mt-1">Renews on {BILLING_PLAN.renewsOn}</p>
+                            <p className="text-[10px] text-gray-500 mt-1">Renews on {BILLING_PLAN.renewsOn}</p>
                         </div>
                         <div className="flex gap-2">
-                            <button className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-slate-600 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-all">
+                            <button className="flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all">
                                 <Download size={12} /> Invoice
                             </button>
-                            <button className="flex items-center gap-1.5 h-[32px] px-3 rounded-lg text-[12px] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all">
+                            <button className="flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-medium text-white bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 transition-all">
                                 <Zap size={12} /> Upgrade
                             </button>
                         </div>
                     </div>
 
                     {/* Student usage */}
-                    <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-[12px] font-medium text-slate-700">Student seats used</p>
-                            <p className="text-[12px] font-medium text-slate-700">{used} / {limit}</p>
+                            <p className="text-xs font-medium text-gray-700">Student seats used</p>
+                            <p className="text-xs font-medium text-gray-700">{used} / {limit}</p>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                                className={cn('h-full rounded-full transition-all', pct > 85 ? 'bg-amber-500' : 'bg-blue-500')}
+                                className={cn('h-full rounded-full transition-all', pct > 85 ? 'bg-amber-500' : 'bg-violet-500')}
                                 style={{ width: `${pct}%` }}
                             />
                         </div>
-                        <p className="text-[10.5px] text-slate-400 mt-1.5">{pct}% of limit used{pct > 85 ? ' — consider upgrading soon' : ''}</p>
+                        <p className="text-[10px] text-gray-500 mt-1.5">{pct}% of limit used{pct > 85 ? ' — consider upgrading soon' : ''}</p>
                     </div>
 
                     {/* Included features */}
                     <div className="mt-4">
-                        <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide mb-2">Included</p>
+                        <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-2">Included</p>
                         <ul className="space-y-1.5">
                             {BILLING_PLAN.features.map(f => (
-                                <li key={f} className="flex items-center gap-2 text-[12.5px] text-slate-700">
-                                    <CheckCircle2 size={13} className="text-green-500 shrink-0" /> {f}
+                                <li key={f} className="flex items-center gap-2 text-xs text-gray-700">
+                                    <CheckCircle2 size={12} className="text-emerald-500 shrink-0" /> {f}
                                 </li>
                             ))}
                         </ul>
@@ -664,12 +664,12 @@ function BillingTab() {
             {/* Unlock with upgrade */}
             <Card>
                 <CardHeader title="Unlock with upgrade" icon={Zap} desc="Features available on higher plans" />
-                <div className="divide-y divide-slate-50 px-5">
+                <div className="divide-y divide-gray-100 px-5">
                     {BILLING_PLAN.upgrades.map(({ label, plan }) => (
                         <div key={label} className="flex items-center justify-between py-3">
-                            <p className="text-[12.5px] text-slate-700">{label}</p>
+                            <p className="text-xs text-gray-700">{label}</p>
                             <span className={cn(
-                                'px-2 py-0.5 rounded-full text-[10.5px] font-medium border',
+                                'px-2 py-0.5 rounded-full text-[10px] font-medium border',
                                 plan === 'Professional'
                                     ? 'bg-amber-50 border-amber-200 text-amber-700'
                                     : 'bg-violet-50 border-violet-200 text-violet-700'
@@ -680,7 +680,7 @@ function BillingTab() {
                     ))}
                 </div>
                 <div className="px-5 pb-5 pt-3">
-                    <button className="w-full h-[36px] rounded-lg text-[13px] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                    <button className="w-full h-9 rounded-md text-xs font-medium text-white bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 transition-all flex items-center justify-center gap-2">
                         <Zap size={13} /> View all plans
                     </button>
                 </div>
@@ -703,19 +703,19 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-5">
 
             {/* Tab bar */}
-            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+            <div className="flex gap-1 bg-white p-1 rounded-md border border-gray-200 w-fit">
                 {TABS.map(({ id, label, Icon }) => (
                     <button
                         key={id}
                         onClick={() => setActiveTab(id)}
                         className={cn(
-                            'flex items-center gap-1.5 h-[32px] px-3.5 rounded-lg text-[12.5px] font-medium transition-all',
+                            'flex items-center gap-1.5 h-8 px-3.5 rounded-md text-xs font-medium transition-all',
                             activeTab === id
-                                ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
-                                : 'text-slate-500 hover:text-slate-700'
+                                ? 'bg-gradient-to-r from-violet-500 to-violet-700 text-white'
+                                : 'text-gray-600 hover:bg-gray-50'
                         )}
                     >
                         <Icon size={13} />

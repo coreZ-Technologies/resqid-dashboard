@@ -3,540 +3,554 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
-  Search, UserPlus, Download, MoreHorizontal,
-  Mail, Phone, BookOpen, Users, Star, Award,
-  CheckCircle2, Clock, AlertCircle, ChevronRight,
-  Eye, Send, Edit2, Trash2, Filter
+  ArrowLeft, ChevronRight, User, Mail, Phone,
+  BookOpen, Lock, Eye, EyeOff, CheckCircle2,
+  AlertCircle, Loader2, UserPlus, Plus, X, GraduationCap
 } from 'lucide-react'
 
-// ── Data ───────────────────────────────────────────────────
-const TEACHERS = [
-  {
-    id: 1,
-    name: 'Mr. Suresh Kumar',
-    email: 'suresh.kumar@springdale.in',
-    phone: '+91 98765 43210',
-    avatar: 'SK',
-    avatarColor: 'bg-blue-500',
-    subject: 'Mathematics',
-    subjectColor: 'bg-blue-50 text-blue-700 border-blue-200',
-    classes: ['Class 8-A', 'Class 9-B', 'Class 10-A'],
-    experience: '8 yrs',
-    status: 'active',
-    rating: 4.8,
-    periodsPerWeek: 18,
-    joinedDate: 'Jan 2020',
-    qualification: 'M.Sc Mathematics',
-  },
-  {
-    id: 2,
-    name: 'Ms. Priya Nair',
-    email: 'priya.nair@springdale.in',
-    phone: '+91 87654 32109',
-    avatar: 'PN',
-    avatarColor: 'bg-violet-500',
-    subject: 'English',
-    subjectColor: 'bg-violet-50 text-violet-700 border-violet-200',
-    classes: ['Class 6-A', 'Class 7-B', 'Class 8-A'],
-    experience: '5 yrs',
-    status: 'active',
-    rating: 4.6,
-    periodsPerWeek: 15,
-    joinedDate: 'Mar 2022',
-    qualification: 'M.A English Literature',
-  },
-  {
-    id: 3,
-    name: 'Mr. Amit Das',
-    email: 'amit.das@springdale.in',
-    phone: '+91 76543 21098',
-    avatar: 'AD',
-    avatarColor: 'bg-emerald-500',
-    subject: 'Science',
-    subjectColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    classes: ['Class 9-A', 'Class 10-B'],
-    experience: '10 yrs',
-    status: 'active',
-    rating: 4.9,
-    periodsPerWeek: 20,
-    joinedDate: 'Jun 2018',
-    qualification: 'M.Sc Physics',
-  },
-  {
-    id: 4,
-    name: 'Ms. Sunita Roy',
-    email: 'sunita.roy@springdale.in',
-    phone: '+91 65432 10987',
-    avatar: 'SR',
-    avatarColor: 'bg-rose-500',
-    subject: 'History',
-    subjectColor: 'bg-amber-50 text-amber-700 border-amber-200',
-    classes: ['Class 7-A', 'Class 8-B', 'Class 9-A'],
-    experience: '6 yrs',
-    status: 'on_leave',
-    rating: 4.4,
-    periodsPerWeek: 12,
-    joinedDate: 'Aug 2021',
-    qualification: 'M.A History',
-  },
-  {
-    id: 5,
-    name: 'Mr. Rakesh Sen',
-    email: 'rakesh.sen@springdale.in',
-    phone: '+91 54321 09876',
-    avatar: 'RS',
-    avatarColor: 'bg-amber-500',
-    subject: 'Computer Science',
-    subjectColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    classes: ['Class 10-A', 'Class 10-B', 'Class 11-A'],
-    experience: '4 yrs',
-    status: 'active',
-    rating: 4.7,
-    periodsPerWeek: 16,
-    joinedDate: 'Jan 2023',
-    qualification: 'B.Tech CSE',
-  },
-  {
-    id: 6,
-    name: 'Ms. Meena Ghosh',
-    email: 'meena.ghosh@springdale.in',
-    phone: '+91 43210 98765',
-    avatar: 'MG',
-    avatarColor: 'bg-cyan-500',
-    subject: 'Geography',
-    subjectColor: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-    classes: ['Class 6-B', 'Class 7-A'],
-    experience: '3 yrs',
-    status: 'active',
-    rating: 4.3,
-    periodsPerWeek: 10,
-    joinedDate: 'Jul 2024',
-    qualification: 'M.A Geography',
-  },
-  {
-    id: 7,
-    name: 'Mr. Debashish Paul',
-    email: 'debashish.paul@springdale.in',
-    phone: '+91 32109 87654',
-    avatar: 'DP',
-    avatarColor: 'bg-orange-500',
-    subject: 'Physical Education',
-    subjectColor: 'bg-orange-50 text-orange-700 border-orange-200',
-    classes: ['Class 5-A', 'Class 6-A', 'Class 7-B', 'Class 8-A'],
-    experience: '7 yrs',
-    status: 'active',
-    rating: 4.5,
-    periodsPerWeek: 22,
-    joinedDate: 'Feb 2019',
-    qualification: 'B.P.Ed',
-  },
-  {
-    id: 8,
-    name: 'Ms. Ananya Bose',
-    email: 'ananya.bose@springdale.in',
-    phone: '+91 21098 76543',
-    avatar: 'AB',
-    avatarColor: 'bg-pink-500',
-    subject: 'Art & Craft',
-    subjectColor: 'bg-rose-50 text-rose-700 border-rose-200',
-    classes: ['Class 5-A', 'Class 5-B', 'Class 6-A'],
-    experience: '2 yrs',
-    status: 'inactive',
-    rating: 4.1,
-    periodsPerWeek: 8,
-    joinedDate: 'Sep 2024',
-    qualification: 'B.F.A',
-  },
+const SUBJECTS = [
+  'Mathematics', 'English', 'Science', 'History',
+  'Geography', 'Computer Science', 'Art & Craft',
+  'Physical Education', 'Hindi', 'Bengali',
 ]
 
-const STATUS_STYLE = {
-  active:   { label: 'Active',    dot: 'bg-emerald-400', text: 'text-emerald-600', badge: 'bg-emerald-50 border-emerald-200' },
-  on_leave: { label: 'On Leave',  dot: 'bg-amber-400',   text: 'text-amber-600',   badge: 'bg-amber-50 border-amber-200' },
-  inactive: { label: 'Inactive',  dot: 'bg-slate-300',   text: 'text-slate-500',   badge: 'bg-slate-50 border-slate-200' },
-}
+const CLASSES = [
+  'Class 5-A', 'Class 5-B', 'Class 6-A', 'Class 6-B',
+  'Class 7-A', 'Class 7-B', 'Class 8-A', 'Class 8-B',
+  'Class 9-A', 'Class 9-B', 'Class 10-A', 'Class 10-B',
+]
 
-// ── Stat Card ──────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, color }) {
+const QUALIFICATIONS = [
+  'B.Ed', 'M.Ed', 'B.Sc + B.Ed', 'M.Sc', 'M.A',
+  'B.Tech', 'M.Tech', 'B.P.Ed', 'B.F.A', 'Other',
+]
+
+// ── Reusable Field ─────────────────────────────────────────
+function Field({ label, required, error, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-start gap-4">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-        <Icon size={18} className="text-white" />
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-slate-800 leading-tight">{value}</p>
-        <p className="text-[12px] text-slate-500 mt-0.5">{label}</p>
-        {sub && <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>}
-      </div>
+    <div className="space-y-1.5">
+      <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1">
+        {label} {required && <span className="text-red-400">*</span>}
+      </label>
+      {children}
+      {error && (
+        <p className="flex items-center gap-1 text-[11px] text-red-500">
+          <AlertCircle size={11} /> {error}
+        </p>
+      )}
     </div>
   )
 }
 
-// ── Teacher Card ───────────────────────────────────────────
-function TeacherCard({ teacher, onClick, selected }) {
-  const st = STATUS_STYLE[teacher.status]
+// ── Input ──────────────────────────────────────────────────
+function Input({ icon: Icon, error, ...props }) {
   return (
-    <div
-      onClick={() => onClick(teacher)}
-      className={`bg-white rounded-2xl border shadow-sm p-5 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
-        selected ? 'border-sky-400 ring-2 ring-sky-100' : 'border-slate-100'
-      }`}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className={`w-11 h-11 rounded-xl ${teacher.avatarColor} flex items-center justify-center text-white text-[13px] font-bold shrink-0`}>
-            {teacher.avatar}
+    <div className="relative">
+      {Icon && <Icon size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />}
+      <input
+        {...props}
+        className={`w-full ${Icon ? 'pl-9' : 'pl-4'} pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
+          error ? 'border-red-300 focus:ring-red-100 focus:border-red-400' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+        }`}
+      />
+    </div>
+  )
+}
+
+// ── Steps ──────────────────────────────────────────────────
+function Steps({ current }) {
+  const steps = [
+    { n: 1, label: 'Personal Info' },
+    { n: 2, label: 'Teaching Details' },
+    { n: 3, label: 'Access & Confirm' },
+  ]
+  return (
+    <div className="flex items-center">
+      {steps.map((s, i) => (
+        <div key={s.n} className="flex items-center">
+          <div className="flex items-center gap-2">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold transition-all ${
+              current > s.n ? 'bg-emerald-500 text-white' :
+              current === s.n ? 'bg-violet-600 text-white' :
+              'bg-violet-50 text-gray-400'
+            }`}>
+              {current > s.n ? <CheckCircle2 size={14} /> : s.n}
+            </div>
+            <span className={`text-[11px] font-medium hidden sm:block ${
+              current === s.n ? 'text-violet-700' : current > s.n ? 'text-emerald-600' : 'text-gray-400'
+            }`}>{s.label}</span>
           </div>
-          <div>
-            <p className="text-[14px] font-semibold text-slate-800">{teacher.name}</p>
-            <p className="text-[11px] text-slate-400">{teacher.qualification}</p>
+          {i < steps.length - 1 && (
+            <div className={`w-8 sm:w-14 h-px mx-3 transition-all ${current > s.n ? 'bg-emerald-200' : 'bg-violet-100'}`} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Step 1: Personal Info ──────────────────────────────────
+function Step1({ form, setForm, errors }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-[15px] font-semibold text-gray-800">Personal Information</h2>
+        <p className="text-gray-500 text-[12px] mt-0.5">Enter the teacher's basic details</p>
+      </div>
+
+      {/* Avatar Preview – Minimal border, no shadow */}
+      <div className="flex items-center gap-4 p-4 bg-violet-50/30 rounded-lg border border-violet-100">
+        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-white text-[18px] font-bold">
+          {form.firstName && form.lastName
+            ? `${form.firstName[0]}${form.lastName[0]}`.toUpperCase()
+            : <User size={22} />}
+        </div>
+        <div>
+          <p className="text-[14px] font-medium text-gray-800">
+            {form.firstName || form.lastName ? `${form.salutation} ${form.firstName} ${form.lastName}`.trim() : 'Teacher Name'}
+          </p>
+          <p className="text-[12px] text-gray-400">{form.email || 'email@school.in'}</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">{form.phone || '+91 XXXXX XXXXX'}</p>
+        </div>
+      </div>
+
+      {/* Salutation + Name */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Field label="Salutation" required error={errors.salutation}>
+          <select
+            value={form.salutation}
+            onChange={e => setForm({ ...form, salutation: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-lg border border-violet-100 text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all appearance-none"
+          >
+            <option value="">Select</option>
+            <option>Mr.</option>
+            <option>Ms.</option>
+            <option>Mrs.</option>
+            <option>Dr.</option>
+          </select>
+        </Field>
+        <Field label="First Name" required error={errors.firstName}>
+          <Input icon={User} placeholder="e.g. Suresh" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} error={errors.firstName} />
+        </Field>
+        <Field label="Last Name" required error={errors.lastName}>
+          <Input placeholder="e.g. Kumar" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} error={errors.lastName} />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Email Address" required error={errors.email}>
+          <Input icon={Mail} type="email" placeholder="teacher@school.in" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} error={errors.email} />
+        </Field>
+        <Field label="Phone Number" required error={errors.phone}>
+          <Input icon={Phone} placeholder="+91 98765 43210" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} error={errors.phone} />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Date of Birth">
+          <Input type="date" value={form.dob} onChange={e => setForm({ ...form, dob: e.target.value })} />
+        </Field>
+        <Field label="Gender">
+          <select
+            value={form.gender}
+            onChange={e => setForm({ ...form, gender: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-lg border border-violet-100 text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all appearance-none"
+          >
+            <option value="">Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </Field>
+      </div>
+
+      <Field label="Address">
+        <textarea
+          rows={2}
+          placeholder="Street, Area, City, State"
+          value={form.address}
+          onChange={e => setForm({ ...form, address: e.target.value })}
+          className="w-full px-4 py-2.5 rounded-lg border border-violet-100 text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all resize-none"
+        />
+      </Field>
+    </div>
+  )
+}
+
+// ── Step 2: Teaching Details ───────────────────────────────
+function Step2({ form, setForm, errors }) {
+  const toggleClass = (cls) => {
+    setForm(f => ({
+      ...f,
+      assignedClasses: f.assignedClasses.includes(cls)
+        ? f.assignedClasses.filter(c => c !== cls)
+        : [...f.assignedClasses, cls]
+    }))
+  }
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-[15px] font-semibold text-gray-800">Teaching Details</h2>
+        <p className="text-gray-500 text-[12px] mt-0.5">Subject expertise and class assignments</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Primary Subject" required error={errors.subject}>
+          <div className="relative">
+            <BookOpen size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <select
+              value={form.subject}
+              onChange={e => setForm({ ...form, subject: e.target.value })}
+              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${
+                errors.subject ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+              }`}
+            >
+              <option value="">Select subject</option>
+              {SUBJECTS.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </div>
+        </Field>
+
+        <Field label="Qualification" required error={errors.qualification}>
+          <div className="relative">
+            <GraduationCap size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <select
+              value={form.qualification}
+              onChange={e => setForm({ ...form, qualification: e.target.value })}
+              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${
+                errors.qualification ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+              }`}
+            >
+              <option value="">Select qualification</option>
+              {QUALIFICATIONS.map(q => <option key={q}>{q}</option>)}
+            </select>
+          </div>
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Experience (years)">
+          <Input type="number" placeholder="e.g. 5" value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} />
+        </Field>
+        <Field label="Joining Date">
+          <Input type="date" value={form.joiningDate} onChange={e => setForm({ ...form, joiningDate: e.target.value })} />
+        </Field>
+      </div>
+
+      {/* Assign Classes */}
+      <Field label="Assign Classes" error={errors.assignedClasses}>
+        <div className="mt-1">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] text-gray-400">{form.assignedClasses.length} class(es) selected</p>
+            <button onClick={() => setForm(f => ({ ...f, assignedClasses: [] }))} className="text-[11px] text-gray-400 hover:text-gray-600">Clear all</button>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            {CLASSES.map(cls => {
+              const active = form.assignedClasses.includes(cls)
+              return (
+                <button
+                  key={cls}
+                  onClick={() => toggleClass(cls)}
+                  className={`py-2 rounded-lg text-[11px] font-medium border transition-all ${
+                    active
+                      ? 'bg-violet-600 text-white border-violet-600'
+                      : 'bg-white text-gray-600 border-violet-100 hover:border-violet-200'
+                  }`}
+                >
+                  {cls}
+                </button>
+              )
+            })}
           </div>
         </div>
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border ${st.badge} ${st.text}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
-          {st.label}
-        </span>
+      </Field>
+
+      <Field label="Employee ID">
+        <Input placeholder="e.g. EMP-2024-001" value={form.employeeId} onChange={e => setForm({ ...form, employeeId: e.target.value })} />
+      </Field>
+    </div>
+  )
+}
+
+// ── Step 3: Access & Confirm ───────────────────────────────
+function Step3({ form, setForm, errors }) {
+  const [showPass, setShowPass] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  const strength = Math.min(4,
+    (form.password.length >= 8 ? 1 : 0) +
+    (/[A-Z]/.test(form.password) ? 1 : 0) +
+    (/[0-9]/.test(form.password) ? 1 : 0) +
+    (/[^A-Za-z0-9]/.test(form.password) ? 1 : 0)
+  )
+  const strengthColors = ['bg-red-400', 'bg-amber-400', 'bg-violet-400', 'bg-emerald-400']
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-[15px] font-semibold text-gray-800">Portal Access</h2>
+        <p className="text-gray-500 text-[12px] mt-0.5">Set login credentials for the teacher portal</p>
       </div>
 
-      {/* Subject badge */}
-      <div className="mb-3">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${teacher.subjectColor}`}>
-          <BookOpen size={10} />
-          {teacher.subject}
-        </span>
-      </div>
-
-      {/* Classes */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {teacher.classes.map(cls => (
-          <span key={cls} className="bg-slate-50 border border-slate-100 text-slate-500 text-[10px] font-medium px-2 py-0.5 rounded-md">
-            {cls}
-          </span>
+      {/* Summary Card – no shadow, subtle border */}
+      <div className="bg-violet-50/30 rounded-lg border border-violet-100 p-4 space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-3">Review</p>
+        {[
+          { label: 'Name',         val: `${form.salutation} ${form.firstName} ${form.lastName}`.trim() || '—' },
+          { label: 'Email',        val: form.email || '—' },
+          { label: 'Subject',      val: form.subject || '—' },
+          { label: 'Qualification',val: form.qualification || '—' },
+          { label: 'Classes',      val: form.assignedClasses.length ? form.assignedClasses.join(', ') : '—' },
+        ].map(({ label, val }) => (
+          <div key={label} className="flex justify-between text-[12px]">
+            <span className="text-gray-400">{label}</span>
+            <span className="text-gray-700 font-medium text-right max-w-[60%] truncate">{val}</span>
+          </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-50 pt-3">
-        <div className="flex items-center gap-1">
-          <Clock size={11} />
-          <span>{teacher.periodsPerWeek} periods/wk</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Star size={11} className="text-amber-400 fill-amber-400" />
-          <span className="text-slate-600 font-medium">{teacher.rating}</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Detail Panel ───────────────────────────────────────────
-function DetailPanel({ teacher, onClose }) {
-  if (!teacher) return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8">
-      <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
-        <Users size={24} className="text-slate-300" />
-      </div>
-      <p className="text-slate-500 font-medium">Select a teacher</p>
-      <p className="text-slate-400 text-[12px] mt-1">Click any card to view full details</p>
-    </div>
-  )
-
-  const st = STATUS_STYLE[teacher.status]
-
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-slate-700 to-slate-900 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-slate-400 text-[11px] font-medium uppercase tracking-widest">Teacher Profile</span>
-          <button onClick={onClose} className="text-white/60 hover:text-white text-[11px] transition-colors">✕ Close</button>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className={`w-14 h-14 rounded-2xl ${teacher.avatarColor} flex items-center justify-center text-white text-[16px] font-bold border-2 border-white/20 shadow-lg`}>
-            {teacher.avatar}
+      {/* Password */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Password" required error={errors.password}>
+          <div className="relative">
+            <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type={showPass ? 'text' : 'password'}
+              placeholder="Min. 8 characters"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
+                errors.password ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+              }`}
+            />
+            <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
           </div>
-          <div>
-            <h3 className="text-white font-bold text-[16px]">{teacher.name}</h3>
-            <p className="text-slate-300 text-[12px]">{teacher.qualification}</p>
-            <span className={`inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/10 text-white border border-white/20`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
-              {st.label}
-            </span>
+        </Field>
+
+        <Field label="Confirm Password" required error={errors.confirmPassword}>
+          <div className="relative">
+            <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type={showConfirm ? 'text' : 'password'}
+              placeholder="Re-enter password"
+              value={form.confirmPassword}
+              onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
+                errors.confirmPassword ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+              }`}
+            />
+            <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              {showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
           </div>
-        </div>
+        </Field>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-5">
-        {/* Contact */}
+      {form.password && (
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Contact Info</p>
-          <div className="space-y-2">
-            {[
-              { icon: Mail,  val: teacher.email },
-              { icon: Phone, val: teacher.phone },
-            ].map(({ icon: Icon, val }) => (
-              <div key={val} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <Icon size={13} className="text-slate-400 shrink-0" />
-                <span className="text-[12px] text-slate-600">{val}</span>
-              </div>
+          <div className="flex gap-1 mb-1">
+            {[1,2,3,4].map(i => (
+              <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= strength ? strengthColors[strength - 1] : 'bg-violet-50'}`} />
             ))}
           </div>
+          <p className="text-[10px] text-gray-400">Use 8+ characters, uppercase, numbers & symbols</p>
         </div>
+      )}
 
-        {/* Stats */}
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Overview</p>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: 'Subject',      val: teacher.subject },
-              { label: 'Experience',   val: teacher.experience },
-              { label: 'Periods/Week', val: teacher.periodsPerWeek },
-              { label: 'Joined',       val: teacher.joinedDate },
-            ].map(({ label, val }) => (
-              <div key={label} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                <p className="text-[10px] text-slate-400 mb-1">{label}</p>
-                <p className="text-[12px] font-semibold text-slate-700">{val}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Rating */}
-        <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center shrink-0">
-            <Star size={18} className="text-white fill-white" />
-          </div>
-          <div>
-            <p className="text-[20px] font-bold text-amber-700 leading-tight">{teacher.rating}</p>
-            <p className="text-[11px] text-amber-600">Average rating</p>
-          </div>
-        </div>
-
-        {/* Classes */}
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">
-            Assigned Classes ({teacher.classes.length})
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {teacher.classes.map(cls => (
-              <span key={cls} className="bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-medium px-3 py-1.5 rounded-xl">
-                {cls}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-3">Quick Actions</p>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { icon: Mail,  label: 'Send Email',   color: 'bg-sky-500' },
-              { icon: Edit2, label: 'Edit Profile',  color: 'bg-violet-500' },
-              { icon: Eye,   label: 'View Schedule', color: 'bg-emerald-500' },
-              { icon: Send,  label: 'Message',       color: 'bg-amber-500' },
-            ].map(({ icon: Icon, label, color }) => (
-              <button key={label} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-white text-[12px] font-medium ${color} hover:opacity-90 transition-opacity`}>
-                <Icon size={13} /> {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Main Page ──────────────────────────────────────────────
-export default function TeachersPage() {
-  const [search, setSearch]       = useState('')
-  const [statusFilter, setStatus] = useState('all')
-  const [selected, setSelected]   = useState(null)
-
-  const filtered = TEACHERS.filter(t => {
-    const matchSearch =
-      t.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.subject.toLowerCase().includes(search.toLowerCase()) ||
-      t.email.toLowerCase().includes(search.toLowerCase())
-    const matchStatus = statusFilter === 'all' || t.status === statusFilter
-    return matchSearch && matchStatus
-  })
-
-  const activeCount   = TEACHERS.filter(t => t.status === 'active').length
-  const onLeaveCount  = TEACHERS.filter(t => t.status === 'on_leave').length
-  const totalPeriods  = TEACHERS.reduce((a, t) => a + t.periodsPerWeek, 0)
-  const avgRating     = (TEACHERS.reduce((a, t) => a + t.rating, 0) / TEACHERS.length).toFixed(1)
-
-  return (
-    <div className="p-6 space-y-6">
-
-      {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-[22px] font-bold text-slate-800">Teachers</h1>
-          <p className="text-slate-500 text-[13px] mt-0.5">Manage teaching staff, subjects, and schedules</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-medium hover:bg-slate-50 transition-colors">
-            <Download size={14} /> Export
-          </button>
-          <Link
-            href="/school/teachers/add"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 text-white text-[13px] font-medium hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200"
-          >
-            <UserPlus size={14} /> Add Teacher
-          </Link>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users}    label="Total Teachers"    value={TEACHERS.length} sub={`${activeCount} active`}         color="bg-sky-500" />
-        <StatCard icon={Award}    label="Avg. Rating"       value={avgRating}       sub="Across all staff"                color="bg-amber-500" />
-        <StatCard icon={BookOpen} label="Periods This Week" value={totalPeriods}    sub="All classes combined"            color="bg-violet-500" />
-        <StatCard icon={Clock}    label="On Leave"          value={onLeaveCount}    sub="Currently unavailable"           color="bg-rose-500" />
-      </div>
-
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search by name, subject, or email..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-[13px] text-slate-700 placeholder:text-slate-400 bg-white focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400 transition-all"
-          />
-        </div>
-        <div className="flex gap-2">
-          {[
-            { id: 'all',      label: 'All' },
-            { id: 'active',   label: 'Active' },
-            { id: 'on_leave', label: 'On Leave' },
-            { id: 'inactive', label: 'Inactive' },
-          ].map(f => (
+      {/* Role */}
+      <Field label="Portal Role">
+        <div className="grid grid-cols-2 gap-3">
+          {['Teacher', 'Class Teacher'].map(role => (
             <button
-              key={f.id}
-              onClick={() => setStatus(f.id)}
-              className={`px-3.5 py-2.5 rounded-xl text-[12px] font-medium transition-all border ${
-                statusFilter === f.id
-                  ? 'bg-sky-500 text-white border-sky-500 shadow-sm shadow-sky-200'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
+              key={role}
+              onClick={() => setForm({ ...form, role })}
+              className={`py-2.5 rounded-lg border text-[12px] font-medium transition-all ${
+                form.role === role ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-gray-600 border-violet-100 hover:border-violet-200'
               }`}
             >
-              {f.label}
+              {role}
             </button>
           ))}
         </div>
-      </div>
+      </Field>
+    </div>
+  )
+}
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Cards */}
-        <div className="xl:col-span-2">
-          {filtered.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
-                <Users size={22} className="text-slate-300" />
-              </div>
-              <p className="text-slate-500 font-medium">No teachers found</p>
-              <p className="text-slate-400 text-[12px] mt-1">Try adjusting your search or filters</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {filtered.map(t => (
-                <TeacherCard
-                  key={t.id}
-                  teacher={t}
-                  onClick={setSelected}
-                  selected={selected?.id === t.id}
-                />
-              ))}
-            </div>
-          )}
+// ── Success ────────────────────────────────────────────────
+function SuccessScreen({ form }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+      <div className="w-16 h-16 rounded-lg bg-emerald-500 flex items-center justify-center">
+        <CheckCircle2 size={30} className="text-white" />
+      </div>
+      <div>
+        <h2 className="text-[20px] font-bold text-gray-800">Teacher Added!</h2>
+        <p className="text-gray-500 text-[13px] mt-1">
+          <span className="font-semibold text-gray-700">{form.salutation} {form.firstName} {form.lastName}</span> has been registered successfully
+        </p>
+      </div>
+      <div className="bg-violet-50/30 border border-violet-100 rounded-lg p-5 w-full max-w-sm text-left space-y-3">
+        {[
+          { label: 'Email',   val: form.email },
+          { label: 'Subject', val: form.subject },
+          { label: 'Classes', val: `${form.assignedClasses.length} assigned` },
+          { label: 'Role',    val: form.role },
+        ].map(({ label, val }) => (
+          <div key={label} className="flex justify-between text-[12px]">
+            <span className="text-gray-400">{label}</span>
+            <span className="text-gray-700 font-medium">{val}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3 pt-2">
+        <Link href="/school/teachers" className="px-5 py-2.5 rounded-lg border border-violet-100 text-gray-600 text-[13px] font-medium hover:bg-violet-50 transition-colors">
+          Back to Teachers
+        </Link>
+        <Link href="/school/teachers/add" className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 text-white text-[13px] font-medium hover:opacity-90 transition-opacity shadow-sm shadow-violet-200">
+          Add Another
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+// ── Main ───────────────────────────────────────────────────
+export default function AddTeacherPage() {
+  const [step, setStep]           = useState(1)
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading]     = useState(false)
+  const [errors, setErrors]       = useState({})
+
+  const [form, setForm] = useState({
+    salutation: '', firstName: '', lastName: '', email: '',
+    phone: '', dob: '', gender: '', address: '',
+    subject: '', qualification: '', experience: '',
+    joiningDate: '', assignedClasses: [], employeeId: '',
+    password: '', confirmPassword: '', role: 'Teacher',
+  })
+
+  function validateStep1() {
+    const e = {}
+    if (!form.firstName.trim())  e.firstName = 'Required'
+    if (!form.lastName.trim())   e.lastName  = 'Required'
+    if (!form.email.trim())      e.email     = 'Required'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email'
+    if (!form.phone.trim())      e.phone     = 'Required'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  function validateStep2() {
+    const e = {}
+    if (!form.subject)                    e.subject         = 'Select a subject'
+    if (!form.qualification)              e.qualification   = 'Select qualification'
+    if (form.assignedClasses.length === 0) e.assignedClasses = 'Assign at least one class'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  function validateStep3() {
+    const e = {}
+    if (!form.password)                           e.password        = 'Required'
+    else if (form.password.length < 8)            e.password        = 'Min 8 characters'
+    if (form.password !== form.confirmPassword)   e.confirmPassword = 'Passwords do not match'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  function handleNext() {
+    if (step === 1 && !validateStep1()) return
+    if (step === 2 && !validateStep2()) return
+    setErrors({})
+    setStep(s => s + 1)
+  }
+
+  async function handleSubmit() {
+    if (!validateStep3()) return
+    setLoading(true)
+    await new Promise(r => setTimeout(r, 1500))
+    setLoading(false)
+    setSubmitted(true)
+  }
+
+  if (submitted) return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <SuccessScreen form={form} />
+    </div>
+  )
+
+  return (
+    <div className="min-h-screen bg-violet-50 p-6">
+      <div className="max-w-2xl mx-auto space-y-6">
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2">
+          <Link href="/school/teachers" className="flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-gray-600 transition-colors">
+            <ArrowLeft size={13} /> Teachers
+          </Link>
+          <ChevronRight size={11} className="text-violet-200" />
+          <span className="text-[12px] text-gray-600 font-medium">Add Teacher</span>
         </div>
 
-        {/* Detail Panel */}
-        <div className="xl:col-span-1">
-          <DetailPanel teacher={selected} onClose={() => setSelected(null)} />
+        {/* Title */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center">
+            <UserPlus size={16} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-[22px] font-bold text-gray-800">Add New Teacher</h1>
+            <p className="text-gray-500 text-[13px]">Register a new staff member to the school</p>
+          </div>
         </div>
-      </div>
 
-      {/* Summary Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
-          <h2 className="text-[14px] font-semibold text-slate-700">Staff Directory</h2>
-          <button className="text-[12px] text-sky-500 hover:text-sky-600 font-medium flex items-center gap-1">
-            View All <ChevronRight size={12} />
+        {/* Steps indicator – minimal, no shadow */}
+        <div className="bg-white rounded-lg border border-violet-100 p-5">
+          <Steps current={step} />
+        </div>
+
+        {/* Form container – no shadow, clean border */}
+        <div className="bg-white rounded-lg border border-violet-100 p-6">
+          {step === 1 && <Step1 form={form} setForm={setForm} errors={errors} />}
+          {step === 2 && <Step2 form={form} setForm={setForm} errors={errors} />}
+          {step === 3 && <Step3 form={form} setForm={setForm} errors={errors} />}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => step > 1 && setStep(s => s - 1)}
+            disabled={step === 1}
+            className={`px-5 py-2.5 rounded-lg border border-violet-100 text-gray-600 text-[13px] font-medium transition-colors ${step === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-violet-50'}`}
+          >
+            ← Back
           </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[12px]">
-            <thead>
-              <tr className="text-left bg-slate-50/60">
-                {['Teacher', 'Subject', 'Classes', 'Periods/Wk', 'Rating', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {TEACHERS.map(t => {
-                const st = STATUS_STYLE[t.status]
-                return (
-                  <tr key={t.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => setSelected(t)}>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-7 h-7 rounded-lg ${t.avatarColor} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
-                          {t.avatar}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-700">{t.name}</p>
-                          <p className="text-slate-400 text-[10px]">{t.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border ${t.subjectColor}`}>
-                        {t.subject}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex flex-wrap gap-1">
-                        {t.classes.slice(0, 2).map(c => (
-                          <span key={c} className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">{c}</span>
-                        ))}
-                        {t.classes.length > 2 && (
-                          <span className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">+{t.classes.length - 2}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-600 font-medium">{t.periodsPerWeek}</td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1">
-                        <Star size={11} className="text-amber-400 fill-amber-400" />
-                        <span className="font-semibold text-slate-700">{t.rating}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border ${st.badge} ${st.text}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
-                        {st.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1.5">
-                        <button className="p-1.5 rounded-lg hover:bg-sky-50 text-slate-400 hover:text-sky-500 transition-colors">
-                          <Eye size={12} />
-                        </button>
-                        <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
-                          <MoreHorizontal size={12} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+
+          <div className="flex items-center gap-2">
+            {[1,2,3].map(n => (
+              <div key={n} className={`h-1.5 rounded-full transition-all ${n === step ? 'w-6 bg-violet-600' : 'w-1.5 bg-violet-200'}`} />
+            ))}
+          </div>
+
+          {step < 3 ? (
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 text-white text-[13px] font-medium hover:opacity-90 transition-opacity shadow-sm shadow-violet-200"
+            >
+              Continue <ChevronRight size={14} />
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 text-white text-[13px] font-medium hover:opacity-90 transition-opacity shadow-sm shadow-violet-200 disabled:opacity-70"
+            >
+              {loading ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><CheckCircle2 size={14} /> Add Teacher</>}
+            </button>
+          )}
         </div>
       </div>
     </div>
