@@ -59,45 +59,45 @@ const topAbsent = [
   { name: 'Sneha Patel',  class: 'Class 6B', absences: 11, trend: 'up'   },
 ]
 
-const PIE_COLORS = ['#2563eb', '#6366f1', '#93c5fd']
+const PIE_COLORS = ['#8b5cf6', '#7c3aed', '#c4b5fd']  // violet shades
 
 const DATE_RANGES = ['This Week', 'This Month', 'This Term', 'This Year']
 const TABS        = ['Overview', 'Attendance', 'Students', 'Teachers']
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
+// ─── KPI Card (Notion style) ─────────────────────────────────────────────────
 
 function KpiCard({ icon: Icon, label, value, change, positive, iconBg, iconColor }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-4 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-md border border-violet-100 p-5 flex flex-col gap-4 hover:border-violet-200 transition-colors">
       <div className="flex items-center justify-between">
-        <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', iconBg)}>
+        <div className={cn('w-9 h-9 rounded-md flex items-center justify-center', iconBg)}>
           <Icon size={18} className={iconColor} />
         </div>
         <span className={cn(
-          'flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full',
-          positive ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-500'
+          'flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md',
+          positive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-600'
         )}>
           {positive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
           {change}
         </span>
       </div>
       <div>
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
-        <p className="text-[12px] text-slate-400 mt-0.5">{label}</p>
+        <p className="text-2xl font-semibold text-gray-800">{value}</p>
+        <p className="text-[11px] text-gray-500 mt-0.5">{label}</p>
       </div>
     </div>
   )
 }
 
-// ─── Section Card ─────────────────────────────────────────────────────────────
+// ─── Section Card (Notion style) ─────────────────────────────────────────────
 
 function SectionCard({ title, subtitle, action, children }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div className="bg-white rounded-md border border-violet-100 overflow-hidden">
+      <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
         <div>
-          <p className="text-[13px] font-semibold text-slate-800">{title}</p>
-          {subtitle && <p className="text-[11px] text-slate-400 mt-0.5">{subtitle}</p>}
+          <p className="text-sm font-medium text-gray-800">{title}</p>
+          {subtitle && <p className="text-[10px] text-gray-500 mt-0.5">{subtitle}</p>}
         </div>
         {action}
       </div>
@@ -106,16 +106,16 @@ function SectionCard({ title, subtitle, action, children }) {
   )
 }
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
+// ─── Custom Tooltip (Notion style) ───────────────────────────────────────────
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-slate-900 text-white text-[11px] rounded-lg px-3 py-2 shadow-xl">
-      <p className="font-semibold mb-1 text-slate-300">{label}</p>
+    <div className="bg-gray-800 text-white text-[10px] rounded-md px-3 py-2 shadow-md">
+      <p className="font-medium mb-1 text-gray-300">{label}</p>
       {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color ?? '#93c5fd' }}>
-          {p.name}: <span className="font-bold">{p.value}{typeof p.value === 'number' && p.name !== 'Students' ? '%' : ''}</span>
+        <p key={i} style={{ color: p.color ?? '#c4b5fd' }}>
+          {p.name}: <span className="font-semibold">{p.value}{typeof p.value === 'number' && p.name !== 'Students' ? '%' : ''}</span>
         </p>
       ))}
     </div>
@@ -135,8 +135,8 @@ export default function ReportsPage() {
       {/* ── Page Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Reports & Analytics</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">
+          <h1 className="text-xl font-semibold text-gray-800">Reports & Analytics</h1>
+          <p className="text-xs text-gray-500 mt-0.5">
             Springdale Public School — Academic Year 2024–25
           </p>
         </div>
@@ -146,21 +146,21 @@ export default function ReportsPage() {
           <div className="relative">
             <button
               onClick={() => setShowDateDropdown(v => !v)}
-              className="flex items-center gap-2 text-[13px] border border-slate-200 rounded-lg px-3 py-2 bg-white hover:bg-slate-50 text-slate-600 transition-colors"
+              className="flex items-center gap-2 text-xs border border-gray-200 rounded-md px-3 py-2 bg-white hover:bg-gray-50 text-gray-600 transition-colors"
             >
-              <Calendar size={13} className="text-slate-400" />
+              <Calendar size={13} className="text-gray-400" />
               {dateRange}
-              <ChevronDown size={13} className="text-slate-400" />
+              <ChevronDown size={13} className="text-gray-400" />
             </button>
             {showDateDropdown && (
-              <div className="absolute right-0 top-full mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-20 min-w-[150px] py-1">
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-md z-20 min-w-[150px] py-1">
                 {DATE_RANGES.map(r => (
                   <button
                     key={r}
                     onClick={() => { setDateRange(r); setShowDateDropdown(false) }}
                     className={cn(
-                      'w-full text-left px-4 py-2 text-[13px] hover:bg-blue-50 transition-colors',
-                      dateRange === r ? 'text-blue-700 font-semibold' : 'text-slate-600'
+                      'w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors',
+                      dateRange === r ? 'text-violet-700 font-medium' : 'text-gray-600'
                     )}
                   >
                     {r}
@@ -171,7 +171,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Export */}
-          <button className="flex items-center gap-2 text-[13px] bg-blue-700 hover:bg-blue-800 text-white rounded-lg px-4 py-2 font-medium transition-colors">
+          <button className="flex items-center gap-2 text-xs bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 text-white rounded-md px-3 py-2 font-medium transition-all">
             <Download size={13} />
             Export PDF
           </button>
@@ -179,16 +179,16 @@ export default function ReportsPage() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="flex gap-1 border-b border-slate-200">
+      <div className="flex gap-1 border-b border-gray-200">
         {TABS.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              'px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors',
+              'px-4 py-2 text-xs font-medium border-b-2 -mb-px transition-colors',
               activeTab === tab
-                ? 'border-blue-700 text-blue-700'
-                : 'border-transparent text-slate-400 hover:text-slate-600'
+                ? 'border-violet-600 text-violet-700'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
             )}
           >
             {tab}
@@ -204,8 +204,8 @@ export default function ReportsPage() {
           value="614"
           change="5.2%"
           positive
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          iconBg="bg-violet-50"
+          iconColor="text-violet-600"
         />
         <KpiCard
           icon={UserCheck}
@@ -213,8 +213,8 @@ export default function ReportsPage() {
           value="42"
           change="2 new"
           positive
-          iconBg="bg-indigo-50"
-          iconColor="text-indigo-600"
+          iconBg="bg-violet-50"
+          iconColor="text-violet-600"
         />
         <KpiCard
           icon={CalendarCheck}
@@ -222,8 +222,8 @@ export default function ReportsPage() {
           value="91.4%"
           change="1.2%"
           positive
-          iconBg="bg-sky-50"
-          iconColor="text-sky-600"
+          iconBg="bg-violet-50"
+          iconColor="text-violet-600"
         />
         <KpiCard
           icon={AlertTriangle}
@@ -231,8 +231,8 @@ export default function ReportsPage() {
           value="23"
           change="3 more"
           positive={false}
-          iconBg="bg-red-50"
-          iconColor="text-red-500"
+          iconBg="bg-rose-50"
+          iconColor="text-rose-500"
         />
       </div>
 
@@ -245,8 +245,8 @@ export default function ReportsPage() {
             title="Monthly Attendance Trend"
             subtitle="Present vs Absent rate across the academic year"
             action={
-              <button className="flex items-center gap-1.5 text-[11px] text-blue-600 font-medium hover:underline">
-                <FileText size={11} /> Full Report
+              <button className="flex items-center gap-1 text-[10px] text-violet-600 font-medium hover:underline">
+                <FileText size={10} /> Full Report
               </button>
             }
           >
@@ -256,9 +256,9 @@ export default function ReportsPage() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f8fafc' }} />
-                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} iconType="circle" iconSize={8} />
-                <Bar dataKey="present" name="Present" fill="#2563eb" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="absent"  name="Absent"  fill="#dbeafe" radius={[4, 4, 0, 0]} />
+                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} iconType="circle" iconSize={8} />
+                <Bar dataKey="present" name="Present" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="absent"  name="Absent"  fill="#ddd6fe" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </SectionCard>
@@ -281,7 +281,7 @@ export default function ReportsPage() {
               </Pie>
               <Tooltip
                 formatter={(v, n) => [`${v} students`, n]}
-                contentStyle={{ fontSize: '12px', borderRadius: '10px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: 'none', backgroundColor: '#fff' }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -290,9 +290,9 @@ export default function ReportsPage() {
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PIE_COLORS[i] }} />
-                  <span className="text-[12px] text-slate-500">{item.name}</span>
+                  <span className="text-[11px] text-gray-500">{item.name}</span>
                 </div>
-                <span className="text-[12px] font-semibold text-slate-700">{item.value}</span>
+                <span className="text-[11px] font-medium text-gray-700">{item.value}</span>
               </div>
             ))}
           </div>
@@ -312,13 +312,13 @@ export default function ReportsPage() {
               <Tooltip
                 formatter={v => [`${v}%`, 'Attendance']}
                 cursor={{ fill: '#f8fafc' }}
-                contentStyle={{ fontSize: '12px', borderRadius: '10px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #e2e8f0', backgroundColor: '#fff' }}
               />
               <Bar dataKey="rate" radius={[0, 4, 4, 0]}>
                 {classAttendance.map((entry, i) => (
                   <Cell
                     key={i}
-                    fill={entry.rate >= 90 ? '#2563eb' : entry.rate >= 85 ? '#f59e0b' : '#ef4444'}
+                    fill={entry.rate >= 90 ? '#8b5cf6' : entry.rate >= 85 ? '#f59e0b' : '#ef4444'}
                   />
                 ))}
               </Bar>
@@ -327,13 +327,13 @@ export default function ReportsPage() {
           {/* Legend */}
           <div className="flex items-center gap-4 mt-3">
             {[
-              { color: '#2563eb', label: '≥90% Good'      },
+              { color: '#8b5cf6', label: '≥90% Good'      },
               { color: '#f59e0b', label: '85–89% Average'  },
               { color: '#ef4444', label: '<85% At Risk'     },
             ].map(l => (
               <div key={l.label} className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: l.color }} />
-                <span className="text-[11px] text-slate-400">{l.label}</span>
+                <span className="text-[10px] text-gray-500">{l.label}</span>
               </div>
             ))}
           </div>
@@ -354,10 +354,10 @@ export default function ReportsPage() {
                 type="monotone"
                 dataKey="students"
                 name="Students"
-                stroke="#2563eb"
-                strokeWidth={2.5}
-                dot={{ fill: '#2563eb', r: 4, strokeWidth: 0 }}
-                activeDot={{ r: 6, fill: '#1d4ed8', strokeWidth: 0 }}
+                stroke="#8b5cf6"
+                strokeWidth={2}
+                dot={{ fill: '#7c3aed', r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: '#6d28d9', strokeWidth: 0 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -369,7 +369,7 @@ export default function ReportsPage() {
         title="High Absenteeism Alert"
         subtitle="Students with the most absences this term"
         action={
-          <button className="text-[11px] text-blue-600 font-medium hover:underline">
+          <button className="text-[10px] text-violet-600 font-medium hover:underline">
             View All
           </button>
         }
@@ -377,9 +377,9 @@ export default function ReportsPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100">
+              <tr className="border-b border-gray-200">
                 {['#', 'Student', 'Class', 'Total Absences', 'Trend'].map(h => (
-                  <th key={h} className="text-left text-[11px] font-semibold uppercase tracking-wider text-slate-300 pb-3 pr-4 last:pr-0">
+                  <th key={h} className="text-left text-[10px] font-semibold uppercase tracking-wider text-gray-500 pb-3 pr-4 last:pr-0">
                     {h}
                   </th>
                 ))}
@@ -387,32 +387,32 @@ export default function ReportsPage() {
             </thead>
             <tbody>
               {topAbsent.map((s, i) => (
-                <tr key={s.name} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 pr-4 text-[12px] text-slate-300 font-mono w-6">{i + 1}</td>
+                <tr key={s.name} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 pr-4 text-[11px] text-gray-400 font-mono w-6">{i + 1}</td>
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 text-[11px] font-bold shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600 text-[10px] font-bold shrink-0">
                         {s.name.slice(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-[13px] font-medium text-slate-700">{s.name}</span>
+                      <span className="text-xs font-medium text-gray-800">{s.name}</span>
                     </div>
                   </td>
                   <td className="py-3 pr-4">
-                    <span className="text-[12px] text-slate-400">{s.class}</span>
+                    <span className="text-[11px] text-gray-500">{s.class}</span>
                   </td>
                   <td className="py-3 pr-4">
                     <span className={cn(
-                      'inline-flex items-center gap-1 text-[12px] font-semibold',
-                      s.absences >= 15 ? 'text-red-500' : s.absences >= 12 ? 'text-amber-500' : 'text-slate-600'
+                      'inline-flex items-center gap-1 text-[11px] font-medium',
+                      s.absences >= 15 ? 'text-rose-600' : s.absences >= 12 ? 'text-amber-600' : 'text-gray-600'
                     )}>
-                      <Clock size={11} />
+                      <Clock size={10} />
                       {s.absences} days
                     </span>
                   </td>
                   <td className="py-3">
                     {s.trend === 'up'
-                      ? <span className="flex items-center gap-1 text-[11px] font-medium text-red-500"><TrendingUp size={11} /> Worsening</span>
-                      : <span className="flex items-center gap-1 text-[11px] font-medium text-blue-600"><TrendingDown size={11} /> Improving</span>
+                      ? <span className="flex items-center gap-1 text-[10px] font-medium text-rose-600"><TrendingUp size={10} /> Worsening</span>
+                      : <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-600"><TrendingDown size={10} /> Improving</span>
                     }
                   </td>
                 </tr>
@@ -424,27 +424,27 @@ export default function ReportsPage() {
 
       {/* ── Quick Exports ── */}
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-300 mb-3">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-3">
           Quick Exports
         </p>
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
           {[
-            { label: 'Attendance Report', icon: CalendarCheck, bg: 'bg-blue-50',   color: 'text-blue-600'   },
-            { label: 'Student List',      icon: Users,         bg: 'bg-indigo-50', color: 'text-indigo-600' },
-            { label: 'Teacher Summary',   icon: UserCheck,     bg: 'bg-sky-50',    color: 'text-sky-600'    },
+            { label: 'Attendance Report', icon: CalendarCheck, bg: 'bg-violet-50',   color: 'text-violet-600'   },
+            { label: 'Student List',      icon: Users,         bg: 'bg-violet-50', color: 'text-violet-600' },
+            { label: 'Teacher Summary',   icon: UserCheck,     bg: 'bg-violet-50',    color: 'text-violet-600'    },
             { label: 'Academic Report',   icon: BookOpen,      bg: 'bg-violet-50', color: 'text-violet-600' },
           ].map(({ label, icon: Icon, bg, color }) => (
             <button
               key={label}
-              className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3.5 hover:border-blue-200 hover:bg-blue-50/40 transition-all text-left group"
+              className="flex items-center gap-3 bg-white border border-violet-100 rounded-md px-4 py-3 hover:border-violet-200 transition-all text-left group"
             >
-              <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', bg)}>
+              <div className={cn('w-8 h-8 rounded-md flex items-center justify-center shrink-0', bg)}>
                 <Icon size={15} className={color} />
               </div>
-              <span className="text-[13px] text-slate-600 font-medium group-hover:text-blue-700 transition-colors flex-1">
+              <span className="text-xs text-gray-700 font-medium group-hover:text-violet-700 transition-colors flex-1">
                 {label}
               </span>
-              <Download size={12} className="text-slate-300 group-hover:text-blue-500 transition-colors shrink-0" />
+              <Download size={12} className="text-gray-400 group-hover:text-violet-500 transition-colors shrink-0" />
             </button>
           ))}
         </div>

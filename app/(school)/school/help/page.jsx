@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { Code, Copy, Check, Server, Key, Lock, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';  // ← ADD THIS IMPORT
+import { cn } from '@/lib/utils';
 
 const API_ENDPOINTS = [
     {
@@ -112,14 +112,14 @@ function CodeBlock({ code, language = "json" }) {
 
     return (
         <div className="relative">
-            <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-xs">
+            <pre className="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto text-xs font-mono">
                 <code>{code}</code>
             </pre>
             <button
                 onClick={handleCopy}
-                className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors"
+                className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
             >
-                {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} className="text-slate-400" />}
+                {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} className="text-gray-400" />}
             </button>
         </div>
     );
@@ -127,54 +127,54 @@ function CodeBlock({ code, language = "json" }) {
 
 function EndpointCard({ endpoint }) {
     const methodColors = {
-        GET: "bg-green-100 text-green-700 border-green-200",
-        POST: "bg-blue-100 text-blue-700 border-blue-200",
-        PUT: "bg-amber-100 text-amber-700 border-amber-200",
-        DELETE: "bg-red-100 text-red-700 border-red-200",
+        GET: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        POST: "bg-violet-50 text-violet-700 border-violet-200",
+        PUT: "bg-amber-50 text-amber-700 border-amber-200",
+        DELETE: "bg-rose-50 text-rose-700 border-rose-200",
     };
 
     return (
-        <div className="border border-slate-200 rounded-xl overflow-hidden">
-            <div className="p-4 bg-slate-50 border-b border-slate-200">
+        <div className="border border-gray-200 rounded-md overflow-hidden">
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
                 <div className="flex items-center gap-3 mb-2">
                     <span className={cn(
-                        "px-2 py-0.5 rounded text-xs font-mono font-medium border",
+                        "px-2 py-0.5 rounded text-[11px] font-mono font-medium border",
                         methodColors[endpoint.method]
                     )}>
                         {endpoint.method}
                     </span>
-                    <code className="text-sm text-slate-700 font-mono">{endpoint.path}</code>
+                    <code className="text-sm text-gray-700 font-mono">{endpoint.path}</code>
                 </div>
-                <p className="text-sm text-slate-600">{endpoint.description}</p>
+                <p className="text-sm text-gray-600">{endpoint.description}</p>
             </div>
 
             <div className="p-4 space-y-3">
                 {endpoint.auth && (
                     <div>
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1">
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-1">
                             <Key size={12} /> Authentication
                         </div>
-                        <code className="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded">{endpoint.auth}</code>
+                        <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md">{endpoint.auth}</code>
                     </div>
                 )}
 
                 {endpoint.params && (
                     <div>
-                        <div className="text-xs font-medium text-slate-500 mb-1">Query Parameters</div>
-                        <code className="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded">{endpoint.params}</code>
+                        <div className="text-xs font-medium text-gray-500 mb-1">Query Parameters</div>
+                        <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md">{endpoint.params}</code>
                     </div>
                 )}
 
                 {endpoint.body && (
                     <div>
-                        <div className="text-xs font-medium text-slate-500 mb-1">Request Body</div>
+                        <div className="text-xs font-medium text-gray-500 mb-1">Request Body</div>
                         <CodeBlock code={endpoint.body} />
                     </div>
                 )}
 
                 {endpoint.response && (
                     <div>
-                        <div className="text-xs font-medium text-slate-500 mb-1">Response</div>
+                        <div className="text-xs font-medium text-gray-500 mb-1">Response</div>
                         <CodeBlock code={endpoint.response} />
                     </div>
                 )}
@@ -185,46 +185,46 @@ function EndpointCard({ endpoint }) {
 
 export default function APIDocs() {
     return (
-        <div className="max-w-4xl mx-auto py-12">
+        <div className="max-w-4xl mx-auto py-12 px-4">
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
-                    <Server className="w-6 h-6 text-blue-600" />
-                    <h1 className="text-3xl font-bold text-slate-800">API Reference</h1>
+                    <Server className="w-6 h-6 text-violet-600" />
+                    <h1 className="text-2xl font-semibold text-gray-800">API Reference</h1>
                 </div>
-                <p className="text-slate-600">
+                <p className="text-gray-600 text-sm">
                     The ResQID API allows you to programmatically access and manage your school data.
                     All endpoints require authentication using Bearer tokens.
                 </p>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
+            <div className="bg-gray-50 border border-gray-200 rounded-md p-4 mb-8">
                 <div className="flex items-start gap-3">
-                    <Lock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <Lock className="w-5 h-5 text-violet-500 shrink-0 mt-0.5" />
                     <div>
-                        <h3 className="font-semibold text-amber-800 mb-1">Authentication Required</h3>
-                        <p className="text-sm text-amber-700">
-                            All API requests must include an Authorization header: <code className="bg-amber-100 px-1.5 py-0.5 rounded text-xs">Authorization: Bearer your_token_here</code>
+                        <h3 className="font-medium text-gray-800 mb-1">Authentication Required</h3>
+                        <p className="text-sm text-gray-600">
+                            All API requests must include an Authorization header: <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">Authorization: Bearer your_token_here</code>
                         </p>
                     </div>
                 </div>
             </div>
 
             <div className="space-y-4">
-                <h2 className="text-xl font-bold text-slate-800 mb-4">Endpoints</h2>
+                <h2 className="text-lg font-semibold text-gray-800 mb-3">Endpoints</h2>
                 {API_ENDPOINTS.map((endpoint, idx) => (
                     <EndpointCard key={idx} endpoint={endpoint} />
                 ))}
             </div>
 
-            <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded-xl">
-                <h3 className="font-semibold text-slate-800 mb-2">Rate Limits</h3>
-                <div className="flex items-center gap-4 text-sm text-slate-600">
-                    <div className="flex items-center gap-1">
-                        <Clock size={14} />
+            <div className="mt-8 p-5 bg-gray-50 border border-gray-200 rounded-md">
+                <h3 className="font-medium text-gray-800 mb-2">Rate Limits</h3>
+                <div className="flex items-center gap-5 text-sm text-gray-600">
+                    <div className="flex items-center gap-1.5">
+                        <Clock size={14} className="text-gray-500" />
                         <span>100 requests per minute</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <Server size={14} />
+                    <div className="flex items-center gap-1.5">
+                        <Server size={14} className="text-gray-500" />
                         <span>1000 requests per hour</span>
                     </div>
                 </div>

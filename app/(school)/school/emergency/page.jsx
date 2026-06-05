@@ -14,7 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK DATA
+// MOCK DATA (unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
@@ -79,13 +79,13 @@ const mockIncidents = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS
+// SUB-COMPONENTS (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function BloodBadge({ group }) {
     return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">
-            <Droplets size={10} className="fill-red-500 text-red-500" />
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200">
+            <Droplets size={10} className="fill-rose-500 text-rose-500" />
             {group}
         </span>
     );
@@ -106,11 +106,11 @@ function RiskBadge({ hasRisk }) {
 
 function SeverityDot({ severity }) {
     const map = {
-        High: 'bg-red-500',
+        High: 'bg-rose-500',
         Medium: 'bg-amber-400',
         Low: 'bg-sky-400',
     };
-    return <span className={cn('inline-block w-2 h-2 rounded-full', map[severity] || 'bg-slate-300')} />;
+    return <span className={cn('inline-block w-2 h-2 rounded-full', map[severity] || 'bg-gray-300')} />;
 }
 
 function ContactCard({ contact, isPrimary }) {
@@ -128,37 +128,37 @@ function ContactCard({ contact, isPrimary }) {
 
     return (
         <div className={cn(
-            "flex items-center justify-between p-3 rounded-xl border transition-all",
+            "flex items-center justify-between p-3 rounded-md border transition-all",
             isPrimary
-                ? "bg-gradient-to-r from-red-50 to-orange-50 border-red-200"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-gradient-to-r from-rose-50 to-amber-50 border-rose-200"
+                : "bg-white border-gray-200 hover:border-gray-300"
         )}>
             <div className="flex items-center gap-3 min-w-0">
                 <div className={cn(
                     "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
-                    isPrimary ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-600"
+                    isPrimary ? "bg-rose-100 text-rose-700" : "bg-gray-100 text-gray-600"
                 )}>
                     {contact.name.charAt(0)}
                 </div>
                 <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{contact.name}</p>
-                    <p className="text-xs text-slate-500">{contact.relation} · {contact.phone}</p>
+                    <p className="text-sm font-semibold text-gray-800 truncate">{contact.name}</p>
+                    <p className="text-xs text-gray-500">{contact.relation} · {contact.phone}</p>
                 </div>
             </div>
             <div className="flex items-center gap-1 ml-2 shrink-0">
                 {'isReachable' in contact && (
                     <span className={cn(
                         'w-2 h-2 rounded-full mr-1',
-                        contact.isReachable ? 'bg-emerald-400' : 'bg-slate-300'
+                        contact.isReachable ? 'bg-emerald-400' : 'bg-gray-300'
                     )} title={contact.isReachable ? 'Reachable' : 'Unreachable'} />
                 )}
                 <button
                     onClick={handleMsg}
                     className={cn(
-                        "p-2 rounded-lg text-xs transition-all",
+                        "p-2 rounded-md text-xs transition-all",
                         msgSent
                             ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                            : "bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-600"
                     )}
                     title="Send SMS alert"
                 >
@@ -167,10 +167,10 @@ function ContactCard({ contact, isPrimary }) {
                 <button
                     onClick={handleCall}
                     className={cn(
-                        "p-2 rounded-lg text-xs transition-all",
+                        "p-2 rounded-md text-xs transition-all",
                         calling
-                            ? "bg-green-100 text-green-700 animate-pulse"
-                            : "bg-red-50 text-red-600 hover:bg-red-100"
+                            ? "bg-emerald-100 text-emerald-700 animate-pulse"
+                            : "bg-rose-50 text-rose-600 hover:bg-rose-100"
                     )}
                     title="Call"
                 >
@@ -183,13 +183,13 @@ function ContactCard({ contact, isPrimary }) {
 
 function MedicalTag({ label, type = 'condition' }) {
     const styles = {
-        condition: 'bg-red-50 text-red-700 border-red-200',
+        condition: 'bg-rose-50 text-rose-700 border-rose-200',
         allergy: 'bg-amber-50 text-amber-700 border-amber-200',
-        medication: 'bg-blue-50 text-blue-700 border-blue-200',
+        medication: 'bg-violet-50 text-violet-700 border-violet-200',
     };
     return (
         <span className={cn(
-            'inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border',
+            'inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border',
             styles[type]
         )}>
             {type === 'condition' && <Heart size={10} />}
@@ -203,17 +203,17 @@ function MedicalTag({ label, type = 'condition' }) {
 function EmptyState({ icon: Icon, title, subtitle }) {
     return (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <Icon className="w-7 h-7 text-slate-300" />
+            <div className="w-14 h-14 rounded-md bg-gray-100 flex items-center justify-center mb-4">
+                <Icon className="w-7 h-7 text-gray-300" />
             </div>
-            <p className="text-sm font-semibold text-slate-600">{title}</p>
-            {subtitle && <p className="text-xs text-slate-400 mt-1 max-w-xs">{subtitle}</p>}
+            <p className="text-sm font-semibold text-gray-600">{title}</p>
+            {subtitle && <p className="text-xs text-gray-400 mt-1 max-w-xs">{subtitle}</p>}
         </div>
     );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STUDENT SEARCH PANEL
+// STUDENT SEARCH PANEL (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function StudentSearchPanel({ onSelect, selectedId }) {
@@ -235,20 +235,20 @@ function StudentSearchPanel({ onSelect, selectedId }) {
     return (
         <div className="flex flex-col h-full">
             {/* Search header */}
-            <div className="p-4 border-b border-slate-200 space-y-3">
+            <div className="p-4 border-b border-gray-200 space-y-3">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                         ref={inputRef}
                         type="text"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         placeholder="Name, ID, class, scan code…"
-                        className="w-full pl-9 pr-4 h-9 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all"
+                        className="w-full pl-9 pr-4 h-9 rounded-md border border-gray-200 bg-white text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 transition-all"
                         autoFocus
                     />
                     {query && (
-                        <button onClick={() => setQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <button onClick={() => setQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <X size={14} />
                         </button>
                     )}
@@ -257,7 +257,7 @@ function StudentSearchPanel({ onSelect, selectedId }) {
                     <select
                         value={classFilter}
                         onChange={e => setClassFilter(e.target.value)}
-                        className="flex-1 h-8 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 focus:outline-none focus:border-red-300"
+                        className="flex-1 h-8 px-2 rounded-md border border-gray-200 bg-white text-xs text-gray-600 focus:outline-none focus:border-violet-300"
                     >
                         <option value="">All Classes</option>
                         {classes.map(c => <option key={c} value={c}>{c}</option>)}
@@ -265,14 +265,14 @@ function StudentSearchPanel({ onSelect, selectedId }) {
                     <select
                         value={riskFilter}
                         onChange={e => setRiskFilter(e.target.value)}
-                        className="flex-1 h-8 px-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-600 focus:outline-none focus:border-red-300"
+                        className="flex-1 h-8 px-2 rounded-md border border-gray-200 bg-white text-xs text-gray-600 focus:outline-none focus:border-violet-300"
                     >
                         <option value="">All Risk</option>
                         <option value="high">High Risk</option>
                         <option value="low">Low Risk</option>
                     </select>
                 </div>
-                <p className="text-xs text-slate-400">{filtered.length} student{filtered.length !== 1 ? 's' : ''}</p>
+                <p className="text-xs text-gray-500">{filtered.length} student{filtered.length !== 1 ? 's' : ''}</p>
             </div>
 
             {/* Student list */}
@@ -286,24 +286,24 @@ function StudentSearchPanel({ onSelect, selectedId }) {
                                 key={student.id}
                                 onClick={() => onSelect(student)}
                                 className={cn(
-                                    "w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-all border",
+                                    "w-full flex items-center gap-3 p-2.5 rounded-md text-left transition-all border",
                                     selectedId === student.id
-                                        ? "bg-red-50 border-red-200 shadow-sm"
-                                        : "hover:bg-slate-50 border-transparent hover:border-slate-200"
+                                        ? "bg-violet-50 border-violet-200"
+                                        : "hover:bg-gray-50 border-transparent hover:border-gray-200"
                                 )}
                             >
                                 <div className={cn(
-                                    "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0",
-                                    student.hasHighRisk ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"
+                                    "w-9 h-9 rounded-md flex items-center justify-center text-sm font-bold shrink-0",
+                                    student.hasHighRisk ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-600"
                                 )}>
                                     {student.name.charAt(0)}
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-1.5 mb-0.5">
-                                        <p className="text-sm font-semibold text-slate-800 truncate">{student.name}</p>
+                                        <p className="text-sm font-semibold text-gray-800 truncate">{student.name}</p>
                                         {student.hasHighRisk && <AlertTriangle size={11} className="text-amber-500 shrink-0" />}
                                     </div>
-                                    <p className="text-xs text-slate-500">{student.class} · Roll {student.rollNo}</p>
+                                    <p className="text-xs text-gray-500">{student.class} · Roll {student.rollNo}</p>
                                 </div>
                                 <BloodBadge group={student.bloodGroup} />
                             </button>
@@ -316,7 +316,7 @@ function StudentSearchPanel({ onSelect, selectedId }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EMERGENCY PROFILE PANEL
+// EMERGENCY PROFILE PANEL (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function EmergencyProfile({ student, onLogIncident }) {
@@ -345,12 +345,12 @@ function EmergencyProfile({ student, onLogIncident }) {
         return (
             <div className="flex flex-col h-full items-center justify-center">
                 <div className="text-center max-w-sm mx-auto">
-                    <div className="w-20 h-20 rounded-3xl bg-red-50 border-2 border-dashed border-red-200 flex items-center justify-center mx-auto mb-5">
-                        <Siren className="w-9 h-9 text-red-300" />
+                    <div className="w-20 h-20 rounded-md bg-rose-50 border-2 border-dashed border-rose-200 flex items-center justify-center mx-auto mb-5">
+                        <Siren className="w-9 h-9 text-rose-300" />
                     </div>
-                    <h3 className="text-lg font-bold text-slate-700 mb-2">No Student Selected</h3>
-                    <p className="text-sm text-slate-400 leading-relaxed">Search for a student on the left to view their emergency profile, contact details, and medical information.</p>
-                    <div className="mt-6 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                    <h3 className="text-lg font-bold text-gray-700 mb-2">No Student Selected</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">Search for a student on the left to view their emergency profile, contact details, and medical information.</p>
+                    <div className="mt-6 p-3 bg-amber-50 border border-amber-200 rounded-md">
                         <p className="text-xs text-amber-700 font-medium flex items-center justify-center gap-1.5">
                             <Zap size={12} /> Tip: Scan a student QR code to jump directly to their profile
                         </p>
@@ -363,21 +363,21 @@ function EmergencyProfile({ student, onLogIncident }) {
     return (
         <div className="flex flex-col h-full">
             {/* Student identity header */}
-            <div className="p-5 border-b border-slate-200 bg-gradient-to-br from-slate-50 to-white">
+            <div className="p-5 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
                 <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-xl font-black text-white shrink-0 shadow-lg shadow-red-200">
+                    <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-xl font-black text-white shrink-0">
                         {student.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                            <h2 className="text-xl font-black text-slate-900">{student.name}</h2>
+                            <h2 className="text-xl font-black text-gray-900">{student.name}</h2>
                             <RiskBadge hasRisk={student.hasHighRisk} />
                         </div>
                         <div className="flex items-center gap-3 mt-1 flex-wrap">
-                            <span className="text-sm text-slate-500">Class {student.class} · Roll {student.rollNo}</span>
+                            <span className="text-sm text-gray-500">Class {student.class} · Roll {student.rollNo}</span>
                             <BloodBadge group={student.bloodGroup} />
                         </div>
-                        <button onClick={handleCopyId} className="mt-1.5 flex items-center gap-1 text-xs text-slate-400 hover:text-red-500 transition-colors group">
+                        <button onClick={handleCopyId} className="mt-1.5 flex items-center gap-1 text-xs text-gray-500 hover:text-rose-500 transition-colors group">
                             <Hash size={10} />
                             <span>{student.studentId}</span>
                             {copied ? <CheckCircle size={10} className="text-emerald-500" /> : <Copy size={10} className="opacity-0 group-hover:opacity-100" />}
@@ -387,10 +387,10 @@ function EmergencyProfile({ student, onLogIncident }) {
                     <button
                         onClick={handleBroadcast}
                         className={cn(
-                            "flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
+                            "flex flex-col items-center gap-1 px-3 py-2 rounded-md text-xs font-bold transition-all shrink-0",
                             alertSent
-                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200"
-                                : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-200 hover:shadow-red-300 active:scale-95"
+                                ? "bg-emerald-500 text-white"
+                                : "bg-rose-500 text-white hover:bg-rose-600 active:scale-95"
                         )}
                     >
                         {alertSent ? <CheckCircle size={18} /> : <Bell size={18} />}
@@ -400,15 +400,15 @@ function EmergencyProfile({ student, onLogIncident }) {
 
                 {/* Quick action bar */}
                 <div className="grid grid-cols-3 gap-2 mt-4">
-                    <button className="flex items-center justify-center gap-2 h-9 rounded-xl bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-all shadow-sm shadow-red-200 active:scale-95">
+                    <button className="flex items-center justify-center gap-2 h-9 rounded-md bg-rose-500 text-white text-xs font-semibold hover:bg-rose-600 transition-all active:scale-95">
                         <PhoneCall size={13} /> Call Parents
                     </button>
-                    <button className="flex items-center justify-center gap-2 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all">
+                    <button className="flex items-center justify-center gap-2 h-9 rounded-md bg-white border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-all">
                         <Ambulance size={13} /> Call Ambulance
                     </button>
                     <button
                         onClick={onLogIncident}
-                        className="flex items-center justify-center gap-2 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
+                        className="flex items-center justify-center gap-2 h-9 rounded-md bg-white border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-all"
                     >
                         <FileText size={13} /> Log Incident
                     </button>
@@ -416,7 +416,7 @@ function EmergencyProfile({ student, onLogIncident }) {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-200 bg-white px-4">
+            <div className="flex border-b border-gray-200 bg-white px-4">
                 {tabs.map(tab => {
                     const Icon = tab.icon;
                     return (
@@ -426,8 +426,8 @@ function EmergencyProfile({ student, onLogIncident }) {
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap",
                                 activeTab === tab.id
-                                    ? "border-red-500 text-red-600"
-                                    : "border-transparent text-slate-500 hover:text-slate-700"
+                                    ? "border-violet-500 text-violet-600"
+                                    : "border-transparent text-gray-500 hover:text-gray-700"
                             )}
                         >
                             <Icon size={12} />
@@ -444,7 +444,7 @@ function EmergencyProfile({ student, onLogIncident }) {
                     <>
                         {/* High risk banner */}
                         {student.hasHighRisk && (
-                            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
+                            <div className="flex items-start gap-3 p-3 rounded-md bg-amber-50 border border-amber-200">
                                 <AlertTriangle className="text-amber-600 mt-0.5 shrink-0" size={16} />
                                 <div>
                                     <p className="text-sm font-bold text-amber-800">High Risk Student</p>
@@ -457,49 +457,49 @@ function EmergencyProfile({ student, onLogIncident }) {
                         <div className="grid grid-cols-2 gap-3">
                             {[
                                 { label: 'Date of Birth', value: student.dob, icon: CalendarDays },
-                                { label: 'Blood Group', value: student.bloodGroup, icon: Droplets, accent: 'red' },
+                                { label: 'Blood Group', value: student.bloodGroup, icon: Droplets, accent: 'rose' },
                                 { label: 'Insurance No.', value: student.insuranceNo, icon: Shield },
                                 { label: 'Last QR Scan', value: new Date(student.lastScanned).toLocaleDateString('en-IN'), icon: Activity },
                             ].map(item => {
                                 const Icon = item.icon;
                                 return (
-                                    <div key={item.label} className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                                    <div key={item.label} className="p-3 rounded-md bg-gray-50 border border-gray-200">
                                         <div className="flex items-center gap-1.5 mb-1">
-                                            <Icon size={12} className={item.accent === 'red' ? 'text-red-500' : 'text-slate-400'} />
-                                            <p className="text-xs text-slate-500">{item.label}</p>
+                                            <Icon size={12} className={item.accent === 'rose' ? 'text-rose-500' : 'text-gray-500'} />
+                                            <p className="text-xs text-gray-500">{item.label}</p>
                                         </div>
-                                        <p className={cn("text-sm font-bold", item.accent === 'red' ? 'text-red-600' : 'text-slate-800')}>{item.value}</p>
+                                        <p className={cn("text-sm font-bold", item.accent === 'rose' ? 'text-rose-600' : 'text-gray-800')}>{item.value}</p>
                                     </div>
                                 );
                             })}
                         </div>
 
                         {/* Address */}
-                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="p-3 rounded-md bg-gray-50 border border-gray-200">
                             <div className="flex items-center gap-1.5 mb-1">
-                                <MapPin size={12} className="text-slate-400" />
-                                <p className="text-xs text-slate-500">Home Address</p>
+                                <MapPin size={12} className="text-gray-500" />
+                                <p className="text-xs text-gray-500">Home Address</p>
                             </div>
-                            <p className="text-sm text-slate-700">{student.address}</p>
+                            <p className="text-sm text-gray-700">{student.address}</p>
                             <a
                                 href={`https://maps.google.com/?q=${encodeURIComponent(student.address)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="mt-1.5 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                                className="mt-1.5 flex items-center gap-1 text-xs text-violet-600 hover:text-violet-700"
                             >
                                 <Navigation size={10} /> Open in Maps
                             </a>
                         </div>
 
                         {/* Doctor */}
-                        <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                        <div className="p-3 rounded-md bg-violet-50 border border-violet-200">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-xs text-blue-500 mb-0.5">Family Doctor</p>
-                                    <p className="text-sm font-bold text-blue-800">{student.doctorName}</p>
-                                    <p className="text-xs text-blue-600">{student.doctorPhone}</p>
+                                    <p className="text-xs text-violet-500 mb-0.5">Family Doctor</p>
+                                    <p className="text-sm font-bold text-violet-800">{student.doctorName}</p>
+                                    <p className="text-xs text-violet-600">{student.doctorPhone}</p>
                                 </div>
-                                <button className="p-2 rounded-xl bg-blue-100 text-blue-700 hover:bg-blue-200 transition-all">
+                                <button className="p-2 rounded-md bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all">
                                     <Phone size={16} />
                                 </button>
                             </div>
@@ -511,7 +511,7 @@ function EmergencyProfile({ student, onLogIncident }) {
                 {activeTab === 'contacts' && (
                     <>
                         <div>
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Parent / Guardian</p>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Parent / Guardian</p>
                             <div className="space-y-2">
                                 {student.parents.map((p, i) => (
                                     <ContactCard key={i} contact={p} isPrimary={i === 0} />
@@ -520,7 +520,7 @@ function EmergencyProfile({ student, onLogIncident }) {
                         </div>
                         {student.emergencyContacts.length > 0 && (
                             <div>
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Emergency Contacts</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Emergency Contacts</p>
                                 <div className="space-y-2">
                                     {student.emergencyContacts.map((c, i) => (
                                         <ContactCard key={i} contact={c} isPrimary={false} />
@@ -529,14 +529,14 @@ function EmergencyProfile({ student, onLogIncident }) {
                             </div>
                         )}
                         <div>
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Medical</p>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Medical</p>
                             <ContactCard contact={{ name: student.doctorName, phone: student.doctorPhone, relation: 'Family Doctor' }} isPrimary={false} />
                         </div>
 
                         {/* Bulk notify */}
-                        <div className="p-3 rounded-xl bg-slate-50 border border-dashed border-slate-300">
-                            <p className="text-xs font-semibold text-slate-600 mb-2">Bulk Notify All Contacts</p>
-                            <button className="w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-red-500 text-white text-xs font-bold hover:bg-red-600 transition-all active:scale-95">
+                        <div className="p-3 rounded-md bg-gray-50 border border-dashed border-gray-300">
+                            <p className="text-xs font-semibold text-gray-600 mb-2">Bulk Notify All Contacts</p>
+                            <button className="w-full flex items-center justify-center gap-2 h-9 rounded-md bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 transition-all active:scale-95">
                                 <Radio size={13} /> Send Emergency SMS to All
                             </button>
                         </div>
@@ -552,7 +552,7 @@ function EmergencyProfile({ student, onLogIncident }) {
                             <>
                                 {student.medicalConditions.length > 0 && (
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Medical Conditions</p>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Medical Conditions</p>
                                         <div className="flex flex-wrap gap-2">
                                             {student.medicalConditions.map(c => <MedicalTag key={c} label={c} type="condition" />)}
                                         </div>
@@ -561,7 +561,7 @@ function EmergencyProfile({ student, onLogIncident }) {
 
                                 {student.allergies.length > 0 && (
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Allergies</p>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Allergies</p>
                                         <div className="flex flex-wrap gap-2">
                                             {student.allergies.map(a => <MedicalTag key={a} label={a} type="allergy" />)}
                                         </div>
@@ -570,7 +570,7 @@ function EmergencyProfile({ student, onLogIncident }) {
 
                                 {student.medications.length > 0 && (
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Current Medications</p>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Current Medications</p>
                                         <div className="flex flex-wrap gap-2">
                                             {student.medications.map(m => <MedicalTag key={m} label={m} type="medication" />)}
                                         </div>
@@ -581,7 +581,7 @@ function EmergencyProfile({ student, onLogIncident }) {
 
                         {/* Notes */}
                         {student.notes && (
-                            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                            <div className="p-3 rounded-md bg-amber-50 border border-amber-200">
                                 <p className="text-xs font-bold text-amber-700 mb-1 flex items-center gap-1.5">
                                     <AlertCircle size={12} /> Important Notes
                                 </p>
@@ -590,20 +590,20 @@ function EmergencyProfile({ student, onLogIncident }) {
                         )}
 
                         {/* Blood group prominent */}
-                        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-red-50 to-rose-50 border border-red-200">
-                            <div className="w-14 h-14 rounded-2xl bg-red-500 flex items-center justify-center shadow-lg shadow-red-200">
+                        <div className="flex items-center gap-4 p-4 rounded-md bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200">
+                            <div className="w-14 h-14 rounded-md bg-rose-500 flex items-center justify-center">
                                 <Droplets className="text-white" size={24} />
                             </div>
                             <div>
-                                <p className="text-xs text-red-400 font-medium">Blood Group</p>
-                                <p className="text-3xl font-black text-red-600">{student.bloodGroup}</p>
+                                <p className="text-xs text-rose-400 font-medium">Blood Group</p>
+                                <p className="text-3xl font-black text-rose-600">{student.bloodGroup}</p>
                             </div>
                         </div>
 
                         {/* Insurance */}
-                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                            <p className="text-xs text-slate-500 mb-0.5 flex items-center gap-1.5"><Shield size={11} /> Insurance Number</p>
-                            <p className="text-sm font-bold text-slate-800">{student.insuranceNo}</p>
+                        <div className="p-3 rounded-md bg-gray-50 border border-gray-200">
+                            <p className="text-xs text-gray-500 mb-0.5 flex items-center gap-1.5"><Shield size={11} /> Insurance Number</p>
+                            <p className="text-sm font-bold text-gray-800">{student.insuranceNo}</p>
                         </div>
                     </>
                 )}
@@ -612,10 +612,10 @@ function EmergencyProfile({ student, onLogIncident }) {
                 {activeTab === 'incidents' && (
                     <>
                         <div className="flex items-center justify-between">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Incident History</p>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Incident History</p>
                             <button
                                 onClick={onLogIncident}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 border border-red-200 transition-all"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 border border-rose-200 transition-all"
                             >
                                 <FileText size={11} /> Log New
                             </button>
@@ -625,19 +625,19 @@ function EmergencyProfile({ student, onLogIncident }) {
                         ) : (
                             <div className="space-y-2">
                                 {mockIncidents.filter(i => i.studentId === student.studentId).map(inc => (
-                                    <div key={inc.id} className="p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-all">
+                                    <div key={inc.id} className="p-3 rounded-md bg-white border border-gray-200 hover:border-gray-300 transition-all">
                                         <div className="flex items-center justify-between mb-1.5">
                                             <div className="flex items-center gap-2">
                                                 <SeverityDot severity={inc.severity} />
-                                                <span className="text-xs font-bold text-slate-700">{inc.type}</span>
+                                                <span className="text-xs font-bold text-gray-700">{inc.type}</span>
                                                 <span className={cn(
                                                     "text-xs px-1.5 py-0.5 rounded-full font-medium",
-                                                    inc.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                                                    inc.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
                                                 )}>{inc.status}</span>
                                             </div>
-                                            <span className="text-xs text-slate-400">{inc.time}</span>
+                                            <span className="text-xs text-gray-400">{inc.time}</span>
                                         </div>
-                                        <p className="text-xs text-slate-600 leading-relaxed">{inc.description}</p>
+                                        <p className="text-xs text-gray-600 leading-relaxed">{inc.description}</p>
                                     </div>
                                 ))}
                             </div>
@@ -650,7 +650,7 @@ function EmergencyProfile({ student, onLogIncident }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LOG INCIDENT MODAL
+// LOG INCIDENT MODAL (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LogIncidentModal({ isOpen, onClose, student }) {
@@ -674,19 +674,19 @@ function LogIncidentModal({ isOpen, onClose, student }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" onClick={onClose} />
+            <div className="relative w-full max-w-md mx-4 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-gradient-to-r from-rose-50 to-amber-50">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-red-500 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-md bg-rose-500 flex items-center justify-center">
                             <FileText size={15} className="text-white" />
                         </div>
                         <div>
-                            <p className="text-sm font-black text-slate-800">Log Incident</p>
-                            {student && <p className="text-xs text-slate-500">{student.name} · {student.class}</p>}
+                            <p className="text-sm font-black text-gray-800">Log Incident</p>
+                            {student && <p className="text-xs text-gray-500">{student.name} · {student.class}</p>}
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
+                    <button onClick={onClose} className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400">
                         <X size={16} />
                     </button>
                 </div>
@@ -694,11 +694,11 @@ function LogIncidentModal({ isOpen, onClose, student }) {
                 <div className="p-5 space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="text-xs font-semibold text-slate-600 block mb-1.5">Incident Type</label>
+                            <label className="text-xs font-semibold text-gray-600 block mb-1.5">Incident Type</label>
                             <select
                                 value={form.type}
                                 onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-                                className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-red-400"
+                                className="w-full h-9 px-3 rounded-md border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-violet-300"
                             >
                                 {['Medical', 'Injury', 'Behavioral', 'Mental Health', 'Other'].map(t => (
                                     <option key={t}>{t}</option>
@@ -706,11 +706,11 @@ function LogIncidentModal({ isOpen, onClose, student }) {
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-semibold text-slate-600 block mb-1.5">Severity</label>
+                            <label className="text-xs font-semibold text-gray-600 block mb-1.5">Severity</label>
                             <select
                                 value={form.severity}
                                 onChange={e => setForm(f => ({ ...f, severity: e.target.value }))}
-                                className="w-full h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-800 focus:outline-none focus:border-red-400"
+                                className="w-full h-9 px-3 rounded-md border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-violet-300"
                             >
                                 {['Low', 'Medium', 'High', 'Critical'].map(s => (
                                     <option key={s}>{s}</option>
@@ -720,37 +720,37 @@ function LogIncidentModal({ isOpen, onClose, student }) {
                     </div>
 
                     <div>
-                        <label className="text-xs font-semibold text-slate-600 block mb-1.5">What happened?</label>
+                        <label className="text-xs font-semibold text-gray-600 block mb-1.5">What happened?</label>
                         <textarea
                             value={form.description}
                             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                             placeholder="Describe the incident in detail..."
                             rows={3}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-red-400 resize-none"
+                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 resize-none"
                         />
                     </div>
 
                     <div>
-                        <label className="text-xs font-semibold text-slate-600 block mb-1.5">Action Taken</label>
+                        <label className="text-xs font-semibold text-gray-600 block mb-1.5">Action Taken</label>
                         <textarea
                             value={form.action}
                             onChange={e => setForm(f => ({ ...f, action: e.target.value }))}
                             placeholder="First aid given, parents called, sent to hospital..."
                             rows={2}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-red-400 resize-none"
+                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 resize-none"
                         />
                     </div>
 
                     <div className="flex gap-2 pt-1">
-                        <button onClick={onClose} className="flex-1 h-10 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all">
+                        <button onClick={onClose} className="flex-1 h-10 rounded-md border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all">
                             Cancel
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={saving || saved}
                             className={cn(
-                                "flex-1 h-10 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-                                saved ? "bg-emerald-500 text-white" : "bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                                "flex-1 h-10 rounded-md text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                saved ? "bg-emerald-500 text-white" : "bg-rose-500 text-white hover:bg-rose-600 active:scale-95"
                             )}
                         >
                             {saving && <Loader2 size={14} className="animate-spin" />}
@@ -765,15 +765,15 @@ function LogIncidentModal({ isOpen, onClose, student }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// RECENT INCIDENTS SIDEBAR
+// RECENT INCIDENTS SIDEBAR (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function RecentIncidents({ onSelectStudent }) {
     return (
         <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-slate-200">
-                <p className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Activity size={12} className="text-red-500" /> Recent Incidents
+            <div className="p-4 border-b border-gray-200">
+                <p className="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Activity size={12} className="text-rose-500" /> Recent Incidents
                 </p>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-2">
@@ -784,21 +784,21 @@ function RecentIncidents({ onSelectStudent }) {
                             const s = mockStudents.find(st => st.studentId === inc.studentId);
                             if (s) onSelectStudent(s);
                         }}
-                        className="w-full p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 text-left transition-all group"
+                        className="w-full p-3 rounded-md bg-white border border-gray-200 hover:border-gray-300 text-left transition-all group"
                     >
                         <div className="flex items-center gap-2 mb-1">
                             <SeverityDot severity={inc.severity} />
-                            <span className="text-xs font-bold text-slate-700">{inc.studentName}</span>
+                            <span className="text-xs font-bold text-gray-700">{inc.studentName}</span>
                         </div>
-                        <p className="text-xs text-slate-500">{inc.class} · {inc.type}</p>
-                        <p className="text-xs text-slate-400 mt-1">{inc.time}</p>
+                        <p className="text-xs text-gray-500">{inc.class} · {inc.type}</p>
+                        <p className="text-xs text-gray-400 mt-1">{inc.time}</p>
                     </button>
                 ))}
             </div>
 
             {/* Emergency numbers */}
-            <div className="p-3 border-t border-slate-200 space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Emergency Numbers</p>
+            <div className="p-3 border-t border-gray-200 space-y-2">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Emergency Numbers</p>
                 {[
                     { label: 'Ambulance', number: '108', color: 'red' },
                     { label: 'Police', number: '100', color: 'blue' },
@@ -807,12 +807,12 @@ function RecentIncidents({ onSelectStudent }) {
                     <a
                         key={e.label}
                         href={`tel:${e.number}`}
-                        className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all group"
+                        className="flex items-center justify-between p-2 rounded-md bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all group"
                     >
-                        <span className="text-xs font-semibold text-slate-600">{e.label}</span>
+                        <span className="text-xs font-semibold text-gray-600">{e.label}</span>
                         <span className={cn(
                             "text-sm font-black",
-                            e.color === 'red' ? 'text-red-600' : e.color === 'blue' ? 'text-blue-600' : 'text-orange-600'
+                            e.color === 'red' ? 'text-rose-600' : e.color === 'blue' ? 'text-violet-600' : 'text-orange-600'
                         )}>{e.number}</span>
                     </a>
                 ))}
@@ -822,7 +822,7 @@ function RecentIncidents({ onSelectStudent }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STATS BAR
+// STATS BAR (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function StatsBar() {
@@ -835,9 +835,9 @@ function StatsBar() {
     ];
 
     const colorMap = {
-        slate: { bg: 'bg-slate-100', text: 'text-slate-600', val: 'text-slate-800' },
+        slate: { bg: 'bg-gray-100', text: 'text-gray-600', val: 'text-gray-800' },
         amber: { bg: 'bg-amber-100', text: 'text-amber-600', val: 'text-amber-700' },
-        blue: { bg: 'bg-blue-100', text: 'text-blue-600', val: 'text-blue-800' },
+        blue: { bg: 'bg-violet-100', text: 'text-violet-600', val: 'text-violet-800' },
         emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600', val: 'text-emerald-800' },
     };
 
@@ -847,13 +847,13 @@ function StatsBar() {
                 const Icon = stat.icon;
                 const c = colorMap[stat.color];
                 return (
-                    <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3">
-                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", c.bg)}>
+                    <div key={stat.label} className="bg-white rounded-md border border-violet-100 p-3 flex items-center gap-3">
+                        <div className={cn("w-9 h-9 rounded-md flex items-center justify-center shrink-0", c.bg)}>
                             <Icon size={16} className={c.text} />
                         </div>
                         <div>
                             <p className={cn("text-xl font-black leading-none", c.val)}>{stat.value}</p>
-                            <p className="text-xs text-slate-400 mt-0.5">{stat.label}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
                         </div>
                     </div>
                 );
@@ -871,26 +871,26 @@ export default function EmergencyPage() {
     const [isLogModalOpen, setIsLogModalOpen] = useState(false);
 
     return (
-        <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
+        <div className="h-screen flex flex-col bg-violet-50 overflow-hidden">
             <div className="flex flex-col flex-1 min-h-0 p-5 max-w-[1600px] mx-auto w-full">
 
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center shadow-lg shadow-red-200">
+                        <div className="w-10 h-10 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 flex items-center justify-center">
                             <Siren size={20} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-slate-900">Emergency Module</h1>
-                            <p className="text-xs text-slate-500">Student emergency profiles, contacts &amp; incident management</p>
+                            <h1 className="text-xl font-semibold text-gray-800">Emergency Module</h1>
+                            <p className="text-xs text-gray-500">Student emergency profiles, contacts &amp; incident management</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-200">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-xs font-semibold text-emerald-700">System Active</span>
                         </div>
-                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600 hover:bg-slate-50 transition-all">
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-all">
                             <RefreshCw size={12} /> Refresh
                         </button>
                     </div>
@@ -903,10 +903,10 @@ export default function EmergencyPage() {
                 <div className="grid grid-cols-[300px_1fr_220px] gap-4 flex-1 min-h-0">
 
                     {/* LEFT: Student search */}
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-sm">
-                        <div className="px-4 py-3 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white flex items-center gap-2">
-                            <Search size={13} className="text-red-500" />
-                            <span className="text-xs font-black text-slate-700 uppercase tracking-wider">Find Student</span>
+                    <div className="bg-white rounded-md border border-violet-100 overflow-hidden flex flex-col">
+                        <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex items-center gap-2">
+                            <Search size={13} className="text-violet-600" />
+                            <span className="text-xs font-black text-gray-700 uppercase tracking-wider">Find Student</span>
                         </div>
                         <StudentSearchPanel
                             onSelect={setSelectedStudent}
@@ -915,7 +915,7 @@ export default function EmergencyPage() {
                     </div>
 
                     {/* CENTER: Emergency profile */}
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-sm">
+                    <div className="bg-white rounded-md border border-violet-100 overflow-hidden flex flex-col">
                         <EmergencyProfile
                             student={selectedStudent}
                             onLogIncident={() => setIsLogModalOpen(true)}
@@ -923,7 +923,7 @@ export default function EmergencyPage() {
                     </div>
 
                     {/* RIGHT: Recent incidents + emergency numbers */}
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-sm">
+                    <div className="bg-white rounded-md border border-violet-100 overflow-hidden flex flex-col">
                         <RecentIncidents onSelectStudent={setSelectedStudent} />
                     </div>
                 </div>

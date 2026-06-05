@@ -49,6 +49,7 @@ const TEACHERS = [
 const TEACHER_NAMES = TEACHERS.map(t => t.name);
 const CLASSES = ['10-A', '10-B', '9-A', '9-B', '8-A', '8-B'];
 
+<<<<<<< HEAD
 // Tight subject → color token (Tailwind safe-list friendly)
 const SUBJ_COLOR = {
     Mathematics: 'blue',
@@ -63,6 +64,21 @@ const SUBJ_COLOR = {
     History: 'rose',
     Geography: 'lime',
     'Computer Science': 'indigo',
+=======
+const SUBJECT_COLORS = {
+    'Mathematics': 'violet',
+    'Science': 'green',
+    'Physics': 'violet',
+    'Chemistry': 'amber',
+    'Biology': 'emerald',
+    'English': 'sky',
+    'Hindi': 'amber',
+    'Sanskrit': 'yellow',
+    'Social Studies': 'teal',
+    'History': 'rose',
+    'Geography': 'lime',
+    'Computer Science': 'violet',
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
     'Physical Education': 'red',
     Arts: 'pink',
     Music: 'fuchsia',
@@ -70,6 +86,7 @@ const SUBJ_COLOR = {
     'Business Studies': 'slate',
 };
 
+<<<<<<< HEAD
 const COLOR_CELL = {
     blue: 'bg-blue-50 border-blue-200 text-blue-900',
     green: 'bg-green-50 border-green-200 text-green-900',
@@ -87,6 +104,23 @@ const COLOR_CELL = {
     pink: 'bg-pink-50 border-pink-200 text-pink-900',
     fuchsia: 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-900',
     cyan: 'bg-cyan-50 border-cyan-200 text-cyan-900',
+=======
+const COLOR_MAP = {
+    violet: 'bg-violet-50 border-violet-200 text-violet-800',
+    green: 'bg-green-50 border-green-200 text-green-800',
+    amber: 'bg-amber-50 border-amber-200 text-amber-800',
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    sky: 'bg-sky-50 border-sky-200 text-sky-800',
+    yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+    teal: 'bg-teal-50 border-teal-200 text-teal-800',
+    rose: 'bg-rose-50 border-rose-200 text-rose-800',
+    lime: 'bg-lime-50 border-lime-200 text-lime-800',
+    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-800',
+    red: 'bg-red-50 border-red-200 text-red-800',
+    pink: 'bg-pink-50 border-pink-200 text-pink-800',
+    fuchsia: 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-800',
+    cyan: 'bg-cyan-50 border-cyan-200 text-cyan-800',
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
     slate: 'bg-slate-100 border-slate-200 text-slate-800',
 };
 
@@ -175,6 +209,7 @@ const validate = (tt, av) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 // ABSENT TEACHERS (mock — today's substitution queue)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -204,6 +239,18 @@ const ABSENT_TODAY = [
         ]
     },
 ];
+=======
+// SUB-COMPONENTS (Notion‑style violet accent)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Modal({ isOpen, onClose, title, icon: Icon, iconColor = 'text-violet-600', children, maxWidth = 'max-w-md' }) {
+    useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [isOpen, onClose]);
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
 
 const FREE_TEACHERS = {
     Science: ['Dr. Sharma (free P4, P7)', 'Dr. Patel (free P7)'],
@@ -215,19 +262,48 @@ const FREE_TEACHERS = {
     Music: ['Mrs. Gupta (free P6)', 'Mr. Reddy (free P6)'],
 };
 
+<<<<<<< HEAD
 // ─────────────────────────────────────────────────────────────────────────────
 // SMALL PIECES
 // ─────────────────────────────────────────────────────────────────────────────
+=======
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" onClick={onClose} />
+            <div className={cn('relative bg-white rounded-lg shadow-lg border border-violet-100 w-full', maxWidth)}>
+                <div className="flex items-center justify-between px-5 py-4 border-b border-violet-100">
+                    <div className="flex items-center gap-2.5">
+                        {Icon && <Icon className={cn('w-5 h-5', iconColor)} />}
+                        <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
+                <div className="p-5">{children}</div>
+            </div>
+        </div>
+    );
+}
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
 
 function CellCard({ cell, isSelected, onClick, locked }) {
     if (!cell) {
         return (
             <div
+<<<<<<< HEAD
                 onClick={locked ? undefined : onClick}
                 className={cn(
                     'h-full min-h-[68px] flex items-center justify-center rounded-lg border border-dashed text-slate-300 transition-colors',
                     locked ? 'border-slate-100 cursor-default' : 'border-slate-200 cursor-pointer hover:border-blue-300 hover:text-blue-300'
                 )}
+=======
+                onClick={onClick}
+                className="h-full min-h-[72px] flex items-center justify-center cursor-pointer rounded-md border border-dashed border-gray-200 text-gray-300 hover:border-violet-300 hover:text-violet-300 transition-colors text-xs"
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
             >
                 {!locked && <Plus size={13} />}
             </div>
@@ -239,11 +315,17 @@ function CellCard({ cell, isSelected, onClick, locked }) {
         <div
             onClick={locked ? undefined : onClick}
             className={cn(
+<<<<<<< HEAD
                 'min-h-[68px] p-2 rounded-lg border transition-all group',
                 COLOR_CELL[color] ?? COLOR_CELL.slate,
                 !locked && 'cursor-pointer hover:shadow-sm hover:-translate-y-px',
                 isSelected && 'ring-2 ring-blue-500 ring-offset-1 shadow-sm',
                 cell.isSubstituted && 'ring-1 ring-amber-400'
+=======
+                'min-h-[72px] p-2 rounded-md border cursor-pointer transition-all hover:shadow-sm group',
+                colorClasses,
+                isSelected && 'ring-2 ring-violet-400 ring-offset-1 shadow-sm'
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
             )}
         >
             <p className="font-semibold text-[11px] leading-tight truncate">{cell.subject}</p>
@@ -268,13 +350,19 @@ function ClassGrid({ timetable, className, selectedCell, onCellClick, locked }) 
             <table className="w-full border-separate border-spacing-1" style={{ minWidth: 920 }}>
                 <thead>
                     <tr>
+<<<<<<< HEAD
                         {/* Day column header */}
                         <th className="w-20 pb-2 text-left">
                             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider pl-1">Day</span>
+=======
+                        <th className="w-28 text-left py-2 px-2">
+                            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Day</span>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                         </th>
                         {DAY_SLOTS.map(slot => (
                             <th key={slot.id} className={cn('pb-2 text-center', slot.type === 'BREAK' ? 'w-14' : '')}>
                                 {slot.type === 'BREAK' ? (
+<<<<<<< HEAD
                                     <div className="flex flex-col items-center gap-0.5 opacity-40">
                                         <Coffee size={11} className="text-slate-400" />
                                         <span className="text-[9px] text-slate-400">{slot.id === 'lunch' ? 'Lunch' : 'Break'}</span>
@@ -283,6 +371,16 @@ function ClassGrid({ timetable, className, selectedCell, onCellClick, locked }) 
                                     <div>
                                         <p className="text-[11px] font-semibold text-slate-600">{slot.label}</p>
                                         <p className="text-[10px] text-slate-400 mt-px">{slot.time}</p>
+=======
+                                    <div className="flex flex-col items-center gap-0.5">
+                                        <Coffee size={12} className="text-gray-300" />
+                                        <span className="text-[10px] text-gray-300 font-medium">{slot.label.split(' ')[0]}</span>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p className="text-xs font-semibold text-gray-600">{slot.label}</p>
+                                        <p className="text-[10px] text-gray-400 mt-0.5">{slot.time}</p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                     </div>
                                 )}
                             </th>
@@ -292,16 +390,30 @@ function ClassGrid({ timetable, className, selectedCell, onCellClick, locked }) 
                 <tbody>
                     {DAYS.map((day, di) => (
                         <tr key={day}>
+<<<<<<< HEAD
                             <td className="py-0.5 pl-1 align-middle">
                                 <p className="text-[11px] font-semibold text-slate-700">{DAYS_SHORT[di]}</p>
                                 <p className="text-[10px] text-slate-400">{day}</p>
+=======
+                            <td className="py-1 px-2">
+                                <span className="text-xs font-semibold text-gray-700">{day.slice(0, 3).toUpperCase()}</span>
+                                <span className="text-[10px] text-gray-400 block">{day.slice(3)}</span>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                             </td>
                             {DAY_SLOTS.map(slot => {
                                 if (slot.type === 'BREAK') {
                                     return (
+<<<<<<< HEAD
                                         <td key={slot.id} className="py-0.5">
                                             <div className="min-h-[68px] bg-slate-50 rounded-lg border border-dashed border-slate-100 flex items-center justify-center">
                                                 <span className="text-[9px] text-slate-300">{slot.time}</span>
+=======
+                                        <td key={slot.id} className="py-1">
+                                            <div className="h-[72px] bg-gray-50 rounded-md border border-dashed border-gray-200 flex items-center justify-center">
+                                                <div className="text-[10px] text-gray-300 text-center leading-tight">
+                                                    {slot.time.split('–').map((t, i) => <div key={i}>{t}</div>)}
+                                                </div>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                             </div>
                                         </td>
                                     );
@@ -357,6 +469,7 @@ function TeacherGrid({ timetable }) {
         <div className="overflow-x-auto">
             <table className="w-full border-separate border-spacing-1" style={{ minWidth: 700 }}>
                 <thead>
+<<<<<<< HEAD
                     <tr>
                         <th className="w-36 pb-2 text-left">
                             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider pl-1">Teacher</span>
@@ -365,11 +478,22 @@ function TeacherGrid({ timetable }) {
                             <th key={d} className="pb-2 text-center">
                                 <p className="text-[11px] font-semibold text-slate-600">{DAYS_SHORT[i]}</p>
                                 <p className="text-[10px] text-slate-400">{d}</p>
+=======
+                    <tr className="border-b border-gray-100">
+                        <th className="w-36 text-left py-2 px-2">
+                            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Teacher</span>
+                        </th>
+                        {DAYS.map(d => (
+                            <th key={d} className="text-center py-2 px-1">
+                                <p className="text-xs font-semibold text-gray-600">{d.slice(0, 3).toUpperCase()}</p>
+                                <p className="text-[10px] text-gray-400">{d.slice(3)}</p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                             </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                     {TEACHERS.map(teacher => (
                         <tr key={teacher.name}>
                             <td className="py-0.5 pl-1 align-top">
@@ -382,24 +506,45 @@ function TeacherGrid({ timetable }) {
                                         <p className="text-[9px] text-slate-400">{teacher.subjects[0]}</p>
                                     </div>
                                 </div>
+=======
+                    {TEACHER_NAMES.map(teacher => (
+                        <tr key={teacher}>
+                            <td className="py-1 px-2 align-top">
+                                <p className="text-xs font-semibold text-gray-700 leading-tight">{teacher}</p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                             </td>
                             {DAYS.map(day => {
                                 const slots = schedule[teacher.name]?.[day] ?? [];
                                 return (
                                     <td key={day} className="py-0.5 align-top">
                                         {slots.length === 0 ? (
+<<<<<<< HEAD
                                             <div className="min-h-[52px] flex items-center justify-center rounded-lg bg-slate-50 border border-dashed border-slate-100">
                                                 <span className="text-[10px] text-slate-300">Free</span>
+=======
+                                            <div className="min-h-[48px] flex items-center justify-center rounded-md bg-gray-50 border border-dashed border-gray-200">
+                                                <span className="text-[10px] text-gray-300">Free</span>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                             </div>
                                         ) : (
                                             <div className="space-y-0.5">
                                                 {slots.map(s => {
                                                     const color = SUBJ_COLOR[s.subject] ?? 'slate';
                                                     return (
+<<<<<<< HEAD
                                                         <div key={s.periodId} className={cn('px-2 py-1 rounded-lg border text-[10px]', COLOR_CELL[color] ?? COLOR_CELL.slate)}>
                                                             <span className="font-bold">P{s.periodId}</span>
                                                             <span className="opacity-50 mx-1">·</span>
                                                             <span className="font-medium">{s.cls}</span>
+=======
+                                                        <div key={s.periodId} className={cn(
+                                                            'px-2 py-1.5 rounded-md border text-[11px]',
+                                                            COLOR_MAP[color] ?? COLOR_MAP.slate
+                                                        )}>
+                                                            <span className="font-semibold">P{s.periodId}</span>
+                                                            <span className="opacity-60 mx-1">·</span>
+                                                            <span>{s.cls}</span>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                                             <span className="block opacity-60 truncate">{s.subject}</span>
                                                         </div>
                                                     );
@@ -427,17 +572,27 @@ function ValidationPanel({ issues }) {
 
     if (issues.length === 0) {
         return (
+<<<<<<< HEAD
             <div className="text-center py-10">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
                 <p className="text-sm font-semibold text-slate-700">No issues</p>
                 <p className="text-xs text-slate-400 mt-0.5">Ready to approve</p>
+=======
+            <div className="text-center py-6">
+                <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle className="w-6 h-6 text-emerald-600" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700">All constraints satisfied</p>
+                <p className="text-xs text-gray-400 mt-1">Timetable is ready to approve</p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
             </div>
         );
     }
 
     return (
+<<<<<<< HEAD
         <div className="space-y-2 overflow-y-auto max-h-full pr-0.5">
             {errors.map(i => (
                 <div key={i.id} className="flex items-start gap-2.5 p-2.5 bg-red-50 border border-red-100 rounded-xl">
@@ -455,12 +610,42 @@ function ValidationPanel({ issues }) {
                         <p className="text-[11px] font-semibold text-amber-800 leading-tight">{i.message}</p>
                         <p className="text-[10px] text-amber-500 mt-0.5">{i.details}</p>
                     </div>
+=======
+        <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+            {errors.map(issue => (
+                <div key={issue.id} className="flex items-start gap-3 p-3 bg-rose-50 border border-rose-100 rounded-lg">
+                    <XCircle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-rose-800 leading-tight">{issue.message}</p>
+                        {issue.details && <p className="text-xs text-rose-500 mt-0.5">{issue.details}</p>}
+                    </div>
+                    {issue.canFix && (
+                        <button onClick={() => onFix(issue.id)} className="shrink-0 text-xs px-2 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition-colors">
+                            Fix
+                        </button>
+                    )}
+                </div>
+            ))}
+            {warnings.map(issue => (
+                <div key={issue.id} className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-amber-800 leading-tight">{issue.message}</p>
+                        {issue.details && <p className="text-xs text-amber-500 mt-0.5">{issue.details}</p>}
+                    </div>
+                    {issue.canFix && (
+                        <button onClick={() => onFix(issue.id)} className="shrink-0 text-xs px-2 py-1 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
+                            Fix
+                        </button>
+                    )}
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                 </div>
             ))}
         </div>
     );
 }
 
+<<<<<<< HEAD
 // ─────────────────────────────────────────────────────────────────────────────
 // SUBSTITUTION PANEL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -573,6 +758,11 @@ function SubstitutionPanel() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SlotModal({ selection, timetable, onClose, onSave }) {
+=======
+// ─── SWAP MODAL (Notion style) ───────────────────────────────────────────────
+
+function SwapModal({ isOpen, onClose, onSwap, timetable, selection }) {
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
     const [mode, setMode] = useState('replace');
     const [newTeacher, setNewTeacher] = useState('');
     const [targetClass, setTargetClass] = useState('');
@@ -594,6 +784,7 @@ function SlotModal({ selection, timetable, onClose, onSave }) {
     };
 
     return (
+<<<<<<< HEAD
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200">
@@ -621,11 +812,41 @@ function SlotModal({ selection, timetable, onClose, onSave }) {
                                 mode === m ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                             )}>
                                 {m === 'replace' ? 'Change Teacher' : 'Swap Slots'}
+=======
+        <Modal isOpen={isOpen} onClose={onClose} title="Manage Slot" icon={ArrowLeftRight} iconColor="text-violet-600">
+            {selection && (
+                <>
+                    <div className="mb-5 p-3 bg-violet-50/30 rounded-lg border border-violet-100">
+                        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Selected Slot</p>
+                        <p className="font-semibold text-gray-800">{selection.cell?.subject ?? '—'}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            {selection.className} · {selection.day} · Period {selection.periodId}
+                        </p>
+                        {selection.cell?.teacher && (
+                            <p className="text-sm text-gray-500">Teacher: <span className="font-medium text-gray-700">{selection.cell.teacher}</span></p>
+                        )}
+                    </div>
+
+                    <div className="flex gap-2 mb-5">
+                        {[{ key: 'replace', label: 'Change Teacher' }, { key: 'swap', label: 'Swap Slots' }].map(opt => (
+                            <button
+                                key={opt.key}
+                                onClick={() => setMode(opt.key)}
+                                className={cn(
+                                    'flex-1 py-2 rounded-lg text-sm font-medium transition-colors',
+                                    mode === opt.key
+                                        ? 'bg-gradient-to-r from-violet-500 to-violet-700 text-white'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                )}
+                            >
+                                {opt.label}
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                             </button>
                         ))}
                     </div>
 
                     {mode === 'replace' && (
+<<<<<<< HEAD
                         <div>
                             <label className="block text-xs font-medium text-slate-600 mb-1.5">New Teacher</label>
                             <select value={newTeacher} onChange={e => setNewTeacher(e.target.value)}
@@ -634,11 +855,29 @@ function SlotModal({ selection, timetable, onClose, onSave }) {
                                 {TEACHER_NAMES.filter(t => t !== selection.cell?.teacher).map(t => <option key={t}>{t}</option>)}
                             </select>
                             <p className="text-[10px] text-slate-400 mt-1.5">Writes a DayOverride — base timetable unchanged.</p>
+=======
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">New Teacher</label>
+                                <select
+                                    value={newTeacher}
+                                    onChange={e => setNewTeacher(e.target.value)}
+                                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300"
+                                >
+                                    <option value="">Select teacher…</option>
+                                    {otherTeachers.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </div>
+                            <p className="text-xs text-gray-400">
+                                This writes a <span className="font-semibold">DayOverride</span> — base timetable is untouched.
+                            </p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                         </div>
                     )}
 
                     {mode === 'swap' && (
                         <div className="space-y-3">
+<<<<<<< HEAD
                             <p className="text-xs text-slate-500">Pick the target slot. Both teachers will be exchanged.</p>
                             <select value={targetClass} onChange={e => { setTargetClass(e.target.value); setTargetDay(''); setTargetPeriod(''); }}
                                 className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
@@ -661,17 +900,61 @@ function SlotModal({ selection, timetable, onClose, onSave }) {
                                 <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs">
                                     <span className="font-semibold text-blue-800">{targetCell.subject}</span>
                                     <span className="text-blue-600"> · {targetCell.teacher}</span>
+=======
+                            <p className="text-xs text-gray-500">Pick the slot to swap with. Both slots will exchange teachers.</p>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Class</label>
+                                <select value={targetClass} onChange={e => { setTargetClass(e.target.value); setTargetDay(''); setTargetPeriod(''); }} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300">
+                                    <option value="">Select class…</option>
+                                    {classes.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Day</label>
+                                    <select value={targetDay} onChange={e => { setTargetDay(e.target.value); setTargetPeriod(''); }} disabled={!targetClass} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 disabled:opacity-50">
+                                        <option value="">Day…</option>
+                                        {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Period</label>
+                                    <select value={targetPeriod} onChange={e => setTargetPeriod(e.target.value)} disabled={!targetDay} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 disabled:opacity-50">
+                                        <option value="">Period…</option>
+                                        {PERIOD_SLOTS.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            {targetCell && (
+                                <div className="p-3 bg-violet-50 border border-violet-200 rounded-lg text-sm">
+                                    <span className="font-semibold text-violet-800">{targetCell.subject}</span>
+                                    <span className="text-violet-600"> · {targetCell.teacher}</span>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                 </div>
                             )}
                         </div>
                     )}
 
+<<<<<<< HEAD
                     <div className="flex gap-2 pt-1">
                         <button onClick={onClose} className="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">Cancel</button>
                         <button onClick={handleSave} disabled={!canSave || saving}
                             className="flex-1 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-40 flex items-center justify-center gap-2 transition-colors">
                             {saving ? <Loader2 size={13} className="animate-spin" /> : <ArrowLeftRight size={13} />}
                             {saving ? 'Saving…' : mode === 'replace' ? 'Change Teacher' : 'Swap'}
+=======
+                    <div className="flex gap-3 mt-6">
+                        <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={!canSubmit || loading}
+                            className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 disabled:opacity-40 text-white text-sm font-medium transition-all flex items-center justify-center gap-2"
+                        >
+                            {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowLeftRight size={15} />}
+                            {loading ? 'Applying…' : mode === 'replace' ? 'Change Teacher' : 'Swap Slots'}
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                         </button>
                     </div>
                 </div>
@@ -788,6 +1071,7 @@ function LongTermSwapModal({ onClose }) {
     };
 
     return (
+<<<<<<< HEAD
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200">
@@ -795,9 +1079,34 @@ function LongTermSwapModal({ onClose }) {
                     <div className="flex items-center gap-2">
                         <Repeat className="w-4 h-4 text-violet-600" />
                         <h2 className="text-sm font-semibold text-slate-800">Long-term Swap</h2>
+=======
+        <Modal isOpen={isOpen} onClose={onClose} title="Long-term Teacher Swap" icon={Repeat} iconColor="text-violet-600">
+            <div className="space-y-4">
+                <div className="p-3 bg-violet-50/30 border border-violet-100 rounded-lg">
+                    <p className="text-xs text-violet-700">
+                        <span className="font-semibold">SWAP</span> — replaces a teacher for a defined date range. Writes to <code className="bg-violet-100 px-1 rounded">SwapAssignment</code>, auto-reverts on end date.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Absent Teacher</label>
+                        <select value={teacher} onChange={e => setTeacher(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300">
+                            <option value="">Select…</option>
+                            {TEACHER_NAMES.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Replacement</label>
+                        <select value={replacement} onChange={e => setReplacement(e.target.value)} disabled={!teacher} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 disabled:opacity-50">
+                            <option value="">Select…</option>
+                            {TEACHER_NAMES.filter(t => t !== teacher).map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                     </div>
                     <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:bg-slate-100"><X size={15} /></button>
                 </div>
+<<<<<<< HEAD
                 <div className="p-5 space-y-3">
                     <div className="p-3 bg-violet-50 border border-violet-100 rounded-xl text-[11px] text-violet-700">
                         Replaces a teacher for a date range. Writes to <code className="bg-violet-100 px-1 rounded">SwapAssignment</code> — auto-reverts on end date.
@@ -839,6 +1148,141 @@ function LongTermSwapModal({ onClose }) {
                 </div>
             </div>
         </div>
+=======
+
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Start Date</label>
+                        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">End Date</label>
+                        <input type="date" value={endDate} min={startDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300" />
+                    </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                    <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium">Cancel</button>
+                    <button onClick={handleSubmit} disabled={!canSubmit || loading} className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 disabled:opacity-40 text-white text-sm font-medium flex items-center justify-center gap-2">
+                        {loading ? <Loader2 size={15} className="animate-spin" /> : <Repeat size={15} />}
+                        {loading ? 'Creating SWAP…' : 'Create SWAP'}
+                    </button>
+                </div>
+            </div>
+        </Modal>
+    );
+}
+
+// ─── AVAILABILITY MODAL (Notion style) ───────────────────────────────────────
+
+function AvailabilityModal({ isOpen, onClose, onUpdate, availability }) {
+    const [local, setLocal] = useState(availability);
+    const [selected, setSelected] = useState(TEACHER_NAMES[0]);
+
+    useEffect(() => { setLocal(availability); }, [availability]);
+
+    const data = local[selected] ?? {};
+
+    const toggle = (day, field, val) => setLocal(prev => ({
+        ...prev,
+        [selected]: { ...prev[selected], [day]: { ...prev[selected]?.[day], [field]: val } }
+    }));
+
+    const togglePeriod = (day, periodId) => {
+        const curr = local[selected]?.[day]?.unavailablePeriods ?? [];
+        const next = curr.includes(periodId) ? curr.filter(p => p !== periodId) : [...curr, periodId];
+        toggle(day, 'unavailablePeriods', next);
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Teacher Availability" icon={UserCheck} maxWidth="max-w-2xl">
+            <div className="flex gap-4">
+                {/* Teacher list */}
+                <div className="w-40 shrink-0 space-y-1 overflow-y-auto max-h-[60vh] pr-1">
+                    {TEACHER_NAMES.map(t => (
+                        <button
+                            key={t}
+                            onClick={() => setSelected(t)}
+                            className={cn(
+                                'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
+                                selected === t ? 'bg-gradient-to-r from-violet-500 to-violet-700 text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'
+                            )}
+                        >
+                            {t}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Day matrix */}
+                <div className="flex-1 overflow-y-auto max-h-[60vh] space-y-3 pr-1">
+                    {DAYS.map(day => {
+                        const dayData = data[day] ?? { available: true, maxPeriods: 6, unavailablePeriods: [] };
+                        return (
+                            <div key={day} className="border border-gray-200 rounded-lg p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-semibold text-gray-700">{day}</span>
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <span className="text-xs text-gray-500">Available</span>
+                                        <div
+                                            onClick={() => toggle(day, 'available', !dayData.available)}
+                                            className={cn(
+                                                'w-9 h-5 rounded-full transition-colors relative cursor-pointer',
+                                                dayData.available ? 'bg-emerald-500' : 'bg-gray-300'
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                'w-3.5 h-3.5 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm',
+                                                dayData.available ? 'translate-x-4' : 'translate-x-0.5'
+                                            )} />
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {dayData.available && (
+                                    <>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-xs text-gray-500 w-24 shrink-0">Max periods: <span className="font-semibold text-gray-700">{dayData.maxPeriods ?? 6}</span></span>
+                                            <input
+                                                type="range" min={1} max={8}
+                                                value={dayData.maxPeriods ?? 6}
+                                                onChange={e => toggle(day, 'maxPeriods', Number(e.target.value))}
+                                                className="flex-1 accent-violet-500"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap gap-1">
+                                            {PERIOD_SLOTS.map(slot => {
+                                                const blocked = (dayData.unavailablePeriods ?? []).includes(slot.id);
+                                                return (
+                                                    <button
+                                                        key={slot.id}
+                                                        onClick={() => togglePeriod(day, slot.id)}
+                                                        className={cn(
+                                                            'px-2 py-1 rounded-md text-xs font-medium transition-colors',
+                                                            blocked ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                        )}
+                                                    >
+                                                        P{slot.id}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <div className="flex gap-3 mt-5 pt-5 border-t border-gray-100">
+                <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium">Cancel</button>
+                <button onClick={() => { onUpdate(local); onClose(); }} className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 text-white text-sm font-medium flex items-center justify-center gap-2">
+                    <Save size={15} />
+                    Save Changes
+                </button>
+            </div>
+        </Modal>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
     );
 }
 
@@ -916,10 +1360,15 @@ export default function TimetablePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div className="min-h-screen bg-violet-50 flex items-center justify-center">
                 <div className="text-center">
+<<<<<<< HEAD
                     <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
                     <p className="text-sm text-slate-400">Loading timetable…</p>
+=======
+                    <Loader2 className="w-10 h-10 animate-spin text-violet-600 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">Loading timetable…</p>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                 </div>
             </div>
         );
@@ -932,6 +1381,7 @@ export default function TimetablePage() {
     ];
 
     return (
+<<<<<<< HEAD
         <div className="min-h-screen bg-slate-50/60 flex flex-col">
             {/* ── Sticky top bar ── */}
             <div className="sticky top-0 z-20 bg-white border-b border-slate-100 shadow-sm">
@@ -941,6 +1391,102 @@ export default function TimetablePage() {
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                                 <Calendar className="w-4 h-4 text-white" />
+=======
+        <div className="min-h-screen bg-violet-50">
+            <div className="max-w-screen-2xl mx-auto p-6 space-y-5">
+
+                {/* ── Header ── */}
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Timetable Management</h1>
+                        <p className="text-gray-500 text-sm mt-0.5">Generate, validate, and manage school timetables</p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            onClick={() => setShowAvailModal(true)}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors"
+                        >
+                            <UserCheck size={15} />
+                            Availability
+                        </button>
+                        <button
+                            onClick={() => setShowLongTermModal(true)}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors"
+                        >
+                            <Repeat size={15} />
+                            Long-term Swap
+                        </button>
+                        <button
+                            onClick={handleGenerate}
+                            disabled={generating || approved}
+                            className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors disabled:opacity-40"
+                        >
+                            {generating ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                            {generating ? 'Generating…' : 'Regenerate'}
+                        </button>
+                        <button
+                            onClick={handleApprove}
+                            disabled={errorCount > 0 || approving || approved}
+                            className={cn(
+                                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                                approved
+                                    ? 'bg-emerald-600 text-white cursor-default'
+                                    : errorCount > 0
+                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-violet-500 to-violet-700 text-white hover:opacity-90'
+                            )}
+                        >
+                            {approving ? <Loader2 size={15} className="animate-spin" /> : approved ? <Lock size={15} /> : <CheckCircle size={15} />}
+                            {approving ? 'Approving…' : approved ? 'Approved & Locked' : 'Approve Timetable'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── Status bar ── */}
+                {(errorCount > 0 || warnCount > 0 || approved) && (
+                    <div className={cn(
+                        'flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium',
+                        approved ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                            : errorCount > 0 ? 'bg-rose-50 border-rose-200 text-rose-800'
+                                : 'bg-amber-50 border-amber-200 text-amber-800'
+                    )}>
+                        {approved
+                            ? <><Lock size={15} /> Timetable is approved and locked. Edit access disabled.</>
+                            : errorCount > 0
+                                ? <><XCircle size={15} /> {errorCount} error{errorCount > 1 ? 's' : ''} must be resolved before approving.{warnCount > 0 ? ` ${warnCount} warning${warnCount > 1 ? 's' : ''}.` : ''}</>
+                                : <><AlertCircle size={15} /> {warnCount} warning{warnCount > 1 ? 's' : ''}. No hard errors — ready to approve.</>
+                        }
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 xl:grid-cols-4 gap-5">
+                    {/* ── Main grid ── */}
+                    <div className="xl:col-span-3 bg-white rounded-lg border border-violet-100 overflow-hidden">
+                        {/* Controls */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-5 py-3.5 border-b border-violet-100">
+                            <div className="flex gap-1 bg-gray-100 p-1 rounded-md">
+                                <button
+                                    onClick={() => setViewType('class')}
+                                    className={cn(
+                                        'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all',
+                                        viewType === 'class' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                    )}
+                                >
+                                    <LayoutGrid size={14} />
+                                    Class View
+                                </button>
+                                <button
+                                    onClick={() => setViewType('teacher')}
+                                    className={cn(
+                                        'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all',
+                                        viewType === 'teacher' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                    )}
+                                >
+                                    <Users size={14} />
+                                    Teacher View
+                                </button>
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                             </div>
                             <div>
                                 <h1 className="text-base font-semibold text-slate-900 leading-tight">Timetable</h1>
@@ -948,6 +1494,7 @@ export default function TimetablePage() {
                             </div>
                         </div>
 
+<<<<<<< HEAD
                         <div className="flex items-center gap-2">
                             {/* Validation indicator */}
                             {!approved && issues.length > 0 && (
@@ -999,6 +1546,94 @@ export default function TimetablePage() {
                                         activeTab === tab.id
                                             ? 'border-blue-600 text-blue-600'
                                             : 'border-transparent text-slate-500 hover:text-slate-700'
+=======
+                            {viewType === 'class' && (
+                                <div className="flex gap-1 flex-wrap">
+                                    {classes.map(cls => (
+                                        <button
+                                            key={cls}
+                                            onClick={() => setSelectedClass(cls)}
+                                            className={cn(
+                                                'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                                                selectedClass === cls
+                                                    ? 'bg-violet-600 text-white'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                            )}
+                                        >
+                                            {cls}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            <div className="sm:ml-auto flex gap-2">
+                                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 text-sm transition-colors">
+                                    <Printer size={13} /> Print
+                                </button>
+                                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 text-sm transition-colors">
+                                    <Download size={13} /> Export
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Grid */}
+                        <div className="p-4">
+                            {viewType === 'class' ? (
+                                <ClassTimetableGrid
+                                    timetable={timetable}
+                                    className={selectedClass}
+                                    selectedCell={selectedCell}
+                                    onCellClick={handleCellClick}
+                                />
+                            ) : (
+                                <TeacherTimetableGrid timetable={timetable} />
+                            )}
+                        </div>
+
+                        {!approved && viewType === 'class' && (
+                            <div className="px-5 pb-4">
+                                <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                                    <Edit2 size={11} /> Click any cell to change teacher or swap slots
+                                </p>
+                            </div>
+                        )}
+                        {approved && (
+                            <div className="px-5 pb-4">
+                                <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                                    <Lock size={11} /> Timetable locked — editing disabled
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Sidebar ── */}
+                    <div className="space-y-4">
+                        {/* Stats */}
+                        <div className="bg-white rounded-lg border border-violet-100 p-4">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <Activity size={15} className="text-violet-600" /> Overview
+                            </h3>
+                            <div className="space-y-2.5">
+                                {[
+                                    { label: 'Classes', value: classes.length },
+                                    { label: 'Teachers', value: TEACHER_NAMES.length },
+                                    { label: 'Periods / Day', value: PERIOD_SLOTS.length },
+                                    { label: 'Working Days', value: DAYS.length },
+                                ].map(({ label, value }) => (
+                                    <div key={label} className="flex justify-between items-center">
+                                        <span className="text-sm text-gray-500">{label}</span>
+                                        <span className="text-sm font-semibold text-gray-800">{value}</span>
+                                    </div>
+                                ))}
+                                <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
+                                    <span className="text-sm text-gray-500">Status</span>
+                                    <span className={cn(
+                                        'text-xs font-semibold px-2.5 py-1 rounded-full',
+                                        approved ? 'bg-emerald-100 text-emerald-700'
+                                            : errorCount > 0 ? 'bg-rose-100 text-rose-700'
+                                                : warnCount > 0 ? 'bg-amber-100 text-amber-700'
+                                                    : 'bg-emerald-100 text-emerald-700'
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                     )}>
                                     {tab.label}
                                     {tab.badge && (
@@ -1008,6 +1643,7 @@ export default function TimetablePage() {
                             ))}
                         </div>
 
+<<<<<<< HEAD
                         {/* Class pills — only visible on class tab */}
                         {activeTab === 'class' && (
                             <div className="flex items-center gap-1 ml-4 pl-4 border-l border-slate-100 py-1.5">
@@ -1018,6 +1654,36 @@ export default function TimetablePage() {
                                             selectedClass === cls ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                         )}>
                                         {cls}
+=======
+                        {/* Validation */}
+                        <div className="bg-white rounded-lg border border-violet-100 p-4">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <Shield size={15} className="text-violet-600" /> Validation
+                                {issues.length > 0 && (
+                                    <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                        {issues.length}
+                                    </span>
+                                )}
+                            </h3>
+                            <ValidationPanel issues={issues} onFix={handleFixIssue} />
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="bg-white rounded-lg border border-violet-100 p-4">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <Zap size={15} className="text-amber-500" /> Quick Actions
+                            </h3>
+                            <div className="space-y-1.5">
+                                {[
+                                    { icon: Bell, label: 'Notify Teachers', color: 'text-violet-600' },
+                                    { icon: Eye, label: 'Preview PDF', color: 'text-gray-600' },
+                                    { icon: Download, label: 'Download as PDF', color: 'text-gray-600' },
+                                    { icon: Upload, label: 'Import from Excel', color: 'text-emerald-600' },
+                                ].map(({ icon: Icon, label, color }) => (
+                                    <button key={label} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left">
+                                        <Icon size={14} className={color} />
+                                        {label}
+>>>>>>> b5086afe9f866127f3983a9dd88f7862e3543847
                                     </button>
                                 ))}
                             </div>

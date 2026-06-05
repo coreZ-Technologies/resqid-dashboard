@@ -10,14 +10,15 @@ import {
   RefreshCw, PhoneCall, PhoneMissed
 } from 'lucide-react'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 // ── Mock Data ──────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { label: 'Students with Contacts',  value: 318, total: 342, icon: Users,     color: 'bg-emerald-500' },
+  { label: 'Students with Contacts',  value: 318, total: 342, icon: Users,     color: 'bg-violet-600' },
   { label: 'Missing Contacts',        value: 24,  total: 342, icon: XCircle,   color: 'bg-rose-500'    },
   { label: 'Medical Alerts',          value: 11,              icon: Heart,     color: 'bg-amber-500'   },
-  { label: 'Verified Numbers',        value: 601,             icon: PhoneCall, color: 'bg-sky-500'     },
+  { label: 'Verified Numbers',        value: 601,             icon: PhoneCall, color: 'bg-emerald-500' },
 ]
 
 const CONTACTS = [
@@ -129,7 +130,7 @@ const RELATION_META = {
   Mother:  { color: 'text-pink-700',    bg: 'bg-pink-50',    border: 'border-pink-200'    },
   Guardian:{ color: 'text-violet-700',  bg: 'bg-violet-50',  border: 'border-violet-200'  },
   Doctor:  { color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  default: { color: 'text-slate-700',   bg: 'bg-slate-50',   border: 'border-slate-200'   },
+  default: { color: 'text-gray-700',   bg: 'bg-gray-50',   border: 'border-gray-200'   },
 }
 
 const BLOOD_COLORS = {
@@ -142,24 +143,24 @@ const BLOOD_COLORS = {
 const CLASS_FILTERS = ['All Classes', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
 const STATUS_FILTERS = ['All', 'Complete', 'Missing', 'Medical Alert']
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// ── Sub-components (Notion style) ─────────────────────────────────────────────
 
 function StatCard({ label, value, total, icon: Icon, color }) {
   const pct = total ? Math.round((value / total) * 100) : null
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
+    <div className="bg-white rounded-md border border-violet-100 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className={`w-10 h-10 rounded-md flex items-center justify-center ${color}`}>
           <Icon size={18} className="text-white" />
         </div>
         {pct !== null && (
-          <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">{pct}%</span>
+          <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{pct}%</span>
         )}
       </div>
-      <p className="text-[26px] font-bold text-slate-800 leading-tight">{value}</p>
-      <p className="text-[12px] text-slate-500 mt-0.5">{label}</p>
+      <p className="text-2xl font-semibold text-gray-800 leading-tight">{value}</p>
+      <p className="text-xs text-gray-500 mt-0.5">{label}</p>
       {total && (
-        <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="mt-3 h-1.5 bg-gray-200 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full ${color}`}
             style={{ width: `${pct}%` }}
@@ -173,7 +174,7 @@ function StatCard({ label, value, total, icon: Icon, color }) {
 function RelationBadge({ relation }) {
   const m = RELATION_META[relation] || RELATION_META.default
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${m.bg} ${m.color} ${m.border}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${m.bg} ${m.color} ${m.border}`}>
       {relation}
     </span>
   )
@@ -181,25 +182,25 @@ function RelationBadge({ relation }) {
 
 function ContactRow({ contact }) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0">
+    <div className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-[12px] font-semibold text-slate-700">{contact.name}</p>
+          <p className="text-xs font-medium text-gray-800">{contact.name}</p>
           <RelationBadge relation={contact.relation} />
           {contact.primary && (
-            <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-full">PRIMARY</span>
+            <span className="text-[9px] font-bold text-violet-700 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-full">PRIMARY</span>
           )}
           {contact.verified
-            ? <CheckCircle2 size={11} className="text-emerald-500" />
-            : <Clock size={11} className="text-amber-400" title="Unverified" />
+            ? <CheckCircle2 size={11} className="text-emerald-600" />
+            : <Clock size={11} className="text-amber-500" />
           }
         </div>
         <div className="flex items-center gap-3 mt-1 flex-wrap">
-          <a href={`tel:${contact.phone}`} className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-sky-600 transition-colors">
+          <a href={`tel:${contact.phone}`} className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-violet-600 transition-colors">
             <Phone size={9} /> {contact.phone}
           </a>
           {contact.email && (
-            <a href={`mailto:${contact.email}`} className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-sky-600 transition-colors truncate">
+            <a href={`mailto:${contact.email}`} className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-violet-600 transition-colors truncate">
               <Mail size={9} /> {contact.email}
             </a>
           )}
@@ -207,7 +208,7 @@ function ContactRow({ contact }) {
       </div>
       <a
         href={`tel:${contact.phone}`}
-        className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center hover:bg-emerald-100 transition-colors shrink-0"
+        className="w-7 h-7 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center hover:bg-emerald-100 transition-colors shrink-0"
         title="Call"
       >
         <Phone size={12} className="text-emerald-600" />
@@ -224,41 +225,42 @@ function StudentCard({ student, selected, onSelect }) {
   return (
     <div
       onClick={() => onSelect(isSelected ? null : student.id)}
-      className={`bg-white rounded-2xl border shadow-sm overflow-hidden cursor-pointer transition-all duration-200 ${
+      className={cn(
+        'bg-white rounded-md border transition-all duration-200 cursor-pointer',
         isSelected
-          ? 'border-indigo-300 ring-2 ring-indigo-100'
-          : 'border-slate-100 hover:border-slate-200 hover:shadow-md'
-      }`}
+          ? 'border-violet-300 ring-1 ring-violet-100'
+          : 'border-violet-100 hover:border-violet-200'
+      )}
     >
       {/* Student header */}
       <div className="flex items-center gap-3 p-4">
-        <div className={`w-10 h-10 rounded-full ${student.avatarColor} flex items-center justify-center text-white text-[12px] font-bold shrink-0`}>
+        <div className={`w-10 h-10 rounded-full ${student.avatarColor} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
           {student.avatar}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className="text-[13px] font-bold text-slate-800 truncate">{student.studentName}</p>
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${BLOOD_COLORS[student.bloodGroup] || 'bg-slate-100 text-slate-600'}`}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-semibold text-gray-800 truncate">{student.studentName}</p>
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${BLOOD_COLORS[student.bloodGroup] || 'bg-gray-100 text-gray-600'}`}>
               {student.bloodGroup}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">{student.studentClass} · Roll {student.rollNo}</p>
+          <p className="text-[10px] text-gray-500">{student.studentClass} · Roll {student.rollNo}</p>
         </div>
         <div className="shrink-0">
           {!hasContacts
-            ? <span className="flex items-center gap-1 text-[10px] font-semibold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full"><XCircle size={10} /> Missing</span>
+            ? <span className="flex items-center gap-1 text-[10px] font-medium text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full"><XCircle size={10} /> Missing</span>
             : allVerified
-              ? <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full"><CheckCircle2 size={10} /> Verified</span>
-              : <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full"><Clock size={10} /> Pending</span>
+              ? <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full"><CheckCircle2 size={10} /> Verified</span>
+              : <span className="flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full"><Clock size={10} /> Pending</span>
           }
         </div>
       </div>
 
       {/* Medical alert */}
       {student.medicalAlert && (
-        <div className="mx-4 mb-3 flex items-start gap-2 px-3 py-2 rounded-xl bg-rose-50 border border-rose-200">
-          <Heart size={12} className="text-rose-500 mt-0.5 shrink-0" />
-          <p className="text-[11px] text-rose-700 font-medium leading-snug">{student.medicalAlert}</p>
+        <div className="mx-4 mb-3 flex items-start gap-2 px-3 py-2 rounded-md bg-rose-50 border border-rose-200">
+          <Heart size={12} className="text-rose-600 mt-0.5 shrink-0" />
+          <p className="text-[10px] text-rose-800 font-medium leading-snug">{student.medicalAlert}</p>
         </div>
       )}
 
@@ -267,13 +269,13 @@ function StudentCard({ student, selected, onSelect }) {
         <div className="px-4 pb-4">
           <div className="flex items-center gap-2 flex-wrap">
             {student.contacts.slice(0, 2).map((c, i) => (
-              <span key={i} className="flex items-center gap-1.5 text-[11px] text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5">
-                <Phone size={9} className="text-slate-400" />
+              <span key={i} className="flex items-center gap-1.5 text-[10px] text-gray-600 bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5">
+                <Phone size={9} className="text-gray-500" />
                 {c.name} <RelationBadge relation={c.relation} />
               </span>
             ))}
             {student.contacts.length > 2 && (
-              <span className="text-[11px] text-slate-400">+{student.contacts.length - 2} more</span>
+              <span className="text-[10px] text-gray-500">+{student.contacts.length - 2} more</span>
             )}
           </div>
         </div>
@@ -281,19 +283,19 @@ function StudentCard({ student, selected, onSelect }) {
 
       {/* Expanded contacts */}
       {isSelected && (
-        <div className="px-4 pb-4 space-y-3 border-t border-slate-50 pt-3">
+        <div className="px-4 pb-4 space-y-3 border-t border-gray-100 pt-3">
           {hasContacts ? (
             <div>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Emergency Contacts</p>
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-2">Emergency Contacts</p>
               <div>
                 {student.contacts.map((c, i) => <ContactRow key={i} contact={c} />)}
               </div>
             </div>
           ) : (
             <div className="flex flex-col items-center py-4 gap-2">
-              <PhoneMissed size={22} className="text-slate-200" />
-              <p className="text-[12px] text-slate-400 font-medium">No contacts added</p>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 text-white text-[11px] font-semibold hover:bg-indigo-600 transition-colors">
+              <PhoneMissed size={22} className="text-gray-300" />
+              <p className="text-xs text-gray-500 font-medium">No contacts added</p>
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-[10px] font-medium hover:opacity-90 transition-all">
                 <Plus size={11} /> Add Contact
               </button>
             </div>
@@ -301,8 +303,8 @@ function StudentCard({ student, selected, onSelect }) {
 
           {student.address && (
             <div className="flex items-start gap-2 pt-1">
-              <MapPin size={11} className="text-slate-400 mt-0.5 shrink-0" />
-              <p className="text-[11px] text-slate-500">{student.address}</p>
+              <MapPin size={11} className="text-gray-500 mt-0.5 shrink-0" />
+              <p className="text-[10px] text-gray-600">{student.address}</p>
             </div>
           )}
 
@@ -310,13 +312,13 @@ function StudentCard({ student, selected, onSelect }) {
             <div className="flex gap-2 pt-1">
               <Link
                 href={`/school/students/${student.id}`}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-slate-200 text-slate-600 text-[11px] font-semibold hover:bg-slate-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md border border-gray-200 text-gray-600 text-[10px] font-medium hover:bg-gray-50 transition-colors"
                 onClick={e => e.stopPropagation()}
               >
                 <User size={12} /> View Profile
               </Link>
               <button
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-[11px] font-semibold hover:bg-indigo-100 transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md border border-violet-200 bg-violet-50 text-violet-700 text-[10px] font-medium hover:bg-violet-100 transition-colors"
                 onClick={e => e.stopPropagation()}
               >
                 <Edit2 size={12} /> Edit Contacts
@@ -365,16 +367,16 @@ export default function EmergencyContactsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <AlertTriangle size={20} className="text-amber-500" />
-            <h1 className="text-[22px] font-bold text-slate-800">Emergency Contacts</h1>
+            <h1 className="text-xl font-semibold text-gray-800">Emergency Contacts</h1>
           </div>
-          <p className="text-[13px] text-slate-500">Manage and verify student emergency contacts and medical information</p>
+          <p className="text-xs text-gray-500">Manage and verify student emergency contacts and medical information</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors">
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors">
             <Download size={13} />
             Export
           </button>
-          <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-[12px] font-semibold transition-colors">
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 text-white text-xs font-medium transition-all">
             <Plus size={13} />
             Add Contact
           </button>
@@ -388,19 +390,19 @@ export default function EmergencyContactsPage() {
 
       {/* ── Alert banner for missing contacts ── */}
       {CONTACTS.filter(s => s.contacts.length === 0).length > 0 && (
-        <div className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-rose-50 border border-rose-200">
-          <AlertTriangle size={16} className="text-rose-500 mt-0.5 shrink-0" />
+        <div className="flex items-start gap-3 px-4 py-3 rounded-md bg-rose-50 border border-rose-200">
+          <AlertTriangle size={15} className="text-rose-600 mt-0.5 shrink-0" />
           <div className="flex-1">
-            <p className="text-[13px] font-semibold text-rose-700">
+            <p className="text-xs font-semibold text-rose-800">
               {CONTACTS.filter(s => s.contacts.length === 0).length} students have no emergency contacts
             </p>
-            <p className="text-[12px] text-rose-600 mt-0.5">
+            <p className="text-[11px] text-rose-700 mt-0.5">
               Please collect contact information for these students. Click "Missing" filter to view them.
             </p>
           </div>
           <button
             onClick={() => setStatusFilter('Missing')}
-            className="shrink-0 px-3 py-1.5 rounded-xl bg-rose-500 text-white text-[11px] font-semibold hover:bg-rose-600 transition-colors"
+            className="shrink-0 px-2.5 py-1 rounded-md bg-rose-600 text-white text-[10px] font-medium hover:bg-rose-700 transition-colors"
           >
             View Missing
           </button>
@@ -411,27 +413,28 @@ export default function EmergencyContactsPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-sm">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search student or contact name…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all"
+            className="w-full pl-8 pr-3 py-1.5 rounded-md border border-gray-200 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 transition-all"
           />
         </div>
 
         {/* Status tabs */}
-        <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-0.5">
+        <div className="flex items-center bg-gray-100 rounded-md p-1 gap-0.5">
           {STATUS_FILTERS.map(f => (
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap ${
+              className={cn(
+                'px-3 py-1 rounded-md text-[10px] font-medium transition-all whitespace-nowrap',
                 statusFilter === f
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
             >
               {f}
             </button>
@@ -443,20 +446,20 @@ export default function EmergencyContactsPage() {
           <select
             value={classFilter}
             onChange={e => setClassFilter(e.target.value)}
-            className="appearance-none pl-3 pr-7 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-white cursor-pointer"
+            className="appearance-none pl-3 pr-7 py-1.5 rounded-md border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-violet-100 focus:border-violet-300 bg-white cursor-pointer"
           >
             {CLASS_FILTERS.map(f => <option key={f}>{f}</option>)}
           </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
       {/* ── Cards Grid ── */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm py-20 flex flex-col items-center gap-3">
-          <Users size={36} className="text-slate-200" />
-          <p className="text-[14px] font-semibold text-slate-400">No students found</p>
-          <p className="text-[12px] text-slate-300">Try adjusting your filters</p>
+        <div className="bg-white rounded-md border border-violet-100 py-16 flex flex-col items-center gap-3">
+          <Users size={32} className="text-gray-200" />
+          <p className="text-sm font-medium text-gray-500">No students found</p>
+          <p className="text-xs text-gray-400">Try adjusting your filters</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -472,7 +475,7 @@ export default function EmergencyContactsPage() {
       )}
 
       {/* Footer count */}
-      <p className="text-[11px] text-slate-400 text-center pb-2">
+      <p className="text-[10px] text-gray-500 text-center pb-2">
         Showing {filtered.length} of {CONTACTS.length} students
       </p>
     </div>

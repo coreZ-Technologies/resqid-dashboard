@@ -63,13 +63,13 @@ const generateMockStudents = () => {
 function SearchBar({ value, onChange, placeholder }) {
     return (
         <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder || "Search by name, ID, roll number, or parent name..."}
-                className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full pl-9 pr-4 h-10 rounded-md border border-gray-200 bg-white text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-100 transition-all"
             />
         </div>
     );
@@ -83,10 +83,10 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "flex items-center gap-2 px-3 h-10 rounded-lg border text-sm font-medium transition-all whitespace-nowrap",
+                    "flex items-center gap-2 px-3 h-10 rounded-md border text-sm font-medium transition-all whitespace-nowrap",
                     value
-                        ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-violet-50 border-violet-200 text-violet-700"
+                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
                 )}
             >
                 {Icon && <Icon size={14} />}
@@ -97,15 +97,15 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
             {isOpen && (
                 <>
                     <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-20 py-1 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20 py-1 max-h-64 overflow-y-auto">
                         <button
                             onClick={() => {
                                 onChange('');
                                 setIsOpen(false);
                             }}
                             className={cn(
-                                "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
-                                !value && "text-blue-600 bg-blue-50"
+                                "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors",
+                                !value && "text-violet-600 bg-violet-50"
                             )}
                         >
                             All {label}s
@@ -118,8 +118,8 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
                                     setIsOpen(false);
                                 }}
                                 className={cn(
-                                    "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
-                                    value === opt && "text-blue-600 bg-blue-50"
+                                    "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors",
+                                    value === opt && "text-violet-600 bg-violet-50"
                                 )}
                             >
                                 {opt}
@@ -152,15 +152,15 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
     if (totalPages <= 1) return null;
 
     return (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 flex-wrap gap-3">
-            <div className="text-sm text-slate-500">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 flex-wrap gap-3">
+            <div className="text-sm text-gray-500">
                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} students
             </div>
             <div className="flex gap-1">
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    className="p-2 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                 >
                     <ChevronLeft size={16} />
                 </button>
@@ -169,10 +169,10 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
                         key={page}
                         onClick={() => onPageChange(page)}
                         className={cn(
-                            "w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+                            "w-8 h-8 rounded-md text-sm font-medium transition-colors",
                             currentPage === page
-                                ? "bg-blue-600 text-white"
-                                : "hover:bg-slate-100 text-slate-600"
+                                ? "bg-gradient-to-r from-violet-500 to-violet-700 text-white"
+                                : "hover:bg-gray-100 text-gray-600"
                         )}
                     >
                         {page}
@@ -181,7 +181,7 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    className="p-2 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                 >
                     <ChevronRight size={16} />
                 </button>
@@ -194,11 +194,11 @@ function StudentTable({ students, onDelete }) {
     if (students.length === 0) {
         return (
             <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-8 h-8 text-slate-400" />
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-800 mb-1">No students found</h3>
-                <p className="text-sm text-slate-500">Try adjusting your filters or add a new student</p>
+                <h3 className="text-lg font-medium text-gray-800 mb-1">No students found</h3>
+                <p className="text-sm text-gray-500">Try adjusting your filters or add a new student</p>
             </div>
         );
     }
@@ -206,23 +206,23 @@ function StudentTable({ students, onDelete }) {
     return (
         <div className="overflow-x-auto">
             <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200 sticky top-0">
+                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                     <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Student</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Class/Section</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Roll No.</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Parent/Guardian</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Class/Section</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Roll No.</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Parent/Guardian</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-gray-100">
                     {students.map((student) => (
-                        <tr key={student.id} className="hover:bg-slate-50 transition-colors">
+                        <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                             <td className="py-3 px-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700 font-semibold text-sm">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center text-violet-700 font-semibold text-sm">
                                         {student.photo ? (
                                             <img src={student.photo} alt={student.name} className="w-full h-full rounded-full object-cover" />
                                         ) : (
@@ -230,29 +230,29 @@ function StudentTable({ students, onDelete }) {
                                         )}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-slate-800">{student.name}</p>
-                                        <p className="text-xs text-slate-400">ID: {student.id}</p>
+                                        <p className="font-medium text-gray-800">{student.name}</p>
+                                        <p className="text-xs text-gray-400">ID: {student.id}</p>
                                     </div>
                                 </div>
                             </td>
                             <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
+                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-violet-50 text-violet-700 text-xs font-medium">
                                     {student.class}-{student.section}
                                 </span>
                             </td>
-                            <td className="py-3 px-4 text-sm text-slate-600">{student.rollNumber}</td>
+                            <td className="py-3 px-4 text-sm text-gray-600">{student.rollNumber}</td>
                             <td className="py-3 px-4">
-                                <p className="text-sm text-slate-800">{student.parentName}</p>
-                                <p className="text-xs text-slate-400">{student.relationship || 'Parent'}</p>
+                                <p className="text-sm text-gray-800">{student.parentName}</p>
+                                <p className="text-xs text-gray-400">{student.relationship || 'Parent'}</p>
                             </td>
                             <td className="py-3 px-4">
-                                <p className="text-sm text-slate-600">{student.parentPhone}</p>
-                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{student.email}</p>
+                                <p className="text-sm text-gray-600">{student.parentPhone}</p>
+                                <p className="text-xs text-gray-400 truncate max-w-[150px]">{student.email}</p>
                             </td>
                             <td className="py-3 px-4">
                                 <span className={cn(
                                     "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                                    student.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                    student.status === 'Active' ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
                                 )}>
                                     {student.status}
                                 </span>
@@ -261,21 +261,21 @@ function StudentTable({ students, onDelete }) {
                                 <div className="flex items-center justify-end gap-1">
                                     <Link
                                         href={`/school/students/${student.id}`}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-violet-600 transition-colors"
                                         title="View Details"
                                     >
                                         <Eye size={16} />
                                     </Link>
                                     <Link
                                         href={`/school/students/${student.id}/edit`}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-green-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-emerald-600 transition-colors"
                                         title="Edit"
                                     >
                                         <Edit2 size={16} />
                                     </Link>
                                     <button
                                         onClick={() => onDelete(student)}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-rose-600 transition-colors"
                                         title="Delete"
                                     >
                                         <Trash2 size={16} />
@@ -311,7 +311,6 @@ export default function StudentsPage() {
     // Fetch students (replace with actual API call)
     const fetchStudents = async () => {
         setLoading(true);
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         const mockData = generateMockStudents();
         setStudents(mockData);
@@ -372,7 +371,7 @@ export default function StudentsPage() {
 
     // Stats
     const stats = [
-        { label: 'Total Students', value: students.length, icon: Users, color: 'blue' },
+        { label: 'Total Students', value: students.length, icon: Users, color: 'violet' },
         { label: 'Total Classes', value: new Set(students.map(s => s.class)).size, icon: BookOpen, color: 'green' },
         { label: 'Active Students', value: students.filter(s => s.status === 'Active').length, icon: Check, color: 'emerald' },
         { label: 'Sections', value: SECTIONS.length, icon: School, color: 'purple' },
@@ -384,13 +383,20 @@ export default function StudentsPage() {
         return order.indexOf(a) - order.indexOf(b);
     });
 
+    const statColors = {
+        violet: 'bg-violet-100 text-violet-600',
+        green: 'bg-green-100 text-green-600',
+        emerald: 'bg-emerald-100 text-emerald-600',
+        purple: 'bg-purple-100 text-purple-600',
+    };
+
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-violet-50">
             <div className="p-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-slate-800 mb-1">Student Management</h1>
-                    <p className="text-slate-500">Manage all students from Nursery to 12th grade</p>
+                    <h1 className="text-2xl font-bold text-gray-800 mb-1">Student Management</h1>
+                    <p className="text-gray-500">Manage all students from Nursery to 12th grade</p>
                 </div>
 
                 {/* Stats Cards */}
@@ -398,26 +404,17 @@ export default function StudentsPage() {
                     {stats.map((stat) => {
                         const Icon = stat.icon;
                         return (
-                            <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4">
+                            <div key={stat.label} className="bg-white rounded-lg border border-violet-100 p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-slate-500">{stat.label}</p>
-                                        <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                                        <p className="text-sm text-gray-500">{stat.label}</p>
+                                        <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
                                     </div>
                                     <div className={cn(
-                                        "w-10 h-10 rounded-lg flex items-center justify-center",
-                                        stat.color === 'blue' && "bg-blue-100",
-                                        stat.color === 'green' && "bg-green-100",
-                                        stat.color === 'emerald' && "bg-emerald-100",
-                                        stat.color === 'purple' && "bg-purple-100"
+                                        "w-10 h-10 rounded-md flex items-center justify-center",
+                                        statColors[stat.color]
                                     )}>
-                                        <Icon className={cn(
-                                            "w-5 h-5",
-                                            stat.color === 'blue' && "text-blue-600",
-                                            stat.color === 'green' && "text-green-600",
-                                            stat.color === 'emerald' && "text-emerald-600",
-                                            stat.color === 'purple' && "text-purple-600"
-                                        )} />
+                                        <Icon className="w-5 h-5" />
                                     </div>
                                 </div>
                             </div>
@@ -426,8 +423,8 @@ export default function StudentsPage() {
                 </div>
 
                 {/* Actions Bar */}
-                <div className="bg-white rounded-xl border border-slate-200 mb-6">
-                    <div className="p-4 border-b border-slate-200">
+                <div className="bg-white rounded-lg border border-violet-100 mb-6">
+                    <div className="p-4 border-b border-gray-200">
                         <div className="flex flex-col lg:flex-row gap-3 justify-between">
                             <SearchBar
                                 value={searchQuery}
@@ -452,7 +449,7 @@ export default function StudentsPage() {
                                 {(selectedClass || selectedSection || searchQuery) && (
                                     <button
                                         onClick={handleClearFilters}
-                                        className="flex items-center gap-2 px-3 h-10 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                        className="flex items-center gap-2 px-3 h-10 rounded-md border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                                     >
                                         <FilterX size={14} />
                                         Clear Filters
@@ -462,14 +459,14 @@ export default function StudentsPage() {
                             <div className="flex gap-2">
                                 <Link
                                     href="/school/students/add?mode=bulk"
-                                    className="flex items-center gap-2 px-4 h-10 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                    className="flex items-center gap-2 px-4 h-10 rounded-md border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                                 >
                                     <Upload size={16} />
                                     Bulk Import
                                 </Link>
                                 <Link
                                     href="/school/students/add"
-                                    className="flex items-center gap-2 px-4 h-10 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 h-10 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-sm font-medium text-white hover:opacity-90 transition-all"
                                 >
                                     <Plus size={16} />
                                     Add Student
@@ -479,11 +476,11 @@ export default function StudentsPage() {
                     </div>
 
                     {/* Results Summary */}
-                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500 flex justify-between items-center">
+                    <div className="px-4 py-2 bg-violet-50/30 border-b border-gray-200 text-sm text-gray-500 flex justify-between items-center">
                         <span>Showing {paginatedStudents.length} of {filteredStudents.length} students</span>
                         <button
                             onClick={fetchStudents}
-                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                            className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-700"
                         >
                             <RefreshCw size={12} />
                             Refresh
@@ -493,7 +490,7 @@ export default function StudentsPage() {
                     {/* Table */}
                     {loading ? (
                         <div className="flex items-center justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                            <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
                         </div>
                     ) : (
                         <StudentTable
