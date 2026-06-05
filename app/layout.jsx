@@ -6,7 +6,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
     title: 'RESQID | coreZ Technologies',
     description: 'School Safety Platform',
+    icons: {
+        icon: '/images/main-icon.png'
+    }
 }
+
 
 export default function RootLayout({ children }) {
     return (
