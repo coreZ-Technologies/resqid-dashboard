@@ -49,9 +49,8 @@ function Input({ icon: Icon, error, ...props }) {
       {Icon && <Icon size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />}
       <input
         {...props}
-        className={`w-full ${Icon ? 'pl-9' : 'pl-4'} pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
-          error ? 'border-red-300 focus:ring-red-100 focus:border-red-400' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
-        }`}
+        className={`w-full ${Icon ? 'pl-9' : 'pl-4'} pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${error ? 'border-red-300 focus:ring-red-100 focus:border-red-400' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+          }`}
       />
     </div>
   )
@@ -69,16 +68,14 @@ function Steps({ current }) {
       {steps.map((s, i) => (
         <div key={s.n} className="flex items-center">
           <div className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold transition-all ${
-              current > s.n ? 'bg-emerald-500 text-white' :
-              current === s.n ? 'bg-violet-600 text-white' :
-              'bg-violet-50 text-gray-400'
-            }`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold transition-all ${current > s.n ? 'bg-emerald-500 text-white' :
+                current === s.n ? 'bg-violet-600 text-white' :
+                  'bg-violet-50 text-gray-400'
+              }`}>
               {current > s.n ? <CheckCircle2 size={14} /> : s.n}
             </div>
-            <span className={`text-[11px] font-medium hidden sm:block ${
-              current === s.n ? 'text-violet-700' : current > s.n ? 'text-emerald-600' : 'text-gray-400'
-            }`}>{s.label}</span>
+            <span className={`text-[11px] font-medium hidden sm:block ${current === s.n ? 'text-violet-700' : current > s.n ? 'text-emerald-600' : 'text-gray-400'
+              }`}>{s.label}</span>
           </div>
           {i < steps.length - 1 && (
             <div className={`w-8 sm:w-14 h-px mx-3 transition-all ${current > s.n ? 'bg-emerald-200' : 'bg-violet-100'}`} />
@@ -202,9 +199,8 @@ function Step2({ form, setForm, errors }) {
             <select
               value={form.subject}
               onChange={e => setForm({ ...form, subject: e.target.value })}
-              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${
-                errors.subject ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
-              }`}
+              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${errors.subject ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+                }`}
             >
               <option value="">Select subject</option>
               {SUBJECTS.map(s => <option key={s}>{s}</option>)}
@@ -218,9 +214,8 @@ function Step2({ form, setForm, errors }) {
             <select
               value={form.qualification}
               onChange={e => setForm({ ...form, qualification: e.target.value })}
-              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${
-                errors.qualification ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
-              }`}
+              className={`w-full pl-9 pr-4 py-2.5 rounded-lg border text-[13px] text-gray-700 bg-white focus:outline-none focus:ring-2 transition-all appearance-none ${errors.qualification ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+                }`}
             >
               <option value="">Select qualification</option>
               {QUALIFICATIONS.map(q => <option key={q}>{q}</option>)}
@@ -252,11 +247,10 @@ function Step2({ form, setForm, errors }) {
                 <button
                   key={cls}
                   onClick={() => toggleClass(cls)}
-                  className={`py-2 rounded-lg text-[11px] font-medium border transition-all ${
-                    active
+                  className={`py-2 rounded-lg text-[11px] font-medium border transition-all ${active
                       ? 'bg-violet-600 text-white border-violet-600'
                       : 'bg-white text-gray-600 border-violet-100 hover:border-violet-200'
-                  }`}
+                    }`}
                 >
                   {cls}
                 </button>
@@ -297,11 +291,11 @@ function Step3({ form, setForm, errors }) {
       <div className="bg-violet-50/30 rounded-lg border border-violet-100 p-4 space-y-2">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-3">Review</p>
         {[
-          { label: 'Name',         val: `${form.salutation} ${form.firstName} ${form.lastName}`.trim() || '—' },
-          { label: 'Email',        val: form.email || '—' },
-          { label: 'Subject',      val: form.subject || '—' },
-          { label: 'Qualification',val: form.qualification || '—' },
-          { label: 'Classes',      val: form.assignedClasses.length ? form.assignedClasses.join(', ') : '—' },
+          { label: 'Name', val: `${form.salutation} ${form.firstName} ${form.lastName}`.trim() || '—' },
+          { label: 'Email', val: form.email || '—' },
+          { label: 'Subject', val: form.subject || '—' },
+          { label: 'Qualification', val: form.qualification || '—' },
+          { label: 'Classes', val: form.assignedClasses.length ? form.assignedClasses.join(', ') : '—' },
         ].map(({ label, val }) => (
           <div key={label} className="flex justify-between text-[12px]">
             <span className="text-gray-400">{label}</span>
@@ -320,9 +314,8 @@ function Step3({ form, setForm, errors }) {
               placeholder="Min. 8 characters"
               value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
-              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
-                errors.password ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
-              }`}
+              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${errors.password ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+                }`}
             />
             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -338,9 +331,8 @@ function Step3({ form, setForm, errors }) {
               placeholder="Re-enter password"
               value={form.confirmPassword}
               onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${
-                errors.confirmPassword ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
-              }`}
+              className={`w-full pl-9 pr-10 py-2.5 rounded-lg border text-[13px] text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 transition-all ${errors.confirmPassword ? 'border-red-300 focus:ring-red-100' : 'border-violet-100 focus:ring-violet-100 focus:border-violet-300'
+                }`}
             />
             <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -352,7 +344,7 @@ function Step3({ form, setForm, errors }) {
       {form.password && (
         <div>
           <div className="flex gap-1 mb-1">
-            {[1,2,3,4].map(i => (
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= strength ? strengthColors[strength - 1] : 'bg-violet-50'}`} />
             ))}
           </div>
@@ -367,9 +359,8 @@ function Step3({ form, setForm, errors }) {
             <button
               key={role}
               onClick={() => setForm({ ...form, role })}
-              className={`py-2.5 rounded-lg border text-[12px] font-medium transition-all ${
-                form.role === role ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-gray-600 border-violet-100 hover:border-violet-200'
-              }`}
+              className={`py-2.5 rounded-lg border text-[12px] font-medium transition-all ${form.role === role ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-gray-600 border-violet-100 hover:border-violet-200'
+                }`}
             >
               {role}
             </button>
@@ -395,10 +386,10 @@ function SuccessScreen({ form }) {
       </div>
       <div className="bg-violet-50/30 border border-violet-100 rounded-lg p-5 w-full max-w-sm text-left space-y-3">
         {[
-          { label: 'Email',   val: form.email },
+          { label: 'Email', val: form.email },
           { label: 'Subject', val: form.subject },
           { label: 'Classes', val: `${form.assignedClasses.length} assigned` },
-          { label: 'Role',    val: form.role },
+          { label: 'Role', val: form.role },
         ].map(({ label, val }) => (
           <div key={label} className="flex justify-between text-[12px]">
             <span className="text-gray-400">{label}</span>
@@ -420,10 +411,10 @@ function SuccessScreen({ form }) {
 
 // ── Main ───────────────────────────────────────────────────
 export default function AddTeacherPage() {
-  const [step, setStep]           = useState(1)
+  const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading]     = useState(false)
-  const [errors, setErrors]       = useState({})
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
 
   const [form, setForm] = useState({
     salutation: '', firstName: '', lastName: '', email: '',
@@ -435,19 +426,19 @@ export default function AddTeacherPage() {
 
   function validateStep1() {
     const e = {}
-    if (!form.firstName.trim())  e.firstName = 'Required'
-    if (!form.lastName.trim())   e.lastName  = 'Required'
-    if (!form.email.trim())      e.email     = 'Required'
+    if (!form.firstName.trim()) e.firstName = 'Required'
+    if (!form.lastName.trim()) e.lastName = 'Required'
+    if (!form.email.trim()) e.email = 'Required'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email'
-    if (!form.phone.trim())      e.phone     = 'Required'
+    if (!form.phone.trim()) e.phone = 'Required'
     setErrors(e)
     return Object.keys(e).length === 0
   }
 
   function validateStep2() {
     const e = {}
-    if (!form.subject)                    e.subject         = 'Select a subject'
-    if (!form.qualification)              e.qualification   = 'Select qualification'
+    if (!form.subject) e.subject = 'Select a subject'
+    if (!form.qualification) e.qualification = 'Select qualification'
     if (form.assignedClasses.length === 0) e.assignedClasses = 'Assign at least one class'
     setErrors(e)
     return Object.keys(e).length === 0
@@ -455,9 +446,9 @@ export default function AddTeacherPage() {
 
   function validateStep3() {
     const e = {}
-    if (!form.password)                           e.password        = 'Required'
-    else if (form.password.length < 8)            e.password        = 'Min 8 characters'
-    if (form.password !== form.confirmPassword)   e.confirmPassword = 'Passwords do not match'
+    if (!form.password) e.password = 'Required'
+    else if (form.password.length < 8) e.password = 'Min 8 characters'
+    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -530,7 +521,7 @@ export default function AddTeacherPage() {
           </button>
 
           <div className="flex items-center gap-2">
-            {[1,2,3].map(n => (
+            {[1, 2, 3].map(n => (
               <div key={n} className={`h-1.5 rounded-full transition-all ${n === step ? 'w-6 bg-violet-600' : 'w-1.5 bg-violet-200'}`} />
             ))}
           </div>
