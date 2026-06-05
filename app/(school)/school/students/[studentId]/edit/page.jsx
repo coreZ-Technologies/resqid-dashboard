@@ -125,11 +125,6 @@ export default function EditStudentPage() {
     const fetchStudentData = async () => {
         setLoading(true);
         try {
-            // Replace with actual API call
-            // const response = await fetch(`/api/students/${params.studentId}`);
-            // const data = await response.json();
-
-            // Mock data for demonstration
             await new Promise(resolve => setTimeout(resolve, 1000));
             const mockData = getMockStudentData(params.studentId);
             setFormData(mockData);
@@ -163,15 +158,7 @@ export default function EditStudentPage() {
 
         setSaving(true);
         try {
-            // Replace with actual API call
-            // const response = await fetch(`/api/students/${params.studentId}`, {
-            //     method: 'PUT',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(formData)
-            // });
-
             await new Promise(resolve => setTimeout(resolve, 2000));
-
             router.push(`/school/students/${params.studentId}`);
             router.refresh();
         } catch (error) {
@@ -347,10 +334,10 @@ export default function EditStudentPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div className="min-h-screen bg-violet-50 flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className="text-slate-500">Loading student data...</p>
+                    <Loader2 className="w-12 h-12 animate-spin text-violet-600 mx-auto mb-4" />
+                    <p className="text-gray-500">Loading student data...</p>
                 </div>
             </div>
         );
@@ -369,28 +356,28 @@ export default function EditStudentPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-violet-50">
             <div className="p-6">
                 {/* Header */}
                 <div className="mb-6">
                     <Link
                         href={`/school/students/${params.studentId}`}
-                        className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors mb-4"
+                        className="flex items-center gap-2 text-gray-600 hover:text-violet-600 transition-colors mb-4"
                     >
                         <ArrowLeft size={20} />
                         Back to Student Details
                     </Link>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-800">Edit Student</h1>
-                            <p className="text-slate-500 mt-1">
+                            <h1 className="text-2xl font-bold text-gray-800">Edit Student</h1>
+                            <p className="text-gray-500 mt-1">
                                 {formData.firstName} {formData.lastName} - {formData.class}-{formData.section}
                             </p>
                         </div>
                         <div className="flex gap-3">
                             <button
                                 onClick={handleCancel}
-                                className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                className="px-4 py-2 rounded-md border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2"
                             >
                                 <X size={16} />
                                 Cancel
@@ -398,7 +385,7 @@ export default function EditStudentPage() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="px-6 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                className="px-6 py-2 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                             >
                                 {saving ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -414,7 +401,7 @@ export default function EditStudentPage() {
                 <div className="flex gap-6">
                     {/* Left Sidebar Navigation */}
                     <div className="w-64 shrink-0">
-                        <div className="bg-white rounded-xl border border-slate-200 p-2 sticky top-6">
+                        <div className="bg-white rounded-md border border-violet-100 p-2 sticky top-6">
                             {sections.map((section) => {
                                 const Icon = section.icon;
                                 return (
@@ -422,10 +409,10 @@ export default function EditStudentPage() {
                                         key={section.id}
                                         onClick={() => setActiveSection(section.id)}
                                         className={cn(
-                                            "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all mb-1",
+                                            "w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all mb-1",
                                             activeSection === section.id
-                                                ? "bg-blue-50 text-blue-700"
-                                                : "text-slate-600 hover:bg-slate-50"
+                                                ? "bg-violet-50 text-violet-700"
+                                                : "text-gray-600 hover:bg-gray-50"
                                         )}
                                     >
                                         <Icon size={18} />
@@ -440,17 +427,17 @@ export default function EditStudentPage() {
                     <div className="flex-1 space-y-6">
                         {/* Personal Information Section */}
                         {activeSection === 'personal' && (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                    <User size={20} className="text-blue-600" />
+                            <div className="bg-white rounded-md border border-violet-100 p-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                    <User size={20} className="text-violet-600" />
                                     Personal Information
                                 </h2>
 
                                 {/* Photo Upload */}
                                 <div className="mb-6">
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Student Photo</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Student Photo</label>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                                        <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                                             {formData.photo ? (
                                                 <img
                                                     src={typeof formData.photo === 'string' ? formData.photo : URL.createObjectURL(formData.photo)}
@@ -458,7 +445,7 @@ export default function EditStudentPage() {
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
-                                                <Camera className="w-8 h-8 text-slate-400" />
+                                                <Camera className="w-8 h-8 text-gray-400" />
                                             )}
                                         </div>
                                         <div>
@@ -471,19 +458,19 @@ export default function EditStudentPage() {
                                             />
                                             <label
                                                 htmlFor="photo-edit"
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer"
                                             >
                                                 <Upload size={16} />
                                                 Change Photo
                                             </label>
-                                            <p className="text-xs text-slate-400 mt-1">JPG, PNG (max 2MB)</p>
+                                            <p className="text-xs text-gray-400 mt-1">JPG, PNG (max 2MB)</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
                                             First Name <span className="text-red-500">*</span>
                                         </label>
                                         <input
@@ -491,14 +478,14 @@ export default function EditStudentPage() {
                                             value={formData.firstName}
                                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                                             className={cn(
-                                                "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-100",
-                                                errors.firstName ? "border-red-400" : "border-slate-200 focus:border-blue-400"
+                                                "w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-violet-100",
+                                                errors.firstName ? "border-red-400" : "border-gray-200 focus:border-violet-300"
                                             )}
                                         />
                                         {errors.firstName && <p className="text-xs text-red-500 mt-1">{errors.firstName}</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Last Name <span className="text-red-500">*</span>
                                         </label>
                                         <input
@@ -506,48 +493,48 @@ export default function EditStudentPage() {
                                             value={formData.lastName}
                                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                             className={cn(
-                                                "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-100",
-                                                errors.lastName ? "border-red-400" : "border-slate-200 focus:border-blue-400"
+                                                "w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-violet-100",
+                                                errors.lastName ? "border-red-400" : "border-gray-200 focus:border-violet-300"
                                             )}
                                         />
                                         {errors.lastName && <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                                         <select
                                             value={formData.gender}
                                             onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         >
                                             {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                                         <input
                                             type="date"
                                             value={formData.dateOfBirth}
                                             onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Blood Group</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
                                         <select
                                             value={formData.bloodGroup}
                                             onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         >
                                             <option value="">Select Blood Group</option>
                                             {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                         <select
                                             value={formData.status}
                                             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         >
                                             {STUDENT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                                         </select>
@@ -559,78 +546,78 @@ export default function EditStudentPage() {
                         {/* Academic Section */}
                         {activeSection === 'academic' && (
                             <div className="space-y-6">
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                        <GraduationCap size={20} className="text-blue-600" />
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                        <GraduationCap size={20} className="text-violet-600" />
                                         Academic Information
                                     </h2>
 
                                     <div className="grid grid-cols-2 gap-4 mb-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                                 Class <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 value={formData.class}
                                                 onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                             >
                                                 <option value="">Select Class</option>
                                                 {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                                 Section <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 value={formData.section}
                                                 onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                             >
                                                 <option value="">Select Section</option>
                                                 {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Roll Number</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Roll Number</label>
                                             <input
                                                 type="text"
                                                 value={formData.rollNumber}
                                                 onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Admission Year</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Admission Year</label>
                                             <input
                                                 type="number"
                                                 value={formData.admissionYear}
                                                 onChange={(e) => setFormData({ ...formData, admissionYear: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div className="col-span-2">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Previous School</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Previous School</label>
                                             <input
                                                 type="text"
                                                 value={formData.previousSchool}
                                                 onChange={(e) => setFormData({ ...formData, previousSchool: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Subjects */}
-                                    <div className="border-t border-slate-200 pt-6 mb-6">
+                                    <div className="border-t border-gray-200 pt-6 mb-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                                            <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                                                 <BookOpen size={16} />
                                                 Subjects
                                             </h3>
                                             <button
                                                 onClick={addSubject}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                                                className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm hover:opacity-90 transition-all"
                                             >
                                                 <Plus size={14} />
                                                 Add Subject
@@ -638,31 +625,31 @@ export default function EditStudentPage() {
                                         </div>
                                         <div className="space-y-3">
                                             {formData.academicInfo.subjects.map((subject, index) => (
-                                                <div key={index} className="flex gap-3 items-start p-3 bg-slate-50 rounded-lg">
+                                                <div key={index} className="flex gap-3 items-start p-3 bg-gray-50 rounded-md">
                                                     <input
                                                         type="text"
                                                         value={subject.name}
                                                         onChange={(e) => updateSubject(index, 'name', e.target.value)}
                                                         placeholder="Subject Name"
-                                                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="flex-1 px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                     <input
                                                         type="text"
                                                         value={subject.code}
                                                         onChange={(e) => updateSubject(index, 'code', e.target.value)}
                                                         placeholder="Code"
-                                                        className="w-24 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-24 px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                     <input
                                                         type="text"
                                                         value={subject.teacher}
                                                         onChange={(e) => updateSubject(index, 'teacher', e.target.value)}
                                                         placeholder="Teacher"
-                                                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="flex-1 px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                     <button
                                                         onClick={() => removeSubject(index)}
-                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -672,12 +659,12 @@ export default function EditStudentPage() {
                                     </div>
 
                                     {/* Achievements */}
-                                    <div className="border-t border-slate-200 pt-6 mb-6">
+                                    <div className="border-t border-gray-200 pt-6 mb-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="font-semibold text-slate-800">Achievements</h3>
+                                            <h3 className="font-semibold text-gray-800">Achievements</h3>
                                             <button
                                                 onClick={addAchievement}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                                                className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm hover:opacity-90 transition-all"
                                             >
                                                 <Plus size={14} />
                                                 Add Achievement
@@ -691,11 +678,11 @@ export default function EditStudentPage() {
                                                         value={achievement}
                                                         onChange={(e) => updateAchievement(index, e.target.value)}
                                                         placeholder="Enter achievement"
-                                                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="flex-1 px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                     <button
                                                         onClick={() => removeAchievement(index)}
-                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -705,8 +692,8 @@ export default function EditStudentPage() {
                                     </div>
 
                                     {/* Remarks */}
-                                    <div className="border-t border-slate-200 pt-6">
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">Remarks</label>
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
                                         <textarea
                                             value={formData.academicInfo.remarks}
                                             onChange={(e) => setFormData({
@@ -717,7 +704,7 @@ export default function EditStudentPage() {
                                                 }
                                             })}
                                             rows="3"
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400 resize-none"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300 resize-none"
                                             placeholder="Enter any remarks..."
                                         />
                                     </div>
@@ -727,65 +714,65 @@ export default function EditStudentPage() {
 
                         {/* Contact Information Section */}
                         {activeSection === 'contact' && (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                    <Mail size={20} className="text-blue-600" />
+                            <div className="bg-white rounded-md border border-violet-100 p-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                    <Mail size={20} className="text-violet-600" />
                                     Contact Information
                                 </h2>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                         <input
                                             type="email"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                                         <input
                                             type="tel"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                                         <textarea
                                             value={formData.address}
                                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                             rows="2"
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 resize-none"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300 resize-none"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">City</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                                         <input
                                             type="text"
                                             value={formData.city}
                                             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">State</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                                         <input
                                             type="text"
                                             value={formData.state}
                                             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Pincode</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
                                         <input
                                             type="text"
                                             value={formData.pincode}
                                             onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                 </div>
@@ -794,15 +781,15 @@ export default function EditStudentPage() {
 
                         {/* Parents Section */}
                         {activeSection === 'parents' && (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
+                            <div className="bg-white rounded-md border border-violet-100 p-6">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                                        <Users size={20} className="text-blue-600" />
+                                    <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                        <Users size={20} className="text-violet-600" />
                                         Parents & Guardians
                                     </h2>
                                     <button
                                         onClick={addParent}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm hover:opacity-90 transition-all"
                                     >
                                         <Plus size={14} />
                                         Add Parent
@@ -811,61 +798,61 @@ export default function EditStudentPage() {
 
                                 <div className="space-y-6">
                                     {formData.parents.map((parent, index) => (
-                                        <div key={parent.id || index} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div key={parent.id || index} className="p-4 bg-gray-50 rounded-md border border-gray-200">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="font-medium text-slate-700">Parent #{index + 1}</h3>
+                                                <h3 className="font-medium text-gray-700">Parent #{index + 1}</h3>
                                                 <button
                                                     onClick={() => removeParent(index)}
-                                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-600 mb-1">Name</label>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
                                                     <input
                                                         type="text"
                                                         value={parent.name}
                                                         onChange={(e) => updateParent(index, 'name', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-600 mb-1">Relationship</label>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Relationship</label>
                                                     <select
                                                         value={parent.relationship}
                                                         onChange={(e) => updateParent(index, 'relationship', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     >
                                                         {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
                                                     <input
                                                         type="tel"
                                                         value={parent.phone}
                                                         onChange={(e) => updateParent(index, 'phone', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-600 mb-1">Email</label>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
                                                     <input
                                                         type="email"
                                                         value={parent.email}
                                                         onChange={(e) => updateParent(index, 'email', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-600 mb-1">Occupation</label>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Occupation</label>
                                                     <input
                                                         type="text"
                                                         value={parent.occupation}
                                                         onChange={(e) => updateParent(index, 'occupation', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                        className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     />
                                                 </div>
                                                 <div className="flex items-center gap-4 pt-4">
@@ -874,16 +861,16 @@ export default function EditStudentPage() {
                                                             type="checkbox"
                                                             checked={parent.isPrimary}
                                                             onChange={(e) => updateParent(index, 'isPrimary', e.target.checked)}
-                                                            className="rounded border-slate-300"
+                                                            className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
                                                         />
-                                                        <span className="text-sm text-slate-600">Primary Contact</span>
+                                                        <span className="text-sm text-gray-600">Primary Contact</span>
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
                                     ))}
                                     {formData.parents.length === 0 && (
-                                        <p className="text-center text-slate-400 py-8">No parents added yet</p>
+                                        <p className="text-center text-gray-400 py-8">No parents added yet</p>
                                     )}
                                 </div>
                             </div>
@@ -892,15 +879,15 @@ export default function EditStudentPage() {
                         {/* Emergency Contacts Section */}
                         {activeSection === 'emergency' && (
                             <div className="space-y-6">
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
                                     <div className="flex items-center justify-between mb-6">
-                                        <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                                            <AlertCircle size={20} className="text-red-600" />
+                                        <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                            <AlertCircle size={20} className="text-rose-600" />
                                             Emergency Contacts
                                         </h2>
                                         <button
                                             onClick={addEmergencyContact}
-                                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                                            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm hover:opacity-90 transition-all"
                                         >
                                             <Plus size={14} />
                                             Add Contact
@@ -909,72 +896,72 @@ export default function EditStudentPage() {
 
                                     <div className="space-y-4">
                                         {formData.emergencyContacts.map((contact, index) => (
-                                            <div key={contact.id || index} className="p-4 bg-slate-50 rounded-lg">
+                                            <div key={contact.id || index} className="p-4 bg-gray-50 rounded-md">
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <h3 className="font-medium text-slate-700">Contact #{index + 1}</h3>
+                                                    <h3 className="font-medium text-gray-700">Contact #{index + 1}</h3>
                                                     <button
                                                         onClick={() => removeEmergencyContact(index)}
-                                                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Name</label>
+                                                        <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
                                                         <input
                                                             type="text"
                                                             value={contact.name}
                                                             onChange={(e) => updateEmergencyContact(index, 'name', e.target.value)}
-                                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Relationship</label>
+                                                        <label className="block text-xs font-medium text-gray-600 mb-1">Relationship</label>
                                                         <input
                                                             type="text"
                                                             value={contact.relationship}
                                                             onChange={(e) => updateEmergencyContact(index, 'relationship', e.target.value)}
-                                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                                                        <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
                                                         <input
                                                             type="tel"
                                                             value={contact.phone}
                                                             onChange={(e) => updateEmergencyContact(index, 'phone', e.target.value)}
-                                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Priority</label>
+                                                        <label className="block text-xs font-medium text-gray-600 mb-1">Priority</label>
                                                         <input
                                                             type="number"
                                                             value={contact.priority}
                                                             onChange={(e) => updateEmergencyContact(index, 'priority', parseInt(e.target.value))}
-                                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
                                         {formData.emergencyContacts.length === 0 && (
-                                            <p className="text-center text-slate-400 py-8">No emergency contacts added</p>
+                                            <p className="text-center text-gray-400 py-8">No emergency contacts added</p>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Emergency Visibility */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                                        <Shield size={16} className="text-red-600" />
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                        <Shield size={16} className="text-rose-600" />
                                         Emergency QR Profile Visibility
                                     </h3>
                                     <select
                                         value={formData.emergencyVisibility}
                                         onChange={(e) => setFormData({ ...formData, emergencyVisibility: e.target.value })}
-                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                        className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                     >
                                         <option value="PUBLIC">Full Visibility</option>
                                         <option value="MINIMAL">Minimal Profile</option>
@@ -987,16 +974,16 @@ export default function EditStudentPage() {
                         {/* Medical Section */}
                         {activeSection === 'medical' && (
                             <div className="space-y-6">
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                        <Heart size={20} className="text-red-600" />
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                        <Heart size={20} className="text-rose-600" />
                                         Medical Information
                                     </h2>
 
                                     {/* Array Fields (Allergies, Conditions, Medications) */}
                                     {['allergies', 'conditions', 'medications'].map((field) => (
                                         <div key={field} className="mb-6">
-                                            <label className="block text-sm font-medium text-slate-700 mb-2 capitalize">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
                                                 {field}
                                             </label>
                                             <div className="flex gap-2 mb-2">
@@ -1004,7 +991,7 @@ export default function EditStudentPage() {
                                                     type="text"
                                                     id={`medical-${field}-input`}
                                                     placeholder={`Add ${field.slice(0, -1)}...`}
-                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                    className="flex-1 px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             e.preventDefault();
@@ -1021,18 +1008,18 @@ export default function EditStudentPage() {
                                                             input.value = '';
                                                         }
                                                     }}
-                                                    className="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                                                    className="px-3 py-2 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm hover:opacity-90 transition-all"
                                                 >
                                                     Add
                                                 </button>
                                             </div>
                                             <div className="flex flex-wrap gap-2">
                                                 {formData.medicalInfo[field].map((item, index) => (
-                                                    <span key={index} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-sm border border-red-200">
+                                                    <span key={index} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 text-sm border border-rose-200">
                                                         {item}
                                                         <button
                                                             onClick={() => removeMedicalArrayItem(field, index)}
-                                                            className="hover:text-red-900"
+                                                            className="hover:text-rose-900"
                                                         >
                                                             <X size={12} />
                                                         </button>
@@ -1044,14 +1031,14 @@ export default function EditStudentPage() {
                                 </div>
 
                                 {/* Doctor Information */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                                         <Stethoscope size={16} />
                                         Doctor Information
                                     </h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Doctor Name</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Doctor Name</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.doctorName}
@@ -1059,11 +1046,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, doctorName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Specialization</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Specialization</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.doctorSpecialization}
@@ -1071,11 +1058,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, doctorSpecialization: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
                                             <input
                                                 type="tel"
                                                 value={formData.medicalInfo.doctorPhone}
@@ -1083,11 +1070,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, doctorPhone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Clinic</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Clinic</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.doctorClinic}
@@ -1095,18 +1082,18 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, doctorClinic: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Hospital Information */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h3 className="font-semibold text-slate-800 mb-4">Hospital Information</h3>
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h3 className="font-semibold text-gray-800 mb-4">Hospital Information</h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Hospital Name</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Hospital Name</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.hospitalName}
@@ -1114,11 +1101,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, hospitalName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
                                             <input
                                                 type="tel"
                                                 value={formData.medicalInfo.hospitalPhone}
@@ -1126,18 +1113,18 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, hospitalPhone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Insurance Information */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h3 className="font-semibold text-slate-800 mb-4">Insurance Details</h3>
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
+                                    <h3 className="font-semibold text-gray-800 mb-4">Insurance Details</h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Provider</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Provider</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.insuranceProvider}
@@ -1145,11 +1132,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, insuranceProvider: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Policy Number</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Policy Number</label>
                                             <input
                                                 type="text"
                                                 value={formData.medicalInfo.insurancePolicyNumber}
@@ -1157,11 +1144,11 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, insurancePolicyNumber: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Valid Until</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Valid Until</label>
                                             <input
                                                 type="date"
                                                 value={formData.medicalInfo.insuranceValidUntil}
@@ -1169,16 +1156,16 @@ export default function EditStudentPage() {
                                                     ...formData,
                                                     medicalInfo: { ...formData.medicalInfo, insuranceValidUntil: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
+                                                className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Additional Notes */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                                <div className="bg-white rounded-md border border-violet-100 p-6">
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">Emergency Instructions</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Instructions</label>
                                         <textarea
                                             value={formData.medicalInfo.emergencyInstructions}
                                             onChange={(e) => setFormData({
@@ -1186,12 +1173,12 @@ export default function EditStudentPage() {
                                                 medicalInfo: { ...formData.medicalInfo, emergencyInstructions: e.target.value }
                                             })}
                                             rows="3"
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400 resize-none"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300 resize-none"
                                             placeholder="Enter emergency instructions..."
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">Medical Notes</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Medical Notes</label>
                                         <textarea
                                             value={formData.medicalInfo.notes}
                                             onChange={(e) => setFormData({
@@ -1199,7 +1186,7 @@ export default function EditStudentPage() {
                                                 medicalInfo: { ...formData.medicalInfo, notes: e.target.value }
                                             })}
                                             rows="3"
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400 resize-none"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300 resize-none"
                                             placeholder="Additional medical notes..."
                                         />
                                     </div>
@@ -1209,14 +1196,14 @@ export default function EditStudentPage() {
 
                         {/* Fees Section */}
                         {activeSection === 'fees' && (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                    <Activity size={20} className="text-blue-600" />
+                            <div className="bg-white rounded-md border border-violet-100 p-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                    <Activity size={20} className="text-violet-600" />
                                     Fee Details
                                 </h2>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Total Fees</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Total Fees</label>
                                         <input
                                             type="number"
                                             value={formData.feeDetails.totalFees}
@@ -1224,11 +1211,11 @@ export default function EditStudentPage() {
                                                 ...formData,
                                                 feeDetails: { ...formData.feeDetails, totalFees: parseFloat(e.target.value) }
                                             })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Paid Amount</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Paid Amount</label>
                                         <input
                                             type="number"
                                             value={formData.feeDetails.paid}
@@ -1236,11 +1223,11 @@ export default function EditStudentPage() {
                                                 ...formData,
                                                 feeDetails: { ...formData.feeDetails, paid: parseFloat(e.target.value) }
                                             })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Pending Amount</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Pending Amount</label>
                                         <input
                                             type="number"
                                             value={formData.feeDetails.pending}
@@ -1248,11 +1235,11 @@ export default function EditStudentPage() {
                                                 ...formData,
                                                 feeDetails: { ...formData.feeDetails, pending: parseFloat(e.target.value) }
                                             })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Last Payment Date</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Payment Date</label>
                                         <input
                                             type="date"
                                             value={formData.feeDetails.lastPayment}
@@ -1260,11 +1247,11 @@ export default function EditStudentPage() {
                                                 ...formData,
                                                 feeDetails: { ...formData.feeDetails, lastPayment: e.target.value }
                                             })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Next Due Date</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Next Due Date</label>
                                         <input
                                             type="date"
                                             value={formData.feeDetails.nextDueDate}
@@ -1272,7 +1259,7 @@ export default function EditStudentPage() {
                                                 ...formData,
                                                 feeDetails: { ...formData.feeDetails, nextDueDate: e.target.value }
                                             })}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         />
                                     </div>
                                 </div>
@@ -1281,31 +1268,31 @@ export default function EditStudentPage() {
 
                         {/* Documents Section */}
                         {activeSection === 'documents' && (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                    <FileText size={20} className="text-blue-600" />
+                            <div className="bg-white rounded-md border border-violet-100 p-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                    <FileText size={20} className="text-violet-600" />
                                     Documents
                                 </h2>
                                 <div className="space-y-3">
                                     {formData.documents.map((doc, index) => (
-                                        <div key={doc.id || index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                        <div key={doc.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                                             <div className="flex items-center gap-3">
-                                                <FileText className="w-8 h-8 text-slate-400" />
+                                                <FileText className="w-8 h-8 text-gray-400" />
                                                 <div>
-                                                    <p className="font-medium text-slate-700">{doc.name}</p>
-                                                    <p className="text-xs text-slate-400">{doc.type} • {doc.size}</p>
+                                                    <p className="font-medium text-gray-700">{doc.name}</p>
+                                                    <p className="text-xs text-gray-400">{doc.type} • {doc.size}</p>
                                                 </div>
                                             </div>
-                                            <button className="px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                            <button className="px-3 py-1.5 text-sm text-violet-600 hover:bg-violet-50 rounded-md transition-colors">
                                                 Download
                                             </button>
                                         </div>
                                     ))}
                                     {formData.documents.length === 0 && (
-                                        <p className="text-center text-slate-400 py-8">No documents uploaded</p>
+                                        <p className="text-center text-gray-400 py-8">No documents uploaded</p>
                                     )}
                                 </div>
-                                <button className="mt-4 flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                                <button className="mt-4 flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                                     <Upload size={16} />
                                     Upload Document
                                 </button>

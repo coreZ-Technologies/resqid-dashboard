@@ -2,28 +2,15 @@
 
 /**
  * SCHOOL ADMIN — SCAN LOGS
- * Next.js App Router version (converted from React Router)
- * Place at: app/(school)/school/scans/page.jsx
- *
- * Changes from old frontend:
- * - Added 'use client' directive (required for useState)
- * - Removed CSS variable references (var(--font-display) etc) — replaced with Tailwind
- * - Removed useDebounce import — inline fallback included (swap with @/lib/hooks)
- * - Removed formatters import — inline fallbacks included (swap with @/lib/utils)
- * - All hover effects via Tailwind classes instead of inline onMouseEnter/Leave handlers
+ * Next.js App Router version — Notion style with violet accent
+ * Path: app/(school)/school/scans/page.jsx
  */
 
 import { useState } from 'react';
 import { Search, ScanLine, CheckCircle, XCircle, Clock, MapPin, Monitor } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-// ─── UPDATE THESE IMPORTS to match your new frontend ──────────────────────────
-// Old: '../../utils/formatters.js'    →  New: '@/lib/utils'
-// Old: '../../hooks/useDebounce.js'   →  New: '@/lib/hooks'
-//
-// import { formatRelativeTime, humanizeEnum, maskTokenHash } from '@/lib/utils';
-// import { useDebounce } from '@/lib/hooks';
-
-// ─── Inline fallbacks (remove once you wire up real imports above) ─────────────
+// ─── Inline helpers (replace with actual imports later) ─────────────────────
 const formatRelativeTime = (iso) => {
     if (!iso) return '';
     const diff = Date.now() - new Date(iso).getTime();
@@ -41,28 +28,25 @@ const humanizeEnum = (str) =>
 const maskTokenHash = (hash) =>
     hash ? `${hash.slice(0, 4)}••••${hash.slice(-4)}` : '';
 
-function useDebounce(value, delay) {
-    const [debounced, setDebounced] = useState(value);
-    // Note: replace this with your real useDebounce from @/lib/hooks
-    // This simplified version doesn't actually debounce — it just returns the value
+function useDebounce(value) {
     return value;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants ──────────────────────────────────────────────────────────────
 const RESULTS = ['ALL', 'SUCCESS', 'INVALID', 'REVOKED', 'EXPIRED', 'RATE_LIMITED', 'ERROR'];
 
 const RESULT_STYLE = {
-    SUCCESS:      { bg: '#ECFDF5', color: '#047857', Icon: CheckCircle },
-    INVALID:      { bg: '#FEF2F2', color: '#B91C1C', Icon: XCircle },
-    REVOKED:      { bg: '#FEF2F2', color: '#B91C1C', Icon: XCircle },
-    EXPIRED:      { bg: '#FFFBEB', color: '#B45309', Icon: Clock },
-    RATE_LIMITED: { bg: '#FEF3C7', color: '#92400E', Icon: Clock },
-    ERROR:        { bg: '#FEF2F2', color: '#B91C1C', Icon: XCircle },
+    SUCCESS:      { bg: 'bg-emerald-50', color: 'text-emerald-700', Icon: CheckCircle },
+    INVALID:      { bg: 'bg-rose-50',   color: 'text-rose-700',   Icon: XCircle },
+    REVOKED:      { bg: 'bg-rose-50',   color: 'text-rose-700',   Icon: XCircle },
+    EXPIRED:      { bg: 'bg-amber-50',  color: 'text-amber-700',  Icon: Clock },
+    RATE_LIMITED: { bg: 'bg-amber-50',  color: 'text-amber-700',  Icon: Clock },
+    ERROR:        { bg: 'bg-rose-50',   color: 'text-rose-700',   Icon: XCircle },
 };
 
 const PAGE_SIZE = 15;
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
+// ─── Mock Data ──────────────────────────────────────────────────────────────
 const MOCK_SCANS = Array.from({ length: 40 }, (_, i) => ({
     id: `scan-${i + 1}`,
     token_hash: `B${Math.random().toString(36).slice(2, 16).toUpperCase()}`,
@@ -86,12 +70,12 @@ const STATS_TODAY = {
     avgResponse: '142ms',
 };
 
-// ─── Main Page Component (default export required for Next.js App Router) ──────
+// ─── Main Page Component ────────────────────────────────────────────────────
 export default function ScanLogsPage() {
     const [resultFilter, setResultFilter] = useState('ALL');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const debouncedSearch = useDebounce(search, 300);
+    const debouncedSearch = useDebounce(search);
 
     const filtered = MOCK_SCANS.filter(s => {
         const matchResult = resultFilter === 'ALL' || s.result === resultFilter;
@@ -110,23 +94,23 @@ export default function ScanLogsPage() {
         <div className="max-w-[1200px]">
             {/* Header */}
             <div className="mb-6">
-                <h2 className="text-[1.375rem] font-bold text-slate-900 m-0">Scan Logs</h2>
-                <p className="text-sm text-slate-500 mt-1">Real-time log of all QR code scan events</p>
+                <h1 className="text-xl font-semibold text-gray-800 mb-1">Scan Logs</h1>
+                <p className="text-xs text-gray-500">Real-time log of all QR code scan events</p>
             </div>
 
-            {/* Today's Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                 {[
-                    ["Today's Scans", STATS_TODAY.total,       'text-blue-600'],
+                    ["Today's Scans", STATS_TODAY.total,       'text-violet-600'],
                     ['Successful',    STATS_TODAY.success,     'text-emerald-600'],
-                    ['Failed',        STATS_TODAY.failed,      'text-red-500'],
-                    ['Avg Response',  STATS_TODAY.avgResponse, 'text-amber-500'],
+                    ['Failed',        STATS_TODAY.failed,      'text-rose-500'],
+                    ['Avg Response',  STATS_TODAY.avgResponse, 'text-amber-600'],
                 ].map(([label, val, colorClass]) => (
-                    <div key={label} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                    <div key={label} className="bg-white rounded-md border border-violet-100 p-4">
+                        <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
                             {label}
                         </div>
-                        <div className={`text-[1.75rem] font-bold ${colorClass}`}>
+                        <div className={`text-2xl font-semibold ${colorClass}`}>
                             {typeof val === 'number' ? val.toLocaleString('en-IN') : val}
                         </div>
                     </div>
@@ -134,44 +118,42 @@ export default function ScanLogsPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
+            <div className="bg-white rounded-md border border-violet-100 p-3 mb-4 flex flex-wrap gap-3 items-center">
                 <div className="flex flex-wrap gap-1.5">
                     {RESULTS.map(r => (
                         <button
                             key={r}
                             onClick={() => { setResultFilter(r); setPage(1); }}
-                            className={`px-3 py-1.5 rounded-lg border text-[0.8125rem] font-medium transition-colors cursor-pointer ${
+                            className={cn(
+                                'px-3 py-1.5 rounded-md border text-xs font-medium transition-all',
                                 resultFilter === r
-                                    ? 'border-blue-500 bg-blue-600 text-white font-bold'
-                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                            }`}
+                                    ? 'bg-gradient-to-r from-violet-500 to-violet-700 text-white border-transparent'
+                                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                            )}
                         >
                             {r === 'ALL' ? 'All Results' : humanizeEnum(r)}
                         </button>
                     ))}
                 </div>
                 <div className="ml-auto relative">
-                    <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                         value={search}
                         onChange={e => { setSearch(e.target.value); setPage(1); }}
                         placeholder="Search student, city, token..."
-                        className="py-1.5 pl-8 pr-3 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 w-[220px]"
+                        className="py-1.5 pl-8 pr-3 border border-gray-200 rounded-md text-sm outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 w-[220px]"
                     />
                 </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-md border border-violet-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-slate-200 bg-slate-50">
+                            <tr className="border-b border-gray-200 bg-gray-50">
                                 {['Time', 'Result', 'Student', 'Token', 'Location', 'Device', 'Response'].map(h => (
-                                    <th
-                                        key={h}
-                                        className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                                         {h}
                                     </th>
                                 ))}
@@ -180,9 +162,9 @@ export default function ScanLogsPage() {
                         <tbody>
                             {paginated.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="py-16 text-center text-slate-400">
-                                        <ScanLine size={36} className="mx-auto mb-3 opacity-30" />
-                                        <div className="font-medium">No scan logs found</div>
+                                    <td colSpan={7} className="py-16 text-center text-gray-400">
+                                        <ScanLine size={32} className="mx-auto mb-3 text-gray-300" />
+                                        <div className="text-sm font-medium">No scan logs found</div>
                                     </td>
                                 </tr>
                             ) : (
@@ -192,62 +174,68 @@ export default function ScanLogsPage() {
                                     return (
                                         <tr
                                             key={scan.id}
-                                            className={`hover:bg-slate-50 transition-colors ${!isLast ? 'border-b border-slate-100' : ''}`}
+                                            className={cn(
+                                                'hover:bg-gray-50 transition-colors',
+                                                !isLast && 'border-b border-gray-100'
+                                            )}
                                         >
                                             {/* Time */}
                                             <td className="px-4 py-3">
-                                                <div className="text-[0.8125rem] font-medium text-slate-800 whitespace-nowrap">
+                                                <div className="text-xs font-medium text-gray-800 whitespace-nowrap">
                                                     {formatRelativeTime(scan.created_at)}
                                                 </div>
-                                                <div className="text-xs text-slate-400">
+                                                <div className="text-[10px] text-gray-500">
                                                     {new Date(scan.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
                                             </td>
 
                                             {/* Result badge */}
                                             <td className="px-4 py-3">
-                                                <span
-                                                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold"
-                                                    style={{ background: s.bg, color: s.color }}
-                                                >
+                                                <span className={cn(
+                                                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border',
+                                                    s.bg, s.color,
+                                                    scan.result === 'SUCCESS' ? 'border-emerald-200' :
+                                                    (scan.result === 'EXPIRED' || scan.result === 'RATE_LIMITED') ? 'border-amber-200' :
+                                                    'border-rose-200'
+                                                )}>
                                                     <s.Icon size={11} />
                                                     {humanizeEnum(scan.result)}
                                                 </span>
                                             </td>
 
                                             {/* Student */}
-                                            <td className={`px-4 py-3 text-sm ${scan.student_name ? 'font-medium text-slate-800' : 'text-slate-400'}`}>
+                                            <td className={`px-4 py-3 text-xs ${scan.student_name ? 'font-medium text-gray-800' : 'text-gray-400'}`}>
                                                 {scan.student_name || 'Unknown'}
                                             </td>
 
                                             {/* Token */}
                                             <td className="px-4 py-3">
-                                                <code className="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">
+                                                <code className="font-mono text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">
                                                     {maskTokenHash(scan.token_hash)}
                                                 </code>
                                             </td>
 
                                             {/* Location */}
                                             <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1 text-[0.8125rem] text-slate-600">
-                                                    <MapPin size={12} className="text-slate-400" />
+                                                <div className="flex items-center gap-1 text-xs text-gray-600">
+                                                    <MapPin size={11} className="text-gray-400" />
                                                     {scan.ip_city}
                                                 </div>
-                                                <div className="text-xs text-slate-400 font-mono">{scan.ip_address}</div>
+                                                <div className="text-[10px] text-gray-500 font-mono">{scan.ip_address}</div>
                                             </td>
 
                                             {/* Device */}
                                             <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1 text-xs text-slate-500">
-                                                    <Monitor size={12} />
+                                                <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                                                    <Monitor size={11} />
                                                     {scan.device.split('/')[0]}
                                                 </div>
-                                                <div className="text-xs text-slate-400">{scan.device.split('/')[1]}</div>
+                                                <div className="text-[10px] text-gray-400">{scan.device.split('/')[1]}</div>
                                             </td>
 
                                             {/* Response time */}
                                             <td className="px-4 py-3">
-                                                <span className={`font-mono text-[0.8125rem] font-semibold ${scan.response_time_ms > 300 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                                                <span className={`font-mono text-xs font-semibold ${scan.response_time_ms > 300 ? 'text-amber-600' : 'text-emerald-600'}`}>
                                                     {scan.response_time_ms}ms
                                                 </span>
                                             </td>
@@ -261,8 +249,8 @@ export default function ScanLogsPage() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="px-4 py-3.5 border-t border-slate-100 flex items-center justify-between">
-                        <span className="text-[0.8125rem] text-slate-400">
+                    <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
+                        <span className="text-[10px] text-gray-500">
                             Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
                         </span>
                         <div className="flex gap-1">
@@ -270,11 +258,12 @@ export default function ScanLogsPage() {
                                 <button
                                     key={p}
                                     onClick={() => setPage(p)}
-                                    className={`w-8 h-8 rounded-lg border text-[0.8125rem] cursor-pointer transition-colors ${
+                                    className={cn(
+                                        'w-8 h-8 rounded-md border text-xs transition-all',
                                         p === page
-                                            ? 'border-blue-500 bg-blue-600 text-white font-bold'
-                                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                    }`}
+                                            ? 'bg-gradient-to-r from-violet-500 to-violet-700 text-white border-transparent'
+                                            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                                    )}
                                 >
                                     {p}
                                 </button>

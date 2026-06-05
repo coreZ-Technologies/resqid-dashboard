@@ -14,41 +14,41 @@ import {
 } from 'lucide-react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const ROLES = ['All', 'Admin', 'Teacher', 'Staff', 'Accountant'];
+const ROLES = ['All', 'Admin', 'Teacher'];
 const STATUS_OPTS = ['All', 'Active', 'Inactive', 'Suspended'];
 
 const ROLE_STYLE = {
-    Admin:      { bg: 'bg-violet-50',  text: 'text-violet-700', border: 'border-violet-200' },
-    Teacher:    { bg: 'bg-blue-50',    text: 'text-blue-700',   border: 'border-blue-200'   },
-    Staff:      { bg: 'bg-slate-100',  text: 'text-slate-600',  border: 'border-slate-200'  },
-    Accountant: { bg: 'bg-amber-50',   text: 'text-amber-700',  border: 'border-amber-200'  },
+    Admin: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+    Teacher: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+    Staff: { bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' },
+    Accountant: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
 };
 
 const STATUS_STYLE = {
-    Active:    { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-    Inactive:  { bg: 'bg-slate-100',  text: 'text-slate-500',   dot: 'bg-slate-400'   },
-    Suspended: { bg: 'bg-red-50',     text: 'text-red-700',     dot: 'bg-red-500'     },
+    Active: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+    Inactive: { bg: 'bg-slate-100', text: 'text-slate-500', dot: 'bg-slate-400' },
+    Suspended: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
 };
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 const MOCK_USERS = [
-    { id: 'u1',  name: 'Animesh Karan',    email: 'animesh@springdaleschool.in',   phone: '+91 98765 43210', role: 'Admin',      status: 'Active',    avatar: 'AK', color: 'bg-blue-600',    lastLogin: '2026-05-30T10:22:00Z', joined: '2024-01-15' },
-    { id: 'u2',  name: 'Mr. Suresh Kumar', email: 'suresh.kumar@springdale.in',    phone: '+91 97654 32109', role: 'Teacher',    status: 'Active',    avatar: 'SK', color: 'bg-violet-500',  lastLogin: '2026-05-30T08:10:00Z', joined: '2024-03-01' },
-    { id: 'u3',  name: 'Ms. Priya Nair',   email: 'priya.nair@springdale.in',      phone: '+91 96543 21098', role: 'Teacher',    status: 'Active',    avatar: 'PN', color: 'bg-emerald-500', lastLogin: '2026-05-29T15:45:00Z', joined: '2024-03-01' },
-    { id: 'u4',  name: 'Mr. Amit Das',     email: 'amit.das@springdale.in',        phone: '+91 95432 10987', role: 'Teacher',    status: 'Active',    avatar: 'AD', color: 'bg-amber-500',   lastLogin: '2026-05-30T09:30:00Z', joined: '2024-06-01' },
-    { id: 'u5',  name: 'Ms. Sunita Roy',   email: 'sunita.roy@springdale.in',      phone: '+91 94321 09876', role: 'Teacher',    status: 'Inactive',  avatar: 'SR', color: 'bg-rose-500',    lastLogin: '2026-04-10T11:20:00Z', joined: '2024-06-01' },
-    { id: 'u6',  name: 'Ramesh Verma',     email: 'ramesh.v@springdale.in',        phone: '+91 93210 98765', role: 'Staff',      status: 'Active',    avatar: 'RV', color: 'bg-cyan-500',    lastLogin: '2026-05-30T07:55:00Z', joined: '2023-09-01' },
-    { id: 'u7',  name: 'Kavitha Reddy',    email: 'kavitha.r@springdale.in',       phone: '+91 92109 87654', role: 'Accountant', status: 'Active',    avatar: 'KR', color: 'bg-teal-500',    lastLogin: '2026-05-29T16:00:00Z', joined: '2023-07-15' },
-    { id: 'u8',  name: 'Deepak Sharma',    email: 'deepak.s@springdale.in',        phone: '+91 91098 76543', role: 'Staff',      status: 'Suspended', avatar: 'DS', color: 'bg-orange-500',  lastLogin: '2026-03-01T09:00:00Z', joined: '2022-11-01' },
+    { id: 'u1', name: 'Animesh Karan', email: 'animesh@springdaleschool.in', phone: '+91 98765 43210', role: 'Admin', status: 'Active', avatar: 'AK', color: 'bg-blue-600', lastLogin: '2026-05-30T10:22:00Z', joined: '2024-01-15' },
+    { id: 'u2', name: 'Mr. Suresh Kumar', email: 'suresh.kumar@springdale.in', phone: '+91 97654 32109', role: 'Teacher', status: 'Active', avatar: 'SK', color: 'bg-violet-500', lastLogin: '2026-05-30T08:10:00Z', joined: '2024-03-01' },
+    { id: 'u3', name: 'Ms. Priya Nair', email: 'priya.nair@springdale.in', phone: '+91 96543 21098', role: 'Teacher', status: 'Active', avatar: 'PN', color: 'bg-emerald-500', lastLogin: '2026-05-29T15:45:00Z', joined: '2024-03-01' },
+    { id: 'u4', name: 'Mr. Amit Das', email: 'amit.das@springdale.in', phone: '+91 95432 10987', role: 'Teacher', status: 'Active', avatar: 'AD', color: 'bg-amber-500', lastLogin: '2026-05-30T09:30:00Z', joined: '2024-06-01' },
+    { id: 'u5', name: 'Ms. Sunita Roy', email: 'sunita.roy@springdale.in', phone: '+91 94321 09876', role: 'Teacher', status: 'Inactive', avatar: 'SR', color: 'bg-rose-500', lastLogin: '2026-04-10T11:20:00Z', joined: '2024-06-01' },
+    { id: 'u6', name: 'Ramesh Verma', email: 'ramesh.v@springdale.in', phone: '+91 93210 98765', role: 'Staff', status: 'Active', avatar: 'RV', color: 'bg-cyan-500', lastLogin: '2026-05-30T07:55:00Z', joined: '2023-09-01' },
+    { id: 'u7', name: 'Kavitha Reddy', email: 'kavitha.r@springdale.in', phone: '+91 92109 87654', role: 'Accountant', status: 'Active', avatar: 'KR', color: 'bg-teal-500', lastLogin: '2026-05-29T16:00:00Z', joined: '2023-07-15' },
+    { id: 'u8', name: 'Deepak Sharma', email: 'deepak.s@springdale.in', phone: '+91 91098 76543', role: 'Staff', status: 'Suspended', avatar: 'DS', color: 'bg-orange-500', lastLogin: '2026-03-01T09:00:00Z', joined: '2022-11-01' },
 ];
 
 // ─── Add/Edit Modal ───────────────────────────────────────────────────────────
 const UserModal = ({ user, onClose, onSave }) => {
-    const [name, setName]       = useState(user?.name || '');
-    const [email, setEmail]     = useState(user?.email || '');
-    const [phone, setPhone]     = useState(user?.phone || '');
-    const [role, setRole]       = useState(user?.role || 'Teacher');
-    const [status, setStatus]   = useState(user?.status || 'Active');
+    const [name, setName] = useState(user?.name || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [phone, setPhone] = useState(user?.phone || '');
+    const [role, setRole] = useState(user?.role || 'Teacher');
+    const [status, setStatus] = useState(user?.status || 'Active');
     const [showPass, setShowPass] = useState(false);
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -100,7 +100,7 @@ const UserModal = ({ user, onClose, onSave }) => {
                             <div className="relative">
                                 <select value={role} onChange={e => setRole(e.target.value)}
                                     className="w-full appearance-none border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-500 bg-white cursor-pointer">
-                                    {['Admin','Teacher','Staff','Accountant'].map(r => <option key={r}>{r}</option>)}
+                                    {['Admin', 'Teacher'].map(r => <option key={r}>{r}</option>)}
                                 </select>
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                             </div>
@@ -110,7 +110,7 @@ const UserModal = ({ user, onClose, onSave }) => {
                             <div className="relative">
                                 <select value={status} onChange={e => setStatus(e.target.value)}
                                     className="w-full appearance-none border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-500 bg-white cursor-pointer">
-                                    {['Active','Inactive','Suspended'].map(s => <option key={s}>{s}</option>)}
+                                    {['Active', 'Inactive', 'Suspended'].map(s => <option key={s}>{s}</option>)}
                                 </select>
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                             </div>
@@ -147,16 +147,16 @@ const UserModal = ({ user, onClose, onSave }) => {
 
 // ─── User Row ────────────────────────────────────────────────────────────────
 const UserRow = ({ user, onEdit, onDelete, isLast }) => {
-    const role   = ROLE_STYLE[user.role]     || ROLE_STYLE.Staff;
+    const role = ROLE_STYLE[user.role] || ROLE_STYLE.Staff;
     const status = STATUS_STYLE[user.status] || STATUS_STYLE.Inactive;
 
     const formatLastLogin = (iso) => {
         if (!iso) return 'Never';
         const diff = Date.now() - new Date(iso).getTime();
         const mins = Math.floor(diff / 60000);
-        if (mins < 60)  return `${mins}m ago`;
+        if (mins < 60) return `${mins}m ago`;
         const hrs = Math.floor(mins / 60);
-        if (hrs < 24)   return `${hrs}h ago`;
+        if (hrs < 24) return `${hrs}h ago`;
         return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
     };
 
@@ -213,15 +213,15 @@ const UserRow = ({ user, onEdit, onDelete, isLast }) => {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ManageUsersPage() {
-    const [users, setUsers]         = useState(MOCK_USERS);
-    const [search, setSearch]       = useState('');
-    const [roleFilter, setRole]     = useState('All');
+    const [users, setUsers] = useState(MOCK_USERS);
+    const [search, setSearch] = useState('');
+    const [roleFilter, setRole] = useState('All');
     const [statusFilter, setStatus] = useState('All');
     const [showModal, setShowModal] = useState(false);
-    const [editUser, setEditUser]   = useState(null);
+    const [editUser, setEditUser] = useState(null);
 
     const filtered = useMemo(() => users.filter(u => {
-        const matchRole   = roleFilter   === 'All' || u.role   === roleFilter;
+        const matchRole = roleFilter === 'All' || u.role === roleFilter;
         const matchStatus = statusFilter === 'All' || u.status === statusFilter;
         const matchSearch = !search ||
             u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -235,7 +235,7 @@ export default function ManageUsersPage() {
             setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, ...data } : u));
         } else {
             const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-            const colors = ['bg-blue-500','bg-violet-500','bg-emerald-500','bg-amber-500','bg-rose-500'];
+            const colors = ['bg-blue-500', 'bg-violet-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
             setUsers(prev => [...prev, {
                 id: `u${Date.now()}`, ...data,
                 avatar: initials,
@@ -248,9 +248,9 @@ export default function ManageUsersPage() {
     };
 
     const stats = {
-        total:     users.length,
-        active:    users.filter(u => u.status === 'Active').length,
-        admins:    users.filter(u => u.role === 'Admin').length,
+        total: users.length,
+        active: users.filter(u => u.status === 'Active').length,
+        admins: users.filter(u => u.role === 'Admin').length,
         suspended: users.filter(u => u.status === 'Suspended').length,
     };
 
@@ -284,10 +284,10 @@ export default function ManageUsersPage() {
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 {[
-                    { label: 'Total Users',  value: stats.total,     icon: <Users size={20} className="text-white" />,     bg: 'bg-blue-500'    },
-                    { label: 'Active',       value: stats.active,    icon: <UserCheck size={20} className="text-white" />, bg: 'bg-emerald-500' },
-                    { label: 'Admins',       value: stats.admins,    icon: <Shield size={20} className="text-white" />,    bg: 'bg-violet-500'  },
-                    { label: 'Suspended',    value: stats.suspended, icon: <UserX size={20} className="text-white" />,     bg: 'bg-red-500'     },
+                    { label: 'Total Users', value: stats.total, icon: <Users size={20} className="text-white" />, bg: 'bg-blue-500' },
+                    { label: 'Active', value: stats.active, icon: <UserCheck size={20} className="text-white" />, bg: 'bg-emerald-500' },
+                    { label: 'Admins', value: stats.admins, icon: <Shield size={20} className="text-white" />, bg: 'bg-violet-500' },
+                    { label: 'Suspended', value: stats.suspended, icon: <UserX size={20} className="text-white" />, bg: 'bg-red-500' },
                 ].map(({ label, value, icon, bg }) => (
                     <div key={label} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4 flex items-center gap-3">
                         <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>{icon}</div>
@@ -331,7 +331,7 @@ export default function ManageUsersPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-slate-200 bg-slate-50">
-                                {['User','Phone','Role','Status','Last Login','Joined','Actions'].map(h => (
+                                {['User', 'Phone', 'Role', 'Status', 'Last Login', 'Joined', 'Actions'].map(h => (
                                     <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>

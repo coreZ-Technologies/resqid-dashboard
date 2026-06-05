@@ -101,7 +101,7 @@ const DEFAULT_PROFILE = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// VALIDATION (pure function — defined outside component, no stale closure)
+// VALIDATION (pure function)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function runValidation(p) {
@@ -142,18 +142,18 @@ function runValidation(p) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SMALL SHARED COMPONENTS
+// SMALL SHARED COMPONENTS (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SectionHeader({ icon: Icon, iconClass, title, badge }) {
     return (
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', iconClass)}>
-                <Icon size={18} />
+        <div className="flex items-center gap-3 mb-6 pb-3 border-b border-gray-200">
+            <div className={cn('w-8 h-8 rounded-md flex items-center justify-center bg-gray-100', iconClass)}>
+                <Icon size={16} className="text-gray-600" />
             </div>
             <div>
-                <h2 className="text-base font-semibold text-slate-800">{title}</h2>
-                {badge && <span className="text-xs text-slate-400">{badge}</span>}
+                <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+                {badge && <span className="text-[10px] text-gray-500">{badge}</span>}
             </div>
         </div>
     );
@@ -161,12 +161,12 @@ function SectionHeader({ icon: Icon, iconClass, title, badge }) {
 
 function FieldLabel({ children, hint }) {
     return (
-        <div className="flex items-center gap-1.5 mb-1.5">
-            <label className="text-sm font-medium text-slate-700">{children}</label>
+        <div className="flex items-center gap-1.5 mb-1">
+            <label className="text-xs font-medium text-gray-700">{children}</label>
             {hint && (
                 <span className="group relative">
-                    <Info size={12} className="text-slate-300 cursor-help" />
-                    <span className="absolute z-10 left-5 top-0 w-48 bg-slate-800 text-white text-xs rounded-lg px-2 py-1.5 hidden group-hover:block shadow-lg">
+                    <Info size={11} className="text-gray-300 cursor-help" />
+                    <span className="absolute z-10 left-5 top-0 w-48 bg-gray-800 text-white text-[10px] rounded-md px-2 py-1.5 hidden group-hover:block shadow-md">
                         {hint}
                     </span>
                 </span>
@@ -179,9 +179,9 @@ function StyledInput({ className, ...props }) {
     return (
         <input
             className={cn(
-                'w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-800',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                'placeholder:text-slate-300',
+                'w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-800',
+                'focus:outline-none focus:ring-1 focus:ring-violet-400 focus:border-violet-400',
+                'placeholder:text-gray-300',
                 className
             )}
             {...props}
@@ -193,8 +193,8 @@ function StyledSelect({ className, children, ...props }) {
     return (
         <select
             className={cn(
-                'w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-800',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-800',
+                'focus:outline-none focus:ring-1 focus:ring-violet-400 focus:border-violet-400',
                 className
             )}
             {...props}
@@ -204,12 +204,12 @@ function StyledSelect({ className, children, ...props }) {
     );
 }
 
-function RangeControl({ label, hint, value, min, max, onChange, unit = '', accentClass = 'accent-blue-600' }) {
+function RangeControl({ label, hint, value, min, max, onChange, unit = '', accentClass = 'accent-violet-500' }) {
     return (
         <div className="space-y-2">
             <div className="flex items-center justify-between">
                 <FieldLabel hint={hint}>{label}</FieldLabel>
-                <span className="text-sm font-semibold text-blue-600 tabular-nums">{value}{unit}</span>
+                <span className="text-xs font-semibold text-gray-800 tabular-nums">{value}{unit}</span>
             </div>
             <input
                 type="range"
@@ -217,26 +217,26 @@ function RangeControl({ label, hint, value, min, max, onChange, unit = '', accen
                 max={max}
                 value={value}
                 onChange={e => onChange(parseInt(e.target.value))}
-                className={cn('w-full h-1.5 rounded-full appearance-none cursor-pointer bg-slate-200', accentClass)}
+                className={cn('w-full h-1 rounded-full appearance-none cursor-pointer bg-gray-200', accentClass)}
             />
-            <div className="flex justify-between text-[11px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-gray-400">
                 <span>{min}</span>
-                <span className="text-slate-300">──────────────</span>
+                <span className="text-gray-300">──────────────</span>
                 <span>{max}</span>
             </div>
         </div>
     );
 }
 
-function TogglePill({ label, active, onClick, activeClass = 'bg-blue-600 text-white' }) {
+function TogglePill({ label, active, onClick, activeClass = 'bg-violet-600 text-white' }) {
     return (
         <button
             onClick={onClick}
             className={cn(
-                'px-3 py-1.5 rounded-xl text-sm font-medium transition-all border',
+                'px-2.5 py-1 rounded-md text-xs font-medium transition-all border',
                 active
-                    ? cn(activeClass, 'border-transparent shadow-sm')
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    ? cn(activeClass, 'border-transparent')
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
             )}
         >
             {label}
@@ -249,14 +249,14 @@ function Toggle({ checked, onChange }) {
         <div
             onClick={() => onChange(!checked)}
             className={cn(
-                'w-10 h-5.5 rounded-full relative cursor-pointer transition-colors shrink-0',
-                checked ? 'bg-blue-600' : 'bg-slate-200'
+                'w-9 h-5 rounded-full relative cursor-pointer transition-colors shrink-0',
+                checked ? 'bg-violet-600' : 'bg-gray-200'
             )}
-            style={{ height: 22, width: 40 }}
+            style={{ height: 20, width: 36 }}
         >
             <div className={cn(
-                'w-4 h-4 bg-white rounded-full absolute top-[3px] shadow transition-transform',
-                checked ? 'translate-x-[19px]' : 'translate-x-[3px]'
+                'w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] shadow-sm transition-transform',
+                checked ? 'translate-x-[18px]' : 'translate-x-[3px]'
             )} />
         </div>
     );
@@ -264,10 +264,10 @@ function Toggle({ checked, onChange }) {
 
 function ToggleRow({ label, description, checked, onChange }) {
     return (
-        <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+        <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
             <div className="pr-4">
-                <p className="text-sm font-medium text-slate-700">{label}</p>
-                {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+                <p className="text-xs font-medium text-gray-700">{label}</p>
+                {description && <p className="text-[10px] text-gray-500 mt-0.5">{description}</p>}
             </div>
             <Toggle checked={checked} onChange={onChange} />
         </div>
@@ -277,15 +277,15 @@ function ToggleRow({ label, description, checked, onChange }) {
 function IssueList({ issues, severity }) {
     if (!issues?.length) return null;
     const styles = {
-        hard: { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-700', icon: <XCircle size={13} className="text-red-500 shrink-0 mt-0.5" /> },
-        medium: { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', icon: <AlertCircle size={13} className="text-amber-500 shrink-0 mt-0.5" /> },
-        soft: { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-700', icon: <Info size={13} className="text-blue-400 shrink-0 mt-0.5" /> },
+        hard: { bg: 'bg-rose-50', border: 'border-rose-100', text: 'text-rose-700', icon: <X size={11} className="text-rose-500 shrink-0 mt-0.5" /> },
+        medium: { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', icon: <AlertCircle size={11} className="text-amber-500 shrink-0 mt-0.5" /> },
+        soft: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', icon: <Info size={11} className="text-gray-400 shrink-0 mt-0.5" /> },
     }[severity];
 
     return (
-        <div className="space-y-1.5 mt-3">
+        <div className="space-y-1 mt-2">
             {issues.map((issue, i) => (
-                <div key={i} className={cn('flex items-start gap-2 p-2.5 rounded-xl border text-xs', styles.bg, styles.border, styles.text)}>
+                <div key={i} className={cn('flex items-start gap-1.5 p-2 rounded-md border text-[10px]', styles.bg, styles.border, styles.text)}>
                     {styles.icon}
                     {issue}
                 </div>
@@ -294,20 +294,15 @@ function IssueList({ issues, severity }) {
     );
 }
 
-// XCircle not imported above — define locally
-function XCircle({ size, className }) {
-    return <X size={size} className={className} />;
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION COMPONENTS
+// SECTION COMPONENTS (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function GeneralSection({ data, onChange }) {
     const set = (key, val) => onChange({ ...data, [key]: val });
     return (
         <div>
-            <SectionHeader icon={School} iconClass="bg-blue-100 text-blue-600" title="General School Information" badge="Basic setup" />
+            <SectionHeader icon={School} iconClass="text-violet-600" title="General School Information" badge="Basic setup" />
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <FieldLabel>School Name</FieldLabel>
@@ -343,18 +338,18 @@ function StructureSection({ data, onChange }) {
 
     return (
         <div>
-            <SectionHeader icon={Clock} iconClass="bg-green-100 text-green-600" title="Schedule Structure" badge="Hard constraints — cannot be violated" />
+            <SectionHeader icon={Clock} iconClass="text-violet-600" title="Schedule Structure" badge="Hard constraints — cannot be violated" />
             <div className="space-y-5">
                 <div>
-                    <FieldLabel>Working Days <span className="text-slate-400 font-normal">({data.workingDays.length} selected)</span></FieldLabel>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <FieldLabel>Working Days <span className="text-gray-400 font-normal">({data.workingDays.length} selected)</span></FieldLabel>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
                         {DAYS_OF_WEEK.map(day => (
                             <TogglePill
                                 key={day}
                                 label={day.slice(0, 3)}
                                 active={data.workingDays.includes(day)}
                                 onClick={() => toggleDay(day)}
-                                activeClass="bg-green-600 text-white"
+                                activeClass="bg-violet-600 text-white"
                             />
                         ))}
                     </div>
@@ -399,14 +394,13 @@ function StructureSection({ data, onChange }) {
                     </div>
                 </div>
 
-                {/* Computed preview */}
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Computed Week</p>
-                    <p className="text-sm text-slate-700">
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+                    <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Computed Week</p>
+                    <p className="text-xs text-gray-700">
                         <span className="font-semibold">{data.periodsPerDay * data.workingDays.length}</span> total periods/week
-                        <span className="mx-2 text-slate-300">·</span>
+                        <span className="mx-2 text-gray-300">·</span>
                         <span className="font-semibold">{data.periodsPerDay}</span> periods/day
-                        <span className="mx-2 text-slate-300">·</span>
+                        <span className="mx-2 text-gray-300">·</span>
                         <span className="font-semibold">{data.workingDays.length}</span> days
                     </p>
                 </div>
@@ -434,8 +428,8 @@ function TeacherConstraintsSection({ data, onChange, periodsPerDay }) {
 
     return (
         <div>
-            <SectionHeader icon={UserCheck} iconClass="bg-violet-100 text-violet-600" title="Teacher Constraints" badge="Hard constraints — set by school admin, nobody overrides" />
-            <div className="space-y-6">
+            <SectionHeader icon={UserCheck} iconClass="text-violet-600" title="Teacher Constraints" badge="Hard constraints — set by school admin, nobody overrides" />
+            <div className="space-y-5">
                 {Object.entries(data).map(([key, constraint]) => (
                     <RangeControl
                         key={key}
@@ -445,7 +439,7 @@ function TeacherConstraintsSection({ data, onChange, periodsPerDay }) {
                         min={constraint.min}
                         max={key === 'maxClassesPerDay' ? Math.min(constraint.max, periodsPerDay) : constraint.max}
                         onChange={val => set(key, val)}
-                        accentClass="accent-violet-600"
+                        accentClass="accent-violet-500"
                     />
                 ))}
             </div>
@@ -472,8 +466,8 @@ function ClassConstraintsSection({ data, onChange }) {
 
     return (
         <div>
-            <SectionHeader icon={GraduationCap} iconClass="bg-orange-100 text-orange-600" title="Class Constraints" badge="Hard constraints" />
-            <div className="space-y-6">
+            <SectionHeader icon={GraduationCap} iconClass="text-violet-600" title="Class Constraints" badge="Hard constraints" />
+            <div className="space-y-5">
                 {Object.entries(data)
                     .filter(([, v]) => typeof v === 'object' && v.min !== undefined)
                     .map(([key, constraint]) => (
@@ -484,18 +478,18 @@ function ClassConstraintsSection({ data, onChange }) {
                             min={constraint.min}
                             max={constraint.max}
                             onChange={val => setRange(key, val)}
-                            accentClass="accent-orange-500"
+                            accentClass="accent-violet-500"
                         />
                     ))
                 }
 
                 {[
-                    { key: 'preferredMorningSubjects', label: 'Preferred Morning Subjects', activeClass: 'bg-amber-500 text-white' },
-                    { key: 'preferredAfternoonSubjects', label: 'Preferred Afternoon Subjects', activeClass: 'bg-orange-500 text-white' },
+                    { key: 'preferredMorningSubjects', label: 'Preferred Morning Subjects', activeClass: 'bg-violet-600 text-white' },
+                    { key: 'preferredAfternoonSubjects', label: 'Preferred Afternoon Subjects', activeClass: 'bg-violet-600 text-white' },
                 ].map(({ key, label, activeClass }) => (
                     <div key={key}>
                         <FieldLabel>{label}</FieldLabel>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                             {ALL_SUBJECTS.map(s => (
                                 <TogglePill
                                     key={s}
@@ -529,12 +523,18 @@ function SubjectConstraintsSection({ data, onChange }) {
     };
 
     const PRIORITY_LABELS = { 1: 'Low', 2: 'Low+', 3: 'Mid', 4: 'High', 5: 'Critical' };
-    const PRIORITY_COLORS = { 1: 'bg-slate-200 text-slate-600', 2: 'bg-blue-100 text-blue-700', 3: 'bg-amber-100 text-amber-700', 4: 'bg-orange-100 text-orange-700', 5: 'bg-red-100 text-red-700' };
+    const PRIORITY_COLORS = {
+        1: 'bg-gray-100 text-gray-600',
+        2: 'bg-gray-100 text-gray-600',
+        3: 'bg-gray-100 text-gray-600',
+        4: 'bg-violet-100 text-violet-700',
+        5: 'bg-violet-200 text-violet-800',
+    };
 
     return (
         <div>
-            <SectionHeader icon={BookOpen} iconClass="bg-red-100 text-red-600" title="Subject Rules" badge="Medium constraints — headmaster can override" />
-            <div className="space-y-6">
+            <SectionHeader icon={BookOpen} iconClass="text-violet-600" title="Subject Rules" badge="Medium constraints — headmaster can override" />
+            <div className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                     <RangeControl
                         label="Min Periods / Week"
@@ -543,7 +543,7 @@ function SubjectConstraintsSection({ data, onChange }) {
                         min={data.minPeriodsPerWeek.min}
                         max={data.minPeriodsPerWeek.max}
                         onChange={val => setRange('minPeriodsPerWeek', val)}
-                        accentClass="accent-red-500"
+                        accentClass="accent-violet-500"
                     />
                     <RangeControl
                         label="Max Periods / Week"
@@ -552,32 +552,31 @@ function SubjectConstraintsSection({ data, onChange }) {
                         min={data.maxPeriodsPerWeek.min}
                         max={data.maxPeriodsPerWeek.max}
                         onChange={val => setRange('maxPeriodsPerWeek', val)}
-                        accentClass="accent-red-500"
+                        accentClass="accent-violet-500"
                     />
                 </div>
 
-                {/* Subject priority matrix */}
                 <div>
                     <FieldLabel hint="Higher priority subjects get scheduled first and in better slots">Subject Scheduling Priority</FieldLabel>
-                    <div className="mt-2 rounded-xl border border-slate-200 overflow-hidden">
+                    <div className="mt-2 rounded-md border border-gray-200 overflow-hidden">
                         {Object.entries(data.subjectPriority).map(([subject, priority], i) => (
-                            <div key={subject} className={cn('flex items-center px-4 py-3 gap-4', i % 2 === 0 ? 'bg-white' : 'bg-slate-50/60')}>
-                                <span className="text-sm text-slate-700 w-40 shrink-0">{subject}</span>
+                            <div key={subject} className={cn('flex items-center px-3 py-2 gap-3', i % 2 === 0 ? 'bg-white' : 'bg-gray-50')}>
+                                <span className="text-xs text-gray-700 w-36 shrink-0">{subject}</span>
                                 <div className="flex gap-1 flex-1">
                                     {[1, 2, 3, 4, 5].map(v => (
                                         <button
                                             key={v}
                                             onClick={() => setPriority(subject, v)}
                                             className={cn(
-                                                'flex-1 py-1 rounded-lg text-xs font-semibold transition-all',
-                                                priority === v ? PRIORITY_COLORS[v] : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                                                'flex-1 py-1 rounded-md text-[10px] font-semibold transition-all',
+                                                priority === v ? PRIORITY_COLORS[v] : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                                             )}
                                         >
                                             {v}
                                         </button>
                                     ))}
                                 </div>
-                                <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full w-16 text-center', PRIORITY_COLORS[priority])}>
+                                <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full w-14 text-center', PRIORITY_COLORS[priority])}>
                                     {PRIORITY_LABELS[priority]}
                                 </span>
                             </div>
@@ -585,14 +584,13 @@ function SubjectConstraintsSection({ data, onChange }) {
                     </div>
                 </div>
 
-                {/* Lab & special equipment */}
                 {[
                     { key: 'labRequired', label: 'Requires Lab', activeClass: 'bg-violet-600 text-white' },
-                    { key: 'specialEquipment', label: 'Requires Special Equipment', activeClass: 'bg-teal-600 text-white' },
+                    { key: 'specialEquipment', label: 'Requires Special Equipment', activeClass: 'bg-violet-600 text-white' },
                 ].map(({ key, label, activeClass }) => (
                     <div key={key}>
                         <FieldLabel>{label}</FieldLabel>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                             {ALL_SUBJECTS.map(s => (
                                 <TogglePill
                                     key={s}
@@ -626,8 +624,8 @@ function RoomSection({ data, onChange }) {
 
     return (
         <div>
-            <SectionHeader icon={Building2} iconClass="bg-teal-100 text-teal-600" title="Room & Facility Setup" badge="Hard constraints" />
-            <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+            <SectionHeader icon={Building2} iconClass="text-violet-600" title="Room & Facility Setup" badge="Hard constraints" />
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                 {Object.entries(data).map(([key, constraint]) => (
                     <RangeControl
                         key={key}
@@ -637,7 +635,7 @@ function RoomSection({ data, onChange }) {
                         min={constraint.min}
                         max={constraint.max}
                         onChange={val => set(key, val)}
-                        accentClass="accent-teal-600"
+                        accentClass="accent-violet-500"
                     />
                 ))}
             </div>
@@ -654,17 +652,17 @@ function PreferencesSection({ data, onChange }) {
 
     return (
         <div>
-            <SectionHeader icon={Target} iconClass="bg-indigo-100 text-indigo-600" title="Time Preferences" badge="Soft constraints — solver respects but can bend" />
-            <div className="space-y-6">
+            <SectionHeader icon={Target} iconClass="text-violet-600" title="Time Preferences" badge="Soft constraints — solver respects but can bend" />
+            <div className="space-y-5">
                 {[
-                    { key: 'morningPreference', label: 'Morning Preference Subjects', activeClass: 'bg-amber-400 text-white' },
-                    { key: 'afternoonPreference', label: 'Afternoon Preference Subjects', activeClass: 'bg-indigo-500 text-white' },
-                    { key: 'avoidMondayMorning', label: 'Avoid Monday Morning', activeClass: 'bg-rose-500 text-white' },
-                    { key: 'avoidFridayAfternoon', label: 'Avoid Friday Afternoon', activeClass: 'bg-rose-500 text-white' },
+                    { key: 'morningPreference', label: 'Morning Preference Subjects', activeClass: 'bg-violet-600 text-white' },
+                    { key: 'afternoonPreference', label: 'Afternoon Preference Subjects', activeClass: 'bg-violet-600 text-white' },
+                    { key: 'avoidMondayMorning', label: 'Avoid Monday Morning', activeClass: 'bg-violet-600 text-white' },
+                    { key: 'avoidFridayAfternoon', label: 'Avoid Friday Afternoon', activeClass: 'bg-violet-600 text-white' },
                 ].map(({ key, label, activeClass }) => (
                     <div key={key}>
                         <FieldLabel>{label}</FieldLabel>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                             {ALL_SUBJECTS.map(s => (
                                 <TogglePill key={s} label={s} active={data[key].includes(s)} onClick={() => toggleList(key, s)} activeClass={activeClass} />
                             ))}
@@ -672,7 +670,7 @@ function PreferencesSection({ data, onChange }) {
                     </div>
                 ))}
 
-                <div className="rounded-xl border border-slate-200 overflow-hidden">
+                <div className="rounded-md border border-gray-200 overflow-hidden">
                     <ToggleRow
                         label="Prefer Lab After Theory"
                         description="Schedule practicals immediately after the corresponding theory period"
@@ -696,7 +694,7 @@ function SpecialSection({ data, onChange, periodsPerDay }) {
 
     return (
         <div>
-            <SectionHeader icon={Shield} iconClass="bg-amber-100 text-amber-600" title="Special Rules & Activities" badge="Soft constraints" />
+            <SectionHeader icon={Shield} iconClass="text-violet-600" title="Special Rules & Activities" badge="Soft constraints" />
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <FieldLabel hint="Day when teacher preparation / admin meetings are scheduled">Teacher Free Day</FieldLabel>
@@ -712,8 +710,8 @@ function SpecialSection({ data, onChange, periodsPerDay }) {
                     <FieldLabel>Assembly Duration (min)</FieldLabel>
                     <StyledInput type="number" min={5} max={60} value={data.assemblyDuration} onChange={e => set('assemblyDuration', parseInt(e.target.value) || 0)} />
                 </div>
-                <div className="col-span-2 border-t border-slate-100 pt-4 mt-2">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Club & Remedial Activities</p>
+                <div className="col-span-2 border-t border-gray-100 pt-4 mt-2">
+                    <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Club & Remedial Activities</p>
                 </div>
                 <div>
                     <FieldLabel>Club Activities Day</FieldLabel>
@@ -745,14 +743,14 @@ function SpecialSection({ data, onChange, periodsPerDay }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SECTIONS = [
-    { id: 'general', label: 'General Info', icon: School, dot: 'bg-blue-500' },
-    { id: 'structure', label: 'Schedule Structure', icon: Clock, dot: 'bg-green-500' },
-    { id: 'teachers', label: 'Teacher Constraints', icon: UserCheck, dot: 'bg-violet-500' },
-    { id: 'classes', label: 'Class Constraints', icon: GraduationCap, dot: 'bg-orange-500' },
-    { id: 'subjects', label: 'Subject Rules', icon: BookOpen, dot: 'bg-red-500' },
-    { id: 'rooms', label: 'Room Setup', icon: Building2, dot: 'bg-teal-500' },
-    { id: 'preferences', label: 'Time Preferences', icon: Target, dot: 'bg-indigo-500' },
-    { id: 'special', label: 'Special Rules', icon: Shield, dot: 'bg-amber-500' },
+    { id: 'general', label: 'General Info', icon: School },
+    { id: 'structure', label: 'Schedule Structure', icon: Clock },
+    { id: 'teachers', label: 'Teacher Constraints', icon: UserCheck },
+    { id: 'classes', label: 'Class Constraints', icon: GraduationCap },
+    { id: 'subjects', label: 'Subject Rules', icon: BookOpen },
+    { id: 'rooms', label: 'Room Setup', icon: Building2 },
+    { id: 'preferences', label: 'Time Preferences', icon: Target },
+    { id: 'special', label: 'Special Rules', icon: Shield },
 ];
 
 export default function TimetableSettingsPage() {
@@ -767,13 +765,12 @@ export default function TimetableSettingsPage() {
 
     const handleSave = useCallback(async () => {
         if (hasHardErrors) {
-            setActiveSection('teachers'); // jump to constraints
+            setActiveSection('teachers');
             return;
         }
         setSaveState('saving');
         try {
-            await new Promise(r => setTimeout(r, 1400)); // replace with API call
-            // await fetch('/api/school/timetable-settings', { method: 'POST', body: JSON.stringify(profile) })
+            await new Promise(r => setTimeout(r, 1400));
             setSaveState('saved');
             setTimeout(() => setSaveState('idle'), 3000);
         } catch {
@@ -789,23 +786,23 @@ export default function TimetableSettingsPage() {
     const activeIdx = SECTIONS.findIndex(s => s.id === activeSection);
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-violet-50">
             <div className="max-w-screen-xl mx-auto p-6">
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Timetable Configuration</h1>
-                        <p className="text-slate-500 text-sm mt-0.5">Set up school profile and constraints for timetable generation</p>
+                        <h1 className="text-xl font-semibold text-gray-800 tracking-tight">Timetable Configuration</h1>
+                        <p className="text-xs text-gray-500 mt-0.5">Set up school profile and constraints for timetable generation</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         {totalIssues > 0 && (
                             <div className={cn(
-                                'flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-xl',
-                                hasHardErrors ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                                'flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-md',
+                                hasHardErrors ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'
                             )}>
-                                <AlertTriangle size={13} />
+                                <AlertTriangle size={12} />
                                 {hasHardErrors
                                     ? `${validation.hard.length} hard error${validation.hard.length > 1 ? 's' : ''}`
                                     : `${totalIssues} suggestion${totalIssues > 1 ? 's' : ''}`
@@ -816,19 +813,19 @@ export default function TimetableSettingsPage() {
                             onClick={handleSave}
                             disabled={saveState === 'saving'}
                             className={cn(
-                                'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm',
-                                saveState === 'saved' ? 'bg-green-600 text-white'
-                                    : saveState === 'error' ? 'bg-red-600 text-white'
-                                        : hasHardErrors ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                                            : 'bg-blue-600 text-white hover:bg-blue-700',
+                                'flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-all',
+                                saveState === 'saved' ? 'bg-emerald-600 text-white'
+                                    : saveState === 'error' ? 'bg-rose-600 text-white'
+                                        : hasHardErrors ? 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100'
+                                            : 'bg-gradient-to-r from-violet-500 to-violet-700 text-white hover:opacity-90',
                                 saveState === 'saving' && 'opacity-70 cursor-not-allowed'
                             )}
                         >
-                            {saveState === 'saving' ? <Loader2 size={16} className="animate-spin" />
-                                : saveState === 'saved' ? <Check size={16} />
-                                    : saveState === 'error' ? <AlertCircle size={16} />
-                                        : hasHardErrors ? <AlertCircle size={16} />
-                                            : <Save size={16} />}
+                            {saveState === 'saving' ? <Loader2 size={14} className="animate-spin" />
+                                : saveState === 'saved' ? <Check size={14} />
+                                    : saveState === 'error' ? <AlertCircle size={14} />
+                                        : hasHardErrors ? <AlertCircle size={14} />
+                                            : <Save size={14} />}
                             {saveState === 'saving' ? 'Saving…'
                                 : saveState === 'saved' ? 'Saved!'
                                     : saveState === 'error' ? 'Save Failed'
@@ -848,10 +845,10 @@ export default function TimetableSettingsPage() {
                             severity: 'hard',
                             validText: 'All satisfied',
                             invalidText: `${validation.hard.length} error${validation.hard.length > 1 ? 's' : ''}`,
-                            validStyle: 'bg-green-50 border-green-200',
-                            invalidStyle: 'bg-red-50 border-red-200',
-                            validIcon: 'text-green-600',
-                            invalidIcon: 'text-red-600',
+                            validStyle: 'bg-emerald-50 border-emerald-200',
+                            invalidStyle: 'bg-rose-50 border-rose-200',
+                            validIcon: 'text-emerald-600',
+                            invalidIcon: 'text-rose-600',
                         },
                         {
                             label: 'Medium Constraints', icon: Sliders,
@@ -860,9 +857,9 @@ export default function TimetableSettingsPage() {
                             severity: 'medium',
                             validText: 'Optimal settings',
                             invalidText: `${validation.medium.length} suggestion${validation.medium.length > 1 ? 's' : ''}`,
-                            validStyle: 'bg-blue-50 border-blue-200',
+                            validStyle: 'bg-violet-50 border-violet-200',
                             invalidStyle: 'bg-amber-50 border-amber-200',
-                            validIcon: 'text-blue-600',
+                            validIcon: 'text-violet-600',
                             invalidIcon: 'text-amber-600',
                         },
                         {
@@ -872,24 +869,24 @@ export default function TimetableSettingsPage() {
                             severity: 'soft',
                             validText: 'Preferences set',
                             invalidText: `${validation.soft.length} note${validation.soft.length > 1 ? 's' : ''}`,
-                            validStyle: 'bg-purple-50 border-purple-200',
-                            invalidStyle: 'bg-purple-50 border-purple-200',
-                            validIcon: 'text-purple-600',
-                            invalidIcon: 'text-purple-600',
+                            validStyle: 'bg-gray-50 border-gray-200',
+                            invalidStyle: 'bg-gray-50 border-gray-200',
+                            validIcon: 'text-gray-600',
+                            invalidIcon: 'text-gray-600',
                         },
                     ].map(({ label, icon: Icon, valid, issues, severity, validText, invalidText, validStyle, invalidStyle, validIcon, invalidIcon }) => (
-                        <div key={label} className={cn('p-3.5 rounded-xl border', valid ? validStyle : invalidStyle)}>
+                        <div key={label} className={cn('p-3 rounded-md border', valid ? validStyle : invalidStyle)}>
                             <div className="flex items-center gap-2">
-                                <Icon size={15} className={valid ? validIcon : invalidIcon} />
-                                <span className="text-sm font-semibold text-slate-700">{label}</span>
+                                <Icon size={14} className={valid ? validIcon : invalidIcon} />
+                                <span className="text-xs font-semibold text-gray-700">{label}</span>
                                 <div className="ml-auto">
                                     {valid
-                                        ? <CheckCircle size={14} className={validIcon} />
-                                        : <AlertCircle size={14} className={invalidIcon} />
+                                        ? <CheckCircle size={12} className={validIcon} />
+                                        : <AlertCircle size={12} className={invalidIcon} />
                                     }
                                 </div>
                             </div>
-                            <p className={cn('text-xs mt-1', valid ? validIcon : invalidIcon)}>
+                            <p className={cn('text-[10px] mt-1', valid ? validIcon : invalidIcon)}>
                                 {valid ? validText : invalidText}
                             </p>
                             <IssueList issues={issues} severity={severity} />
@@ -900,10 +897,10 @@ export default function TimetableSettingsPage() {
                 <div className="flex gap-5">
                     {/* Sidebar */}
                     <div className="w-56 shrink-0">
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-6">
-                            <div className="px-4 py-3.5 border-b border-slate-100">
-                                <p className="text-sm font-semibold text-slate-700">Configuration</p>
-                                <p className="text-xs text-slate-400 mt-0.5">8 sections · {totalIssues} issue{totalIssues !== 1 ? 's' : ''}</p>
+                        <div className="bg-white rounded-md border border-violet-100 overflow-hidden sticky top-6">
+                            <div className="px-4 py-3 border-b border-gray-200">
+                                <p className="text-xs font-semibold text-gray-700">Configuration</p>
+                                <p className="text-[10px] text-gray-500 mt-0.5">8 sections · {totalIssues} issue{totalIssues !== 1 ? 's' : ''}</p>
                             </div>
                             <div className="p-2">
                                 {SECTIONS.map((section, idx) => {
@@ -920,16 +917,16 @@ export default function TimetableSettingsPage() {
                                             key={section.id}
                                             onClick={() => setActiveSection(section.id)}
                                             className={cn(
-                                                'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mb-0.5',
+                                                'w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-all mb-0.5',
                                                 isActive
-                                                    ? 'bg-blue-600 text-white shadow-sm'
-                                                    : 'text-slate-600 hover:bg-slate-50'
+                                                    ? 'bg-violet-600 text-white'
+                                                    : 'text-gray-600 hover:bg-gray-50'
                                             )}
                                         >
-                                            <Icon size={15} className={isActive ? 'opacity-90' : 'opacity-60'} />
-                                            <span className="flex-1 text-left text-[13px]">{section.label}</span>
+                                            <Icon size={14} className={isActive ? 'opacity-90' : 'opacity-60'} />
+                                            <span className="flex-1 text-left text-[12px]">{section.label}</span>
                                             {sectionHasIssue && !isActive && (
-                                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
                                             )}
                                         </button>
                                     );
@@ -939,7 +936,7 @@ export default function TimetableSettingsPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 min-h-[500px]">
+                    <div className="flex-1 bg-white rounded-md border border-violet-100 p-5 min-h-[500px]">
                         {activeSection === 'general' && (
                             <GeneralSection data={profile.general} onChange={v => setSection('general', v)} />
                         )}
@@ -974,19 +971,19 @@ export default function TimetableSettingsPage() {
                         )}
 
                         {/* Section nav footer */}
-                        <div className="flex items-center justify-between mt-8 pt-5 border-t border-slate-100">
+                        <div className="flex items-center justify-between mt-8 pt-4 border-t border-gray-200">
                             <button
                                 onClick={() => setActiveSection(SECTIONS[Math.max(0, activeIdx - 1)].id)}
                                 disabled={activeIdx === 0}
-                                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 disabled:opacity-30 transition-colors"
+                                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-30 transition-colors"
                             >
                                 ← {activeIdx > 0 ? SECTIONS[activeIdx - 1].label : ''}
                             </button>
-                            <span className="text-xs text-slate-300">{activeIdx + 1} / {SECTIONS.length}</span>
+                            <span className="text-[10px] text-gray-400">{activeIdx + 1} / {SECTIONS.length}</span>
                             <button
                                 onClick={() => setActiveSection(SECTIONS[Math.min(SECTIONS.length - 1, activeIdx + 1)].id)}
                                 disabled={activeIdx === SECTIONS.length - 1}
-                                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 disabled:opacity-30 transition-colors"
+                                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-30 transition-colors"
                             >
                                 {activeIdx < SECTIONS.length - 1 ? SECTIONS[activeIdx + 1].label : ''} →
                             </button>

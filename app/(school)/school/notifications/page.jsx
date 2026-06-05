@@ -26,18 +26,18 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const NOTIFICATION_TYPES = {
-  ANNOUNCEMENT: { label: 'Announcement', color: 'blue', icon: Megaphone },
+  ANNOUNCEMENT: { label: 'Announcement', color: 'violet', icon: Megaphone },
   EMERGENCY: { label: 'Emergency', color: 'red', icon: AlertCircle },
   REMINDER: { label: 'Reminder', color: 'amber', icon: Clock },
   EVENT: { label: 'Event', color: 'purple', icon: Calendar },
-  ATTENDANCE: { label: 'Attendance', color: 'green', icon: CheckCircle },
+  ATTENDANCE: { label: 'Attendance', color: 'emerald', icon: CheckCircle },
   GENERAL: { label: 'General', color: 'slate', icon: MessageSquare }
 };
 
 const CHANNELS = [
   { id: 'email', label: 'Email', icon: Mail, color: 'blue' },
   { id: 'sms', label: 'SMS', icon: Smartphone, color: 'green' },
-  { id: 'push', label: 'Push Notification', icon: Bell, color: 'purple' },
+  { id: 'push', label: 'Push Notification', icon: Bell, color: 'violet' },
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: 'emerald' }
 ];
 
@@ -55,25 +55,27 @@ const CLASSES = [
 const SECTIONS = ['A', 'B', 'C', 'D'];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPONENTS
+// COMPONENTS (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function StatCard({ title, value, icon: Icon, color, trend }) {
+  // Map original color names to violet accent (except semantic ones)
+  const bgColor = color === 'bg-blue-600' ? 'bg-violet-600' : color;
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
+    <div className="bg-white rounded-md border border-violet-100 p-4">
       <div className="flex items-center justify-between mb-2">
-        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", color)}>
+        <div className={cn("w-10 h-10 rounded-md flex items-center justify-center", bgColor)}>
           <Icon className="w-5 h-5 text-white" />
         </div>
         {trend && (
-          <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+          <div className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
             <TrendingUp size={12} />
             <span>{trend}%</span>
           </div>
         )}
       </div>
-      <p className="text-2xl font-bold text-slate-800">{value}</p>
-      <p className="text-sm text-slate-500 mt-1">{title}</p>
+      <p className="text-2xl font-semibold text-gray-800">{value}</p>
+      <p className="text-xs text-gray-500 mt-1">{title}</p>
     </div>
   );
 }
@@ -86,9 +88,9 @@ function NotificationCard({ notification, onView, onDelete, onResend }) {
 
   const statusConfig = {
     sent: { label: 'Sent', color: 'bg-blue-100 text-blue-700', icon: Send },
-    delivered: { label: 'Delivered', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-    read: { label: 'Read', color: 'bg-emerald-100 text-emerald-700', icon: Eye },
-    failed: { label: 'Failed', color: 'bg-red-100 text-red-700', icon: XCircle }
+    delivered: { label: 'Delivered', color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
+    read: { label: 'Read', color: 'bg-violet-100 text-violet-700', icon: Eye },
+    failed: { label: 'Failed', color: 'bg-rose-100 text-rose-700', icon: XCircle }
   };
 
   const StatusIcon = statusConfig[notification.status]?.icon || Send;
@@ -96,38 +98,53 @@ function NotificationCard({ notification, onView, onDelete, onResend }) {
   const deliveryRate = ((notification.recipients?.delivered || 0) / (notification.recipients?.total || 1) * 100).toFixed(1);
   const readRate = ((notification.recipients?.read || 0) / (notification.recipients?.total || 1) * 100).toFixed(1);
 
+  // Helper to get color class for type icon background
+  const getTypeBg = (color) => {
+    const map = {
+      violet: 'bg-violet-100',
+      red: 'bg-rose-100',
+      amber: 'bg-amber-100',
+      purple: 'bg-purple-100',
+      emerald: 'bg-emerald-100',
+      slate: 'bg-gray-100'
+    };
+    return map[color] || 'bg-gray-100';
+  };
+
+  const getTypeIconColor = (color) => {
+    const map = {
+      violet: 'text-violet-600',
+      red: 'text-rose-600',
+      amber: 'text-amber-600',
+      purple: 'text-purple-600',
+      emerald: 'text-emerald-600',
+      slate: 'text-gray-600'
+    };
+    return map[color] || 'text-gray-600';
+  };
+
   return (
-    <div className="bg-white border border-slate-200 rounded-xl hover:shadow-md transition-all">
+    <div className="bg-white border border-violet-100 rounded-md hover:border-violet-200 transition-all">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center",
-              typeConfig?.color === 'blue' && "bg-blue-100",
-              typeConfig?.color === 'red' && "bg-red-100",
-              typeConfig?.color === 'amber' && "bg-amber-100",
-              typeConfig?.color === 'purple' && "bg-purple-100",
-              typeConfig?.color === 'green' && "bg-green-100")}>
-              <TypeIcon className={cn("w-4 h-4",
-                typeConfig?.color === 'blue' && "text-blue-600",
-                typeConfig?.color === 'red' && "text-red-600",
-                typeConfig?.color === 'amber' && "text-amber-600",
-                typeConfig?.color === 'purple' && "text-purple-600",
-                typeConfig?.color === 'green' && "text-green-600")} />
+            <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", getTypeBg(typeConfig?.color))}>
+              <TypeIcon className={cn("w-4 h-4", getTypeIconColor(typeConfig?.color))} />
             </div>
             <div>
-              <p className="font-semibold text-slate-800">{notification.title}</p>
+              <p className="text-sm font-medium text-gray-800">{notification.title}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium", statusConfig[notification.status]?.color)}>
+                <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium", statusConfig[notification.status]?.color)}>
                   <StatusIcon size={10} />
                   {statusConfig[notification.status]?.label}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px]">
                   <ChannelIcon size={10} />
                   {channelConfig?.label}
                 </span>
                 {notification.priority === 'high' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px]">
                     <AlertCircle size={10} />
                     High Priority
                   </span>
@@ -137,65 +154,65 @@ function NotificationCard({ notification, onView, onDelete, onResend }) {
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={() => onView(notification)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="View Details">
-              <Eye size={16} className="text-slate-500" />
+            <button onClick={() => onView(notification)} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors" title="View Details">
+              <Eye size={15} className="text-gray-500" />
             </button>
-            <button onClick={() => onResend(notification)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="Resend">
-              <RefreshCw size={16} className="text-slate-500" />
+            <button onClick={() => onResend(notification)} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors" title="Resend">
+              <RefreshCw size={15} className="text-gray-500" />
             </button>
-            <button onClick={() => onDelete(notification)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-              <Trash2 size={16} className="text-slate-500 hover:text-red-600" />
+            <button onClick={() => onDelete(notification)} className="p-1.5 rounded-md hover:bg-rose-50 transition-colors" title="Delete">
+              <Trash2 size={15} className="text-gray-500 hover:text-rose-600" />
             </button>
           </div>
         </div>
 
         {/* Message Preview */}
-        <p className="text-sm text-slate-600 mb-3 line-clamp-2">{notification.message || notification.body}</p>
+        <p className="text-xs text-gray-600 mb-3 line-clamp-2">{notification.message || notification.body}</p>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-2 mb-3 p-3 bg-slate-50 rounded-lg">
+        <div className="grid grid-cols-4 gap-2 mb-3 p-2.5 bg-gray-50 rounded-md">
           <div className="text-center">
-            <p className="text-lg font-bold text-slate-800">{notification.recipients?.total || 0}</p>
-            <p className="text-xs text-slate-500">Recipients</p>
+            <p className="text-lg font-semibold text-gray-800">{notification.recipients?.total || 0}</p>
+            <p className="text-[10px] text-gray-500">Recipients</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-green-600">{notification.recipients?.delivered || 0}</p>
-            <p className="text-xs text-slate-500">Delivered</p>
+            <p className="text-lg font-semibold text-emerald-600">{notification.recipients?.delivered || 0}</p>
+            <p className="text-[10px] text-gray-500">Delivered</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-blue-600">{notification.recipients?.read || 0}</p>
-            <p className="text-xs text-slate-500">Read</p>
+            <p className="text-lg font-semibold text-violet-600">{notification.recipients?.read || 0}</p>
+            <p className="text-[10px] text-gray-500">Read</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-red-600">{notification.recipients?.failed || 0}</p>
-            <p className="text-xs text-slate-500">Failed</p>
+            <p className="text-lg font-semibold text-rose-600">{notification.recipients?.failed || 0}</p>
+            <p className="text-[10px] text-gray-500">Failed</p>
           </div>
         </div>
 
         {/* Delivery Rate Bar */}
         <div className="mb-3">
-          <div className="flex justify-between text-xs text-slate-500 mb-1">
+          <div className="flex justify-between text-[10px] text-gray-500 mb-1">
             <span>Delivery Rate: {deliveryRate}%</span>
             <span>Read Rate: {readRate}%</span>
           </div>
           <div className="flex gap-1">
-            <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 rounded-full" style={{ width: `${deliveryRate}%` }} />
+            <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${deliveryRate}%` }} />
             </div>
-            <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${readRate}%` }} />
+            <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full bg-violet-500 rounded-full" style={{ width: `${readRate}%` }} />
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-[10px] text-gray-500">
           <div className="flex items-center gap-2">
-            <Clock size={12} />
+            <Clock size={11} />
             <span>Sent by {notification.sentBy || 'System'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Calendar size={12} />
+            <Calendar size={11} />
             <span>{new Date(notification.sentAt || notification.createdAt).toLocaleString()}</span>
           </div>
         </div>
@@ -253,33 +270,33 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" onClick={handleClose} />
+      <div className="relative bg-white rounded-md shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-violet-100">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-blue-600" />
-            <h2 className="text-xl font-semibold text-slate-800">Send Notification</h2>
+            <Bell className="w-5 h-5 text-violet-600" />
+            <h2 className="text-base font-semibold text-gray-800">Send Notification</h2>
           </div>
-          <button onClick={handleClose} className="p-1 rounded-lg hover:bg-slate-100">
-            <X size={20} />
+          <button onClick={handleClose} className="p-1 rounded-md hover:bg-gray-100">
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-5">
           {/* Step Indicator */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center flex-1">
                 <div className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                  step >= s ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-500"
+                  "w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium",
+                  step >= s ? "bg-violet-600 text-white" : "bg-gray-200 text-gray-500"
                 )}>
                   {s}
                 </div>
                 {s < 3 && (
                   <div className={cn(
-                    "flex-1 h-0.5 mx-2",
-                    step > s ? "bg-blue-600" : "bg-slate-200"
+                    "flex-1 h-px mx-2",
+                    step > s ? "bg-violet-600" : "bg-gray-200"
                   )} />
                 )}
               </div>
@@ -290,8 +307,8 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Notification Type <span className="text-red-500">*</span>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Notification Type <span className="text-rose-500">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(NOTIFICATION_TYPES).map(([key, config]) => {
@@ -301,14 +318,14 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
                         key={key}
                         onClick={() => setFormData({ ...formData, type: key })}
                         className={cn(
-                          "flex items-center gap-2 p-2 rounded-lg border transition-all",
+                          "flex items-center gap-2 p-2 rounded-md border text-xs transition-all",
                           formData.type === key
-                            ? "border-blue-400 bg-blue-50 text-blue-700"
-                            : "border-slate-200 hover:bg-slate-50"
+                            ? "border-violet-300 bg-violet-50 text-violet-700"
+                            : "border-gray-200 hover:bg-gray-50"
                         )}
                       >
-                        <Icon size={14} />
-                        <span className="text-sm">{config.label}</span>
+                        <Icon size={13} />
+                        <span>{config.label}</span>
                       </button>
                     );
                   })}
@@ -316,42 +333,42 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Title <span className="text-red-500">*</span>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Title <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 text-sm"
                   placeholder="Enter notification title"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Message <span className="text-red-500">*</span>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Message <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={5}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none"
+                  className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 text-sm resize-none"
                   placeholder="Type your message here..."
                 />
-                <p className="text-xs text-slate-400 mt-1">{formData.message.length} characters</p>
+                <p className="text-[10px] text-gray-500 mt-1">{formData.message.length} characters</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Priority</label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setFormData({ ...formData, priority: 'normal' })}
                     className={cn(
-                      "flex-1 py-2 rounded-lg border text-sm font-medium transition-all",
+                      "flex-1 py-1.5 rounded-md border text-xs font-medium transition-all",
                       formData.priority === 'normal'
-                        ? "border-blue-400 bg-blue-50 text-blue-700"
-                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "border-violet-300 bg-violet-50 text-violet-700"
+                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
                     )}
                   >
                     Normal
@@ -359,10 +376,10 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
                   <button
                     onClick={() => setFormData({ ...formData, priority: 'high' })}
                     className={cn(
-                      "flex-1 py-2 rounded-lg border text-sm font-medium transition-all",
+                      "flex-1 py-1.5 rounded-md border text-xs font-medium transition-all",
                       formData.priority === 'high'
-                        ? "border-red-400 bg-red-50 text-red-700"
-                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "border-rose-300 bg-rose-50 text-rose-700"
+                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
                     )}
                   >
                     High Priority
@@ -373,7 +390,7 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               <button
                 onClick={() => setStep(2)}
                 disabled={!formData.title || !formData.message}
-                className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-2 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-xs font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue to Recipients →
               </button>
@@ -384,7 +401,7 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Send to</label>
+                <label className="block text-xs font-medium text-gray-700 mb-2">Send to</label>
                 <div className="space-y-2">
                   {RECIPIENT_TYPES.map((type) => {
                     const Icon = type.icon;
@@ -393,23 +410,23 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
                         key={type.id}
                         onClick={() => setFormData({ ...formData, recipientType: type.id })}
                         className={cn(
-                          "w-full flex items-center justify-between p-3 rounded-lg border transition-all",
+                          "w-full flex items-center justify-between p-3 rounded-md border transition-all",
                           formData.recipientType === type.id
-                            ? "border-blue-400 bg-blue-50"
-                            : "border-slate-200 hover:bg-slate-50"
+                            ? "border-violet-300 bg-violet-50"
+                            : "border-gray-200 hover:bg-gray-50"
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                            <Icon size={16} className="text-slate-600" />
+                          <div className="w-8 h-8 rounded-md bg-gray-100 flex items-center justify-center">
+                            <Icon size={15} className="text-gray-600" />
                           </div>
                           <div className="text-left">
-                            <p className="font-medium text-slate-800">{type.label}</p>
-                            <p className="text-xs text-slate-400">{type.count} recipients</p>
+                            <p className="text-xs font-medium text-gray-800">{type.label}</p>
+                            <p className="text-[10px] text-gray-500">{type.count} recipients</p>
                           </div>
                         </div>
                         {formData.recipientType === type.id && (
-                          <Check size={16} className="text-blue-600" />
+                          <Check size={14} className="text-violet-600" />
                         )}
                       </button>
                     );
@@ -420,22 +437,22 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               {formData.recipientType === 'class' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Select Class</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Select Class</label>
                     <select
                       value={formData.selectedClass}
                       onChange={(e) => setFormData({ ...formData, selectedClass: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200"
+                      className="w-full px-3 py-1.5 rounded-md border border-gray-200 text-sm"
                     >
                       <option value="">Select Class</option>
                       {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Select Section</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Select Section</label>
                     <select
                       value={formData.selectedSection}
                       onChange={(e) => setFormData({ ...formData, selectedSection: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200"
+                      className="w-full px-3 py-1.5 rounded-md border border-gray-200 text-sm"
                     >
                       <option value="">All Sections</option>
                       {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -445,7 +462,7 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Send via</label>
+                <label className="block text-xs font-medium text-gray-700 mb-2">Send via</label>
                 <div className="grid grid-cols-2 gap-2">
                   {CHANNELS.map((channel) => {
                     const Icon = channel.icon;
@@ -461,24 +478,24 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
                           }
                         }}
                         className={cn(
-                          "flex items-center gap-2 p-2 rounded-lg border transition-all",
+                          "flex items-center gap-2 p-2 rounded-md border text-xs transition-all",
                           isSelected
-                            ? "border-blue-400 bg-blue-50 text-blue-700"
-                            : "border-slate-200 hover:bg-slate-50"
+                            ? "border-violet-300 bg-violet-50 text-violet-700"
+                            : "border-gray-200 hover:bg-gray-50"
                         )}
                       >
-                        <Icon size={14} />
-                        <span className="text-sm">{channel.label}</span>
+                        <Icon size={13} />
+                        <span>{channel.label}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Schedule for later</p>
-                  <p className="text-xs text-slate-400">Send notification at a specific time</p>
+                  <p className="text-xs font-medium text-gray-700">Schedule for later</p>
+                  <p className="text-[10px] text-gray-500">Send notification at a specific time</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -487,18 +504,18 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
                     onChange={(e) => setFormData({ ...formData, scheduleLater: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                  <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-violet-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
                 </label>
               </div>
 
               {formData.scheduleLater && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Schedule Date & Time</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Schedule Date & Time</label>
                   <input
                     type="datetime-local"
                     value={formData.scheduledTime}
                     onChange={(e) => setFormData({ ...formData, scheduledTime: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200"
+                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 text-sm"
                   />
                 </div>
               )}
@@ -506,14 +523,14 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep(1)}
-                  className="flex-1 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50"
+                  className="flex-1 py-1.5 rounded-md border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50"
                 >
                   Back
                 </button>
                 <button
                   onClick={() => setStep(3)}
                   disabled={formData.channel.length === 0}
-                  className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-xs font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Review & Send →
                 </button>
@@ -524,44 +541,44 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
           {/* Step 3: Review & Send */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm font-medium text-slate-700 mb-2">Notification Preview</p>
-                <div className="bg-white rounded-lg p-3 border border-slate-200">
+              <div className="p-3 bg-gray-50 rounded-md">
+                <p className="text-xs font-medium text-gray-700 mb-2">Notification Preview</p>
+                <div className="bg-white rounded-md p-3 border border-gray-200">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className={cn("w-6 h-6 rounded flex items-center justify-center", formData.type === 'EMERGENCY' ? "bg-red-100" : "bg-blue-100")}>
-                      {formData.type === 'EMERGENCY' ? <AlertCircle size={12} className="text-red-600" /> : <Bell size={12} className="text-blue-600" />}
+                    <div className={cn("w-5 h-5 rounded flex items-center justify-center", formData.type === 'EMERGENCY' ? "bg-rose-100" : "bg-violet-100")}>
+                      {formData.type === 'EMERGENCY' ? <AlertCircle size={11} className="text-rose-600" /> : <Bell size={11} className="text-violet-600" />}
                     </div>
-                    <p className="font-semibold text-slate-800">{formData.title}</p>
+                    <p className="text-sm font-medium text-gray-800">{formData.title}</p>
                   </div>
-                  <p className="text-sm text-slate-600">{formData.message}</p>
+                  <p className="text-xs text-gray-600">{formData.message}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Recipients</span>
-                  <span className="text-sm font-medium text-slate-700">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-xs text-gray-500">Recipients</span>
+                  <span className="text-xs font-medium text-gray-700">
                     {RECIPIENT_TYPES.find(t => t.id === formData.recipientType)?.label}
                     {formData.selectedClass && ` - Class ${formData.selectedClass}`}
                     {formData.selectedSection && `-${formData.selectedSection}`}
                   </span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Channels</span>
-                  <span className="text-sm font-medium text-slate-700">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-xs text-gray-500">Channels</span>
+                  <span className="text-xs font-medium text-gray-700">
                     {formData.channel.map(c => CHANNELS.find(ch => ch.id === c)?.label).join(', ')}
                   </span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Priority</span>
-                  <span className={cn("text-sm font-medium", formData.priority === 'high' ? "text-red-600" : "text-slate-700")}>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-xs text-gray-500">Priority</span>
+                  <span className={cn("text-xs font-medium", formData.priority === 'high' ? "text-rose-600" : "text-gray-700")}>
                     {formData.priority.toUpperCase()}
                   </span>
                 </div>
                 {formData.scheduleLater && (
                   <div className="flex justify-between py-2">
-                    <span className="text-sm text-slate-500">Scheduled For</span>
-                    <span className="text-sm font-medium text-slate-700">
+                    <span className="text-xs text-gray-500">Scheduled For</span>
+                    <span className="text-xs font-medium text-gray-700">
                       {new Date(formData.scheduledTime).toLocaleString()}
                     </span>
                   </div>
@@ -571,16 +588,16 @@ function SendNotificationModal({ isOpen, onClose, onSend }) {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => setStep(2)}
-                  className="flex-1 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50"
+                  className="flex-1 py-1.5 rounded-md border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={sending}
-                  className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-xs font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                  {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
                   {sending ? 'Sending...' : formData.scheduleLater ? 'Schedule Notification' : 'Send Now'}
                 </button>
               </div>
@@ -598,90 +615,114 @@ function NotificationDetailsModal({ isOpen, onClose, notification }) {
   const typeConfig = NOTIFICATION_TYPES[notification.type];
   const TypeIcon = typeConfig?.icon || MessageSquare;
 
+  const getTypeBg = (color) => {
+    const map = {
+      violet: 'bg-violet-100',
+      red: 'bg-rose-100',
+      amber: 'bg-amber-100',
+      purple: 'bg-purple-100',
+      emerald: 'bg-emerald-100',
+      slate: 'bg-gray-100'
+    };
+    return map[color] || 'bg-gray-100';
+  };
+
+  const getTypeIconColor = (color) => {
+    const map = {
+      violet: 'text-violet-600',
+      red: 'text-rose-600',
+      amber: 'text-amber-600',
+      purple: 'text-purple-600',
+      emerald: 'text-emerald-600',
+      slate: 'text-gray-600'
+    };
+    return map[color] || 'text-gray-600';
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" onClick={onClose} />
+      <div className="relative bg-white rounded-md shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-violet-100">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-blue-600" />
-            <h2 className="text-xl font-semibold text-slate-800">Notification Details</h2>
+            <Bell className="w-5 h-5 text-violet-600" />
+            <h2 className="text-base font-semibold text-gray-800">Notification Details</h2>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
-            <X size={20} />
+          <button onClick={onClose} className="p-1 rounded-md hover:bg-gray-100">
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-5 space-y-4">
           {/* Header */}
           <div className="flex items-start gap-3">
-            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", typeConfig?.color === 'blue' && "bg-blue-100", typeConfig?.color === 'red' && "bg-red-100")}>
-              <TypeIcon className={cn("w-6 h-6", typeConfig?.color === 'blue' && "text-blue-600", typeConfig?.color === 'red' && "text-red-600")} />
+            <div className={cn("w-12 h-12 rounded-md flex items-center justify-center", getTypeBg(typeConfig?.color))}>
+              <TypeIcon className={cn("w-6 h-6", getTypeIconColor(typeConfig?.color))} />
             </div>
             <div className="flex-1">
-              <p className="text-xl font-bold text-slate-800">{notification.title}</p>
+              <p className="text-lg font-semibold text-gray-800">{notification.title}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-slate-500">{new Date(notification.sentAt || notification.createdAt).toLocaleString()}</span>
-                <span className="text-sm text-slate-400">•</span>
-                <span className="text-sm text-slate-500">Sent by {notification.sentBy || 'System'}</span>
+                <span className="text-xs text-gray-500">{new Date(notification.sentAt || notification.createdAt).toLocaleString()}</span>
+                <span className="text-xs text-gray-400">•</span>
+                <span className="text-xs text-gray-500">Sent by {notification.sentBy || 'System'}</span>
               </div>
             </div>
           </div>
 
           {/* Message */}
-          <div className="p-4 bg-slate-50 rounded-lg">
-            <p className="text-sm font-medium text-slate-700 mb-2">Message</p>
-            <p className="text-slate-600">{notification.message || notification.body}</p>
+          <div className="p-4 bg-gray-50 rounded-md">
+            <p className="text-xs font-medium text-gray-700 mb-2">Message</p>
+            <p className="text-sm text-gray-600">{notification.message || notification.body}</p>
           </div>
 
           {/* Delivery Stats */}
           <div>
-            <p className="text-sm font-medium text-slate-700 mb-3">Delivery Statistics</p>
+            <p className="text-xs font-medium text-gray-700 mb-3">Delivery Statistics</p>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-green-50 rounded-lg text-center">
-                <p className="text-2xl font-bold text-green-600">{notification.recipients?.delivered || 0}</p>
-                <p className="text-xs text-slate-500">Delivered</p>
+              <div className="p-3 bg-emerald-50 rounded-md text-center">
+                <p className="text-2xl font-semibold text-emerald-600">{notification.recipients?.delivered || 0}</p>
+                <p className="text-[10px] text-gray-500">Delivered</p>
               </div>
-              <div className="p-3 bg-blue-50 rounded-lg text-center">
-                <p className="text-2xl font-bold text-blue-600">{notification.recipients?.read || 0}</p>
-                <p className="text-xs text-slate-500">Read</p>
+              <div className="p-3 bg-violet-50 rounded-md text-center">
+                <p className="text-2xl font-semibold text-violet-600">{notification.recipients?.read || 0}</p>
+                <p className="text-[10px] text-gray-500">Read</p>
               </div>
-              <div className="p-3 bg-red-50 rounded-lg text-center">
-                <p className="text-2xl font-bold text-red-600">{notification.recipients?.failed || 0}</p>
-                <p className="text-xs text-slate-500">Failed</p>
+              <div className="p-3 bg-rose-50 rounded-md text-center">
+                <p className="text-2xl font-semibold text-rose-600">{notification.recipients?.failed || 0}</p>
+                <p className="text-[10px] text-gray-500">Failed</p>
               </div>
-              <div className="p-3 bg-slate-100 rounded-lg text-center">
-                <p className="text-2xl font-bold text-slate-600">{notification.recipients?.total || 0}</p>
-                <p className="text-xs text-slate-500">Total Recipients</p>
+              <div className="p-3 bg-gray-100 rounded-md text-center">
+                <p className="text-2xl font-semibold text-gray-600">{notification.recipients?.total || 0}</p>
+                <p className="text-[10px] text-gray-500">Total Recipients</p>
               </div>
             </div>
           </div>
 
           {/* Additional Info */}
-          <div className="space-y-2 p-4 bg-slate-50 rounded-lg">
+          <div className="space-y-2 p-4 bg-gray-50 rounded-md">
             <div className="flex justify-between">
-              <span className="text-sm text-slate-500">Channel</span>
-              <span className="text-sm font-medium text-slate-700">{CHANNELS.find(c => c.id === notification.channel)?.label}</span>
+              <span className="text-xs text-gray-500">Channel</span>
+              <span className="text-xs font-medium text-gray-700">{CHANNELS.find(c => c.id === notification.channel)?.label}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-slate-500">Status</span>
-              <span className="text-sm font-medium text-slate-700 capitalize">{notification.status}</span>
+              <span className="text-xs text-gray-500">Status</span>
+              <span className="text-xs font-medium text-gray-700 capitalize">{notification.status}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-slate-500">Priority</span>
-              <span className="text-sm font-medium text-slate-700 capitalize">{notification.priority}</span>
+              <span className="text-xs text-gray-500">Priority</span>
+              <span className="text-xs font-medium text-gray-700 capitalize">{notification.priority}</span>
             </div>
             {notification.scheduledFor && (
               <div className="flex justify-between">
-                <span className="text-sm text-slate-500">Scheduled For</span>
-                <span className="text-sm font-medium text-slate-700">{new Date(notification.scheduledFor).toLocaleString()}</span>
+                <span className="text-xs text-gray-500">Scheduled For</span>
+                <span className="text-xs font-medium text-gray-700">{new Date(notification.scheduledFor).toLocaleString()}</span>
               </div>
             )}
           </div>
 
           <button
             onClick={onClose}
-            className="w-full py-2 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-colors"
+            className="w-full py-2 rounded-md bg-gray-100 text-gray-700 text-xs font-medium hover:bg-gray-200 transition-colors"
           >
             Close
           </button>
@@ -727,13 +768,11 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const response = await getNotifications({ page: currentPage, limit: itemsPerPage });
-      // Backend returns: { data: [...], meta: { total, page, limit, totalPages } }
       const data = response.data || response.notifications || [];
       setNotifications(data);
       setFilteredNotifications(data);
       setTotalPages(response.meta?.totalPages || 1);
 
-      // Calculate stats from real data
       const totalSent = data.reduce((sum, n) => sum + (n.recipients?.total || 0), 0);
       const totalDelivered = data.reduce((sum, n) => sum + (n.recipients?.delivered || 0), 0);
       const totalRead = data.reduce((sum, n) => sum + (n.recipients?.read || 0), 0);
@@ -774,7 +813,6 @@ export default function NotificationsPage() {
 
   // Actions
   const handleSendNotification = (data) => {
-    // TODO: Replace with actual API call to send notification
     console.log('Send notification:', data);
     alert('Send notification API not yet implemented. Check console.');
   };
@@ -785,13 +823,11 @@ export default function NotificationsPage() {
   };
 
   const handleResend = async (notification) => {
-    // TODO: Implement resend API endpoint
     console.log('Resend:', notification);
   };
 
   const handleDelete = async (notification) => {
     if (confirm(`Delete notification "${notification.title}"?`)) {
-      // TODO: Implement delete API endpoint
       setNotifications(prev => prev.filter(n => n.id !== notification.id));
     }
   };
@@ -804,26 +840,26 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-violet-50">
       <div className="p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-1">Notifications</h1>
-            <p className="text-slate-500">Manage and send notifications to parents</p>
+            <h1 className="text-xl font-semibold text-gray-800 mb-1">Notifications</h1>
+            <p className="text-xs text-gray-500">Manage and send notifications to parents</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => markAllNotificationsRead().then(fetchNotifications)}
-              className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
+              className="px-3 py-1.5 rounded-md border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 transition-colors"
             >
               Mark all as read
             </button>
             <button
               onClick={() => setIsSendModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-xs font-medium hover:opacity-90 transition-all"
             >
-              <Plus size={18} />
+              <Plus size={14} />
               Send Notification
             </button>
           </div>
@@ -838,18 +874,18 @@ export default function NotificationsPage() {
         </div>
 
         {/* Filters Bar */}
-        <div className="bg-white rounded-xl border border-slate-200 mb-6">
-          <div className="p-4 border-b border-slate-200">
+        <div className="bg-white rounded-md border border-violet-100 mb-6">
+          <div className="p-4 border-b border-gray-200">
             <div className="flex flex-col lg:flex-row gap-3">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search notifications..."
-                    className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 text-sm"
+                    className="w-full pl-9 pr-3 h-10 rounded-md border border-gray-200 text-sm focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100"
                   />
                 </div>
               </div>
@@ -857,7 +893,7 @@ export default function NotificationsPage() {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-3 h-10 rounded-lg border border-slate-200 text-sm"
+                className="px-3 h-10 rounded-md border border-gray-200 text-sm"
               >
                 <option value="">All Types</option>
                 {Object.entries(NOTIFICATION_TYPES).map(([key, config]) => (
@@ -868,7 +904,7 @@ export default function NotificationsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 h-10 rounded-lg border border-slate-200 text-sm"
+                className="px-3 h-10 rounded-md border border-gray-200 text-sm"
               >
                 <option value="">All Status</option>
                 <option value="sent">Sent</option>
@@ -881,7 +917,7 @@ export default function NotificationsPage() {
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                className="px-3 h-10 rounded-lg border border-slate-200 text-sm w-36"
+                className="px-3 h-10 rounded-md border border-gray-200 text-sm w-36"
                 placeholder="From"
               />
 
@@ -889,16 +925,16 @@ export default function NotificationsPage() {
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                className="px-3 h-10 rounded-lg border border-slate-200 text-sm w-36"
+                className="px-3 h-10 rounded-md border border-gray-200 text-sm w-36"
                 placeholder="To"
               />
 
               {(selectedType || selectedStatus || dateRange.start || dateRange.end || searchQuery) && (
                 <button
                   onClick={handleClearFilters}
-                  className="flex items-center gap-2 px-3 h-10 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50"
+                  className="flex items-center gap-1.5 px-3 h-10 rounded-md border border-gray-200 text-xs text-gray-600 hover:bg-gray-50"
                 >
-                  <FilterX size={14} />
+                  <FilterX size={13} />
                   Clear
                 </button>
               )}
@@ -906,19 +942,19 @@ export default function NotificationsPage() {
           </div>
 
           {/* Results Count */}
-          <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500">
+          <div className="px-4 py-1.5 bg-gray-50 border-b border-gray-200 text-xs text-gray-500">
             Found {filteredNotifications.length} notifications
           </div>
 
           {/* Notifications List */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
             </div>
           ) : paginatedNotifications.length === 0 ? (
-            <div className="py-12 text-center text-slate-500">No notifications found.</div>
+            <div className="py-12 text-center text-gray-500 text-sm">No notifications found.</div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-gray-100">
               {paginatedNotifications.map((notification) => (
                 <div key={notification.id} className="p-4">
                   <NotificationCard
@@ -934,24 +970,24 @@ export default function NotificationsPage() {
 
           {/* Pagination */}
           {clientTotalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200">
-              <div className="text-sm text-slate-500">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-gray-200">
+              <div className="text-xs text-gray-500">
                 Page {currentPage} of {clientTotalPages}
               </div>
               <div className="flex gap-1">
                 <button
                   onClick={() => setCurrentPage(p => p - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                  className="p-1.5 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={15} />
                 </button>
                 <button
                   onClick={() => setCurrentPage(p => p + 1)}
                   disabled={currentPage === clientTotalPages}
-                  className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                  className="p-1.5 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  <ChevronRight size={16} />
+                  <ChevronRight size={15} />
                 </button>
               </div>
             </div>

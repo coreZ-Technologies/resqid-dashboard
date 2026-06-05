@@ -101,19 +101,19 @@ const generateMockStaff = () => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPONENTS
+// COMPONENTS (Notion style)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SearchBar({ value, onChange, placeholder }) {
     return (
         <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder || "Search by name, ID, designation, or department..."}
-                className="w-full pl-9 pr-4 h-10 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full pl-9 pr-4 h-10 rounded-md border border-gray-200 bg-white text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 transition-all"
             />
         </div>
     );
@@ -127,10 +127,10 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "flex items-center gap-2 px-3 h-10 rounded-lg border text-sm font-medium transition-all whitespace-nowrap",
+                    "flex items-center gap-2 px-3 h-10 rounded-md border text-sm font-medium transition-all whitespace-nowrap",
                     value
-                        ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-violet-50 border-violet-200 text-violet-700"
+                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
                 )}
             >
                 {Icon && <Icon size={14} />}
@@ -141,15 +141,15 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
             {isOpen && (
                 <>
                     <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-white border border-slate-200 rounded-lg shadow-lg z-20 py-1 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-white border border-gray-200 rounded-md shadow-md z-20 py-1 max-h-64 overflow-y-auto">
                         <button
                             onClick={() => {
                                 onChange('');
                                 setIsOpen(false);
                             }}
                             className={cn(
-                                "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
-                                !value && "text-blue-600 bg-blue-50"
+                                "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors",
+                                !value && "text-violet-600 bg-violet-50"
                             )}
                         >
                             All {label}s
@@ -162,8 +162,8 @@ function FilterDropdown({ label, options, value, onChange, icon: Icon }) {
                                     setIsOpen(false);
                                 }}
                                 className={cn(
-                                    "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
-                                    value === opt && "text-blue-600 bg-blue-50"
+                                    "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors",
+                                    value === opt && "text-violet-600 bg-violet-50"
                                 )}
                             >
                                 {opt}
@@ -196,15 +196,15 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
     if (totalPages <= 1) return null;
 
     return (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 flex-wrap gap-3">
-            <div className="text-sm text-slate-500">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-gray-200 flex-wrap gap-3">
+            <div className="text-xs text-gray-500">
                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} staff
             </div>
             <div className="flex gap-1">
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    className="p-2 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                 >
                     <ChevronLeft size={16} />
                 </button>
@@ -213,10 +213,10 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
                         key={page}
                         onClick={() => onPageChange(page)}
                         className={cn(
-                            "w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+                            "w-8 h-8 rounded-md text-sm font-medium transition-colors",
                             currentPage === page
-                                ? "bg-blue-600 text-white"
-                                : "hover:bg-slate-100 text-slate-600"
+                                ? "bg-gradient-to-r from-violet-500 to-violet-700 text-white"
+                                : "hover:bg-gray-100 text-gray-600"
                         )}
                     >
                         {page}
@@ -225,7 +225,7 @@ function Pagination({ currentPage, totalPages, onPageChange, itemsPerPage, total
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    className="p-2 rounded-md border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                 >
                     <ChevronRight size={16} />
                 </button>
@@ -238,11 +238,11 @@ function StaffTable({ staff, onView, onEdit, onDelete }) {
     if (staff.length === 0) {
         return (
             <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-8 h-8 text-slate-400" />
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-800 mb-1">No staff members found</h3>
-                <p className="text-sm text-slate-500">Try adjusting your filters or add a new staff member</p>
+                <h3 className="text-base font-medium text-gray-800 mb-1">No staff members found</h3>
+                <p className="text-xs text-gray-500">Try adjusting your filters or add a new staff member</p>
             </div>
         );
     }
@@ -250,23 +250,23 @@ function StaffTable({ staff, onView, onEdit, onDelete }) {
     return (
         <div className="overflow-x-auto">
             <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200 sticky top-0">
+                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                     <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Staff Member</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Designation</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Experience</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Staff Member</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Designation</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Department</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Experience</th>
+                        <th className="text-left py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="text-right py-3 px-4 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-gray-100">
                     {staff.map((member) => (
-                        <tr key={member.id} className="hover:bg-slate-50 transition-colors">
+                        <tr key={member.id} className="hover:bg-gray-50 transition-colors">
                             <td className="py-3 px-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-purple-700 font-semibold text-sm">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-700 font-semibold text-sm">
                                         {member.photo ? (
                                             <img src={member.photo} alt={member.name} className="w-full h-full rounded-full object-cover" />
                                         ) : (
@@ -274,26 +274,26 @@ function StaffTable({ staff, onView, onEdit, onDelete }) {
                                         )}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-slate-800">{member.name}</p>
-                                        <p className="text-xs text-slate-400">ID: {member.id}</p>
+                                        <p className="font-medium text-gray-800 text-sm">{member.name}</p>
+                                        <p className="text-[10px] text-gray-400">ID: {member.id}</p>
                                     </div>
                                 </div>
                             </td>
                             <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-medium">
+                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-violet-50 text-violet-700 text-xs font-medium">
                                     {member.designation}
                                 </span>
                             </td>
-                            <td className="py-3 px-4 text-sm text-slate-600">{member.department}</td>
+                            <td className="py-3 px-4 text-sm text-gray-600">{member.department}</td>
                             <td className="py-3 px-4">
-                                <p className="text-sm text-slate-600">{member.phone}</p>
-                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{member.email}</p>
+                                <p className="text-xs text-gray-600">{member.phone}</p>
+                                <p className="text-[10px] text-gray-400 truncate max-w-[150px]">{member.email}</p>
                             </td>
-                            <td className="py-3 px-4 text-sm text-slate-600">{member.experience}</td>
+                            <td className="py-3 px-4 text-xs text-gray-600">{member.experience}</td>
                             <td className="py-3 px-4">
                                 <span className={cn(
-                                    "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                                    member.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                    "inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium",
+                                    member.status === 'Active' ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
                                 )}>
                                     {member.status}
                                 </span>
@@ -302,21 +302,21 @@ function StaffTable({ staff, onView, onEdit, onDelete }) {
                                 <div className="flex items-center justify-end gap-1">
                                     <button
                                         onClick={() => onView(member)}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-violet-600 transition-colors"
                                         title="View Details"
                                     >
                                         <Eye size={16} />
                                     </button>
                                     <button
                                         onClick={() => onEdit(member)}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-green-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-emerald-600 transition-colors"
                                         title="Edit"
                                     >
                                         <Edit2 size={16} />
                                     </button>
                                     <button
                                         onClick={() => onDelete(member)}
-                                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-rose-600 transition-colors"
                                         title="Delete"
                                     >
                                         <Trash2 size={16} />
@@ -423,32 +423,32 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" onClick={handleClose} />
+            <div className="relative bg-white rounded-md shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-violet-100">
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <UserPlus className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-xl font-semibold text-slate-800">
+                        <UserPlus className="w-5 h-5 text-violet-600" />
+                        <h2 className="text-base font-semibold text-gray-800">
                             {editingStaff ? 'Edit Staff Member' : 'Add New Staff Member'}
                         </h2>
                     </div>
-                    <button onClick={handleClose} className="p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                        <X size={20} />
+                    <button onClick={handleClose} className="p-1 rounded-md hover:bg-gray-100 transition-colors">
+                        <X size={18} />
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-5 space-y-5">
                     {/* Photo Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Profile Photo</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Profile Photo</label>
                         <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                            <div className="w-16 h-16 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                                 {uploadedFile ? (
                                     <img src={URL.createObjectURL(uploadedFile)} alt="Preview" className="w-full h-full object-cover" />
                                 ) : editingStaff?.photo ? (
                                     <img src={editingStaff.photo} alt="Preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <UserPlus className="w-8 h-8 text-slate-400" />
+                                    <UserPlus className="w-6 h-6 text-gray-400" />
                                 )}
                             </div>
                             <div>
@@ -461,24 +461,24 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                                 />
                                 <label
                                     htmlFor="photo-upload"
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors"
                                 >
-                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                                     {uploading ? 'Uploading...' : 'Upload Photo'}
                                 </label>
-                                <p className="text-xs text-slate-400 mt-1">JPG, PNG (max 2MB)</p>
+                                <p className="text-[10px] text-gray-400 mt-1">JPG, PNG (max 2MB)</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Personal Information */}
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <Users size={14} /> Personal Information
+                        <h3 className="text-xs font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+                            <Users size={13} /> Personal Information
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Full Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -486,20 +486,20 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className={cn(
-                                        "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all",
-                                        errors.name ? "border-red-400" : "border-slate-200 focus:border-blue-400"
+                                        "w-full px-3 py-1.5 rounded-md border focus:outline-none focus:ring-1 focus:ring-violet-100 transition-all",
+                                        errors.name ? "border-rose-300 focus:border-rose-400" : "border-gray-200 focus:border-violet-300"
                                     )}
                                     placeholder="Enter full name"
                                 />
-                                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                                {errors.name && <p className="text-[10px] text-rose-500 mt-1">{errors.name}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Gender</label>
                                 <select
                                     value={formData.gender}
                                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 >
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -507,47 +507,47 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Email <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                     placeholder="staff@school.edu"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Phone <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                     placeholder="+91 XXXXXXXXXX"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Date of Birth</label>
                                 <input
                                     type="date"
                                     value={formData.dateOfBirth}
                                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Blood Group</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Blood Group</label>
                                 <select
                                     value={formData.bloodGroup}
                                     onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 >
                                     <option value="">Select Blood Group</option>
                                     <option value="A+">A+</option>
@@ -562,23 +562,23 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div className="col-span-2">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Address</label>
                                 <textarea
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                     rows="2"
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 resize-none"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300 resize-none"
                                     placeholder="Enter complete address"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Emergency Contact</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Emergency Contact</label>
                                 <input
                                     type="tel"
                                     value={formData.emergencyContact}
                                     onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                     placeholder="Emergency contact number"
                                 />
                             </div>
@@ -587,12 +587,12 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
 
                     {/* Professional Information */}
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <Briefcase size={14} /> Professional Information
+                        <h3 className="text-xs font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+                            <Briefcase size={13} /> Professional Information
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Department <span className="text-red-500">*</span>
                                 </label>
                                 <select
@@ -600,7 +600,7 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                                     onChange={(e) => {
                                         setFormData({ ...formData, department: e.target.value, designation: '' });
                                     }}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 >
                                     <option value="">Select Department</option>
                                     {DEPARTMENTS.map(dept => (
@@ -610,14 +610,14 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Designation <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     value={formData.designation}
                                     onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                                     disabled={!formData.department}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400 disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300 disabled:bg-gray-50 disabled:cursor-not-allowed"
                                 >
                                     <option value="">Select Designation</option>
                                     {availableDesignations.map(des => (
@@ -627,11 +627,11 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Qualification</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Qualification</label>
                                 <select
                                     value={formData.qualification}
                                     onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 >
                                     <option value="">Select Qualification</option>
                                     {QUALIFICATIONS.map(q => (
@@ -641,11 +641,11 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Experience</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Experience</label>
                                 <select
                                     value={formData.experience}
                                     onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 >
                                     <option value="">Select Experience</option>
                                     {EXPERIENCE_LEVELS.map(exp => (
@@ -655,31 +655,31 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Joining Date</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Joining Date</label>
                                 <input
                                     type="date"
                                     value={formData.joiningDate}
                                     onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Annual Salary (₹)</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Annual Salary (₹)</label>
                                 <input
                                     type="number"
                                     value={formData.salary}
                                     onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                    className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                     placeholder="Enter salary amount"
                                 />
                             </div>
 
                             <div className="col-span-2">
-                                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200">
                                     <div>
-                                        <p className="text-sm font-medium text-slate-700">Class Teacher</p>
-                                        <p className="text-xs text-slate-400">Assign as class teacher</p>
+                                        <p className="text-xs font-medium text-gray-700">Class Teacher</p>
+                                        <p className="text-[10px] text-gray-500">Assign as class teacher</p>
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -688,19 +688,19 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                                             onChange={(e) => setFormData({ ...formData, isClassTeacher: e.target.checked })}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                                        <div className="w-8 h-4 bg-gray-200 rounded-full peer-checked:bg-violet-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
                                     </label>
                                 </div>
                             </div>
 
                             {formData.isClassTeacher && (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Class Assigned</label>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Class Assigned</label>
                                     <input
                                         type="text"
                                         value={formData.classAssigned}
                                         onChange={(e) => setFormData({ ...formData, classAssigned: e.target.value })}
-                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-400"
+                                        className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:outline-none focus:border-violet-300"
                                         placeholder="e.g., 10-A"
                                     />
                                 </div>
@@ -709,18 +709,18 @@ function AddStaffModal({ isOpen, onClose, onSave, editingStaff }) {
                     </div>
                 </div>
 
-                <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
+                <div className="sticky bottom-0 bg-white border-t border-gray-200 px-5 py-3 flex justify-end gap-2">
                     <button
                         onClick={handleClose}
-                        className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                        className="px-3 py-1.5 rounded-md border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        className="px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-xs font-medium text-white hover:opacity-90 transition-all flex items-center gap-1.5"
                     >
-                        <Check size={16} />
+                        <Check size={13} />
                         {editingStaff ? 'Update Staff' : 'Add Staff'}
                     </button>
                 </div>
@@ -734,105 +734,105 @@ function StaffDetailsModal({ isOpen, onClose, staff }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" onClick={onClose} />
+            <div className="relative bg-white rounded-md shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-violet-100">
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Users className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-xl font-semibold text-slate-800">Staff Details</h2>
+                        <Users className="w-5 h-5 text-violet-600" />
+                        <h2 className="text-base font-semibold text-gray-800">Staff Details</h2>
                     </div>
-                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
-                        <X size={20} />
+                    <button onClick={onClose} className="p-1 rounded-md hover:bg-gray-100">
+                        <X size={18} />
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-5 space-y-5">
                     {/* Profile Header */}
-                    <div className="flex items-center gap-4 pb-4 border-b border-slate-200">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-purple-700 text-2xl font-bold">
+                    <div className="flex items-center gap-4 pb-3 border-b border-gray-200">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 text-xl font-bold">
                             {staff.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                            <p className="text-xl font-bold text-slate-800">{staff.name}</p>
-                            <p className="text-slate-500">{staff.designation} • {staff.department}</p>
+                            <p className="text-base font-bold text-gray-800">{staff.name}</p>
+                            <p className="text-xs text-gray-500">{staff.designation} • {staff.department}</p>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className={cn(
-                                    "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                                    staff.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                    "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium",
+                                    staff.status === 'Active' ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
                                 )}>
                                     {staff.status}
                                 </span>
-                                <span className="text-xs text-slate-400">ID: {staff.id}</span>
+                                <span className="text-[10px] text-gray-400">ID: {staff.id}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Personal Information */}
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <Users size={14} /> Personal Information
+                        <h3 className="text-xs font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+                            <Users size={13} /> Personal Information
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <p className="text-xs text-slate-400">Email</p>
-                                <p className="text-sm text-slate-700">{staff.email}</p>
+                                <p className="text-[10px] text-gray-500">Email</p>
+                                <p className="text-xs text-gray-700">{staff.email}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Phone</p>
-                                <p className="text-sm text-slate-700">{staff.phone}</p>
+                                <p className="text-[10px] text-gray-500">Phone</p>
+                                <p className="text-xs text-gray-700">{staff.phone}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Date of Birth</p>
-                                <p className="text-sm text-slate-700">{new Date(staff.dateOfBirth).toLocaleDateString()}</p>
+                                <p className="text-[10px] text-gray-500">Date of Birth</p>
+                                <p className="text-xs text-gray-700">{new Date(staff.dateOfBirth).toLocaleDateString()}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Blood Group</p>
-                                <p className="text-sm text-slate-700">{staff.bloodGroup}</p>
+                                <p className="text-[10px] text-gray-500">Blood Group</p>
+                                <p className="text-xs text-gray-700">{staff.bloodGroup}</p>
                             </div>
                             <div className="col-span-2">
-                                <p className="text-xs text-slate-400">Address</p>
-                                <p className="text-sm text-slate-700">{staff.address}</p>
+                                <p className="text-[10px] text-gray-500">Address</p>
+                                <p className="text-xs text-gray-700">{staff.address}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Emergency Contact</p>
-                                <p className="text-sm text-slate-700">{staff.emergencyContact}</p>
+                                <p className="text-[10px] text-gray-500">Emergency Contact</p>
+                                <p className="text-xs text-gray-700">{staff.emergencyContact}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Professional Information */}
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <Briefcase size={14} /> Professional Information
+                        <h3 className="text-xs font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+                            <Briefcase size={13} /> Professional Information
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <p className="text-xs text-slate-400">Qualification</p>
-                                <p className="text-sm text-slate-700">{staff.qualification}</p>
+                                <p className="text-[10px] text-gray-500">Qualification</p>
+                                <p className="text-xs text-gray-700">{staff.qualification}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Experience</p>
-                                <p className="text-sm text-slate-700">{staff.experience}</p>
+                                <p className="text-[10px] text-gray-500">Experience</p>
+                                <p className="text-xs text-gray-700">{staff.experience}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Joining Date</p>
-                                <p className="text-sm text-slate-700">{new Date(staff.joiningDate).toLocaleDateString()}</p>
+                                <p className="text-[10px] text-gray-500">Joining Date</p>
+                                <p className="text-xs text-gray-700">{new Date(staff.joiningDate).toLocaleDateString()}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Annual Salary</p>
-                                <p className="text-sm text-slate-700">₹{staff.salary?.toLocaleString()}</p>
+                                <p className="text-[10px] text-gray-500">Annual Salary</p>
+                                <p className="text-xs text-gray-700">₹{staff.salary?.toLocaleString()}</p>
                             </div>
                             {staff.isClassTeacher && (
                                 <div>
-                                    <p className="text-xs text-slate-400">Class Teacher</p>
-                                    <p className="text-sm text-slate-700">Class {staff.classAssigned}</p>
+                                    <p className="text-[10px] text-gray-500">Class Teacher</p>
+                                    <p className="text-xs text-gray-700">Class {staff.classAssigned}</p>
                                 </div>
                             )}
                             <div>
-                                <p className="text-xs text-slate-400">Subjects</p>
+                                <p className="text-[10px] text-gray-500">Subjects</p>
                                 <div className="flex flex-wrap gap-1 mt-1">
                                     {staff.subjects?.map(subject => (
-                                        <span key={subject} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">
+                                        <span key={subject} className="text-[10px] bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded">
                                             {subject}
                                         </span>
                                     ))}
@@ -843,7 +843,7 @@ function StaffDetailsModal({ isOpen, onClose, staff }) {
 
                     <button
                         onClick={onClose}
-                        className="w-full py-2 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-colors"
+                        className="w-full py-2 rounded-md bg-gray-100 text-gray-700 text-xs font-medium hover:bg-gray-200 transition-colors"
                     >
                         Close
                     </button>
@@ -969,32 +969,38 @@ export default function StaffManagementPage() {
 
     // Stats
     const stats = [
-        { label: 'Total Staff', value: staff.length, icon: Users, color: 'blue' },
-        { label: 'Teaching Staff', value: staff.filter(s => s.department === 'Teaching').length, icon: GraduationCap, color: 'green' },
+        { label: 'Total Staff', value: staff.length, icon: Users, color: 'violet' },
+        { label: 'Teaching Staff', value: staff.filter(s => s.department === 'Teaching').length, icon: GraduationCap, color: 'emerald' },
         { label: 'Active Staff', value: staff.filter(s => s.status === 'Active').length, icon: CheckCircle, color: 'emerald' },
         { label: 'Departments', value: new Set(staff.map(s => s.department)).size, icon: Building2, color: 'purple' },
     ];
+
+    const statColors = {
+        violet: 'bg-violet-50 text-violet-600',
+        emerald: 'bg-emerald-50 text-emerald-600',
+        purple: 'bg-purple-50 text-purple-600',
+    };
 
     // Get unique designations for filter
     const uniqueDesignations = [...new Set(staff.map(s => s.designation))];
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-violet-50">
             <div className="p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800 mb-1">Staff Management</h1>
-                        <p className="text-slate-500">Manage teachers and administrative staff</p>
+                        <h1 className="text-xl font-semibold text-gray-800 mb-1">Staff Management</h1>
+                        <p className="text-xs text-gray-500">Manage teachers and administrative staff</p>
                     </div>
                     <button
                         onClick={() => {
                             setEditingStaff(null);
                             setIsAddModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-violet-500 to-violet-700 text-white text-xs font-medium hover:opacity-90 transition-all"
                     >
-                        <Plus size={18} />
+                        <Plus size={14} />
                         Add Staff Member
                     </button>
                 </div>
@@ -1004,26 +1010,14 @@ export default function StaffManagementPage() {
                     {stats.map((stat) => {
                         const Icon = stat.icon;
                         return (
-                            <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4">
+                            <div key={stat.label} className="bg-white rounded-md border border-violet-100 p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-slate-500">{stat.label}</p>
-                                        <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                                        <p className="text-xs text-gray-500">{stat.label}</p>
+                                        <p className="text-2xl font-semibold text-gray-800">{stat.value}</p>
                                     </div>
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-lg flex items-center justify-center",
-                                        stat.color === 'blue' && "bg-blue-100",
-                                        stat.color === 'green' && "bg-green-100",
-                                        stat.color === 'emerald' && "bg-emerald-100",
-                                        stat.color === 'purple' && "bg-purple-100"
-                                    )}>
-                                        <Icon className={cn(
-                                            "w-5 h-5",
-                                            stat.color === 'blue' && "text-blue-600",
-                                            stat.color === 'green' && "text-green-600",
-                                            stat.color === 'emerald' && "text-emerald-600",
-                                            stat.color === 'purple' && "text-purple-600"
-                                        )} />
+                                    <div className={cn("w-10 h-10 rounded-md flex items-center justify-center", statColors[stat.color])}>
+                                        <Icon className="w-5 h-5" />
                                     </div>
                                 </div>
                             </div>
@@ -1032,8 +1026,8 @@ export default function StaffManagementPage() {
                 </div>
 
                 {/* Filters Bar */}
-                <div className="bg-white rounded-xl border border-slate-200 mb-6">
-                    <div className="p-4 border-b border-slate-200">
+                <div className="bg-white rounded-md border border-violet-100 mb-6">
+                    <div className="p-3 border-b border-gray-200">
                         <div className="flex flex-col lg:flex-row gap-3">
                             <SearchBar
                                 value={searchQuery}
@@ -1068,9 +1062,9 @@ export default function StaffManagementPage() {
                             {(selectedDepartment || selectedStatus || selectedDesignation || searchQuery) && (
                                 <button
                                     onClick={handleClearFilters}
-                                    className="flex items-center gap-2 px-3 h-10 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                                    className="flex items-center gap-1.5 px-3 h-10 rounded-md border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                                 >
-                                    <FilterX size={14} />
+                                    <FilterX size={13} />
                                     Clear Filters
                                 </button>
                             )}
@@ -1078,10 +1072,10 @@ export default function StaffManagementPage() {
                     </div>
 
                     {/* Results Count */}
-                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-sm text-slate-500 flex justify-between items-center">
+                    <div className="px-4 py-1.5 bg-gray-50 border-b border-gray-200 text-xs text-gray-500 flex justify-between items-center">
                         <span>Showing {filteredStaff.length} staff members</span>
-                        <button className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700">
-                            <RefreshCw size={12} />
+                        <button className="flex items-center gap-1 text-[10px] text-violet-600 hover:text-violet-700">
+                            <RefreshCw size={11} />
                             Refresh
                         </button>
                     </div>
@@ -1089,7 +1083,7 @@ export default function StaffManagementPage() {
                     {/* Table */}
                     {loading ? (
                         <div className="flex items-center justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                            <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
                         </div>
                     ) : (
                         <StaffTable

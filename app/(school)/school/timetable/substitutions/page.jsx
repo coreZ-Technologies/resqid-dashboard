@@ -14,22 +14,22 @@ import Link from 'next/link'
 // ── Mock Data ──────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { label: "Today's Substitutions", value: 4,  icon: UsersRound,  color: 'bg-indigo-500', change: +1  },
+  { label: "Today's Substitutions", value: 4,  icon: UsersRound,  color: 'bg-violet-500', change: +1  },
   { label: 'Teachers Absent',       value: 3,  icon: UserX,       color: 'bg-rose-500',   change: +1  },
   { label: 'Covered Periods',       value: 11, icon: CheckCircle2,color: 'bg-emerald-500', change: +3  },
   { label: 'Pending Coverage',      value: 2,  icon: AlertCircle, color: 'bg-amber-500',  change: -1  },
 ]
 
-// All teachers in school
+// All teachers in school (colors mapped to violet variations, but kept for variety)
 const TEACHERS = [
-  { id: 'TCH-001', name: 'Mr. S. Kumar',   subject: 'Mathematics',   avatar: 'SK', color: 'bg-sky-500',    available: true  },
+  { id: 'TCH-001', name: 'Mr. S. Kumar',   subject: 'Mathematics',   avatar: 'SK', color: 'bg-violet-500',    available: true  },
   { id: 'TCH-002', name: 'Ms. P. Nair',    subject: 'English',       avatar: 'PN', color: 'bg-pink-500',   available: true  },
-  { id: 'TCH-003', name: 'Mr. A. Das',     subject: 'Science',       avatar: 'AD', color: 'bg-emerald-500',available: false }, // absent
+  { id: 'TCH-003', name: 'Mr. A. Das',     subject: 'Science',       avatar: 'AD', color: 'bg-emerald-500',available: false },
   { id: 'TCH-004', name: 'Ms. S. Roy',     subject: 'History',       avatar: 'SR', color: 'bg-amber-500',  available: true  },
-  { id: 'TCH-005', name: 'Mr. R. Sen',     subject: 'Comp. Science', avatar: 'RS', color: 'bg-violet-500', available: false }, // absent
+  { id: 'TCH-005', name: 'Mr. R. Sen',     subject: 'Comp. Science', avatar: 'RS', color: 'bg-violet-600', available: false },
   { id: 'TCH-006', name: 'Ms. K. Ghosh',   subject: 'Geography',     avatar: 'KG', color: 'bg-teal-500',   available: true  },
   { id: 'TCH-007', name: 'Mr. D. Verma',   subject: 'Physics',       avatar: 'DV', color: 'bg-indigo-500', available: true  },
-  { id: 'TCH-008', name: 'Ms. M. Sharma',  subject: 'Chemistry',     avatar: 'MS', color: 'bg-rose-500',   available: false }, // absent
+  { id: 'TCH-008', name: 'Ms. M. Sharma',  subject: 'Chemistry',     avatar: 'MS', color: 'bg-rose-500',   available: false },
   { id: 'TCH-009', name: 'Mr. B. Pillai',  subject: 'Hindi',         avatar: 'BP', color: 'bg-orange-500', available: true  },
   { id: 'TCH-010', name: 'Ms. T. Bose',    subject: 'Biology',       avatar: 'TB', color: 'bg-cyan-500',   available: true  },
 ]
@@ -55,8 +55,8 @@ const SUBSTITUTIONS = [
     time: '10:30 – 11:15',
     class: 'Class 7-B',
     subject: 'Comp. Science',
-    absentTeacher: { id: 'TCH-005', name: 'Mr. R. Sen',    avatar: 'RS', color: 'bg-violet-500' },
-    substituteTeacher: { id: 'TCH-001', name: 'Mr. S. Kumar',  avatar: 'SK', color: 'bg-sky-500' },
+    absentTeacher: { id: 'TCH-005', name: 'Mr. R. Sen',    avatar: 'RS', color: 'bg-violet-600' },
+    substituteTeacher: { id: 'TCH-001', name: 'Mr. S. Kumar',  avatar: 'SK', color: 'bg-violet-500' },
     status: 'confirmed',
     reason: 'Personal leave',
     notifiedParents: false,
@@ -107,7 +107,7 @@ const SUBSTITUTIONS = [
     time: '10:30 – 11:15',
     class: 'Class 11-A',
     subject: 'Comp. Science',
-    absentTeacher: { id: 'TCH-005', name: 'Mr. R. Sen',    avatar: 'RS', color: 'bg-violet-500' },
+    absentTeacher: { id: 'TCH-005', name: 'Mr. R. Sen',    avatar: 'RS', color: 'bg-violet-600' },
     substituteTeacher: { id: 'TCH-006', name: 'Ms. K. Ghosh',  avatar: 'KG', color: 'bg-teal-500' },
     status: 'completed',
     reason: 'Training program',
@@ -120,7 +120,7 @@ const SUBSTITUTIONS = [
     time: '8:00 – 8:45',
     class: 'Class 5-A',
     subject: 'Mathematics',
-    absentTeacher: { id: 'TCH-001', name: 'Mr. S. Kumar',  avatar: 'SK', color: 'bg-sky-500' },
+    absentTeacher: { id: 'TCH-001', name: 'Mr. S. Kumar',  avatar: 'SK', color: 'bg-violet-500' },
     substituteTeacher: { id: 'TCH-009', name: 'Mr. B. Pillai',  avatar: 'BP', color: 'bg-orange-500' },
     status: 'completed',
     reason: 'Sick leave',
@@ -131,7 +131,7 @@ const SUBSTITUTIONS = [
 const STATUS_META = {
   confirmed: { label: 'Confirmed', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', dot: 'bg-emerald-500' },
   pending:   { label: 'Pending',   color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200',   dot: 'bg-amber-500'   },
-  completed: { label: 'Completed', color: 'text-slate-600',   bg: 'bg-slate-100',  border: 'border-slate-200',   dot: 'bg-slate-400'   },
+  completed: { label: 'Completed', color: 'text-gray-600',    bg: 'bg-gray-100',   border: 'border-gray-200',     dot: 'bg-gray-400'     },
 }
 
 const DATE_FILTERS   = ['All', 'Today', 'Yesterday', 'This Week']
@@ -141,13 +141,13 @@ const STATUS_FILTERS = ['All Statuses', 'Confirmed', 'Pending', 'Completed']
 
 function StatCard({ label, value, icon: Icon, color, change }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+    <div className="bg-white rounded-lg border border-violet-100 p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${color}`}>
           <Icon size={18} className="text-white" />
         </div>
         {change !== null && (
-          <span className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg ${
+          <span className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md ${
             change >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
           }`}>
             {change >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
@@ -155,8 +155,8 @@ function StatCard({ label, value, icon: Icon, color, change }) {
           </span>
         )}
       </div>
-      <p className="text-[26px] font-bold text-slate-800 leading-tight">{value}</p>
-      <p className="text-[12px] text-slate-500 mt-0.5">{label}</p>
+      <p className="text-[26px] font-bold text-gray-800 leading-tight">{value}</p>
+      <p className="text-[12px] text-gray-500 mt-0.5">{label}</p>
     </div>
   )
 }
@@ -173,7 +173,7 @@ function StatusBadge({ status }) {
 
 function TeacherChip({ teacher, size = 'md' }) {
   if (!teacher) return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-400 border border-slate-200">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-gray-100 text-gray-400 border border-gray-200">
       <UserX size={10} /> Unassigned
     </span>
   )
@@ -182,12 +182,12 @@ function TeacherChip({ teacher, size = 'md' }) {
       <div className={`${size === 'sm' ? 'w-6 h-6 text-[9px]' : 'w-7 h-7 text-[10px]'} rounded-full ${teacher.color} flex items-center justify-center text-white font-bold shrink-0`}>
         {teacher.avatar}
       </div>
-      <span className="text-[12px] font-medium text-slate-700 whitespace-nowrap">{teacher.name}</span>
+      <span className="text-[12px] font-medium text-gray-700 whitespace-nowrap">{teacher.name}</span>
     </div>
   )
 }
 
-// ── Assign Modal ────────────────────────────────────────────────────────────────
+// ── Assign Modal (Notion style) ────────────────────────────────────────────────
 
 function AssignModal({ sub, onClose, onAssign }) {
   const [picked, setPicked] = useState(null)
@@ -195,69 +195,69 @@ function AssignModal({ sub, onClose, onAssign }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-md overflow-hidden">
+      <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-lg border border-violet-100 w-full max-w-md overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-violet-100">
           <div>
-            <p className="text-[14px] font-bold text-slate-800">Assign Substitute</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">{sub.period} · {sub.time} · {sub.class} · {sub.subject}</p>
+            <p className="text-[14px] font-semibold text-gray-800">Assign Substitute</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">{sub.period} · {sub.time} · {sub.class} · {sub.subject}</p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 transition-colors">
             <X size={16} />
           </button>
         </div>
 
         {/* Absent teacher info */}
         <div className="px-5 pt-4">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Absent Teacher</p>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-rose-50 border border-rose-200 mb-4">
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Absent Teacher</p>
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-rose-50 border border-rose-200 mb-4">
             <div className={`w-8 h-8 rounded-full ${sub.absentTeacher.color} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
               {sub.absentTeacher.avatar}
             </div>
             <div>
-              <p className="text-[12px] font-semibold text-slate-700">{sub.absentTeacher.name}</p>
-              <p className="text-[10px] text-slate-500">Reason: {sub.reason}</p>
+              <p className="text-[12px] font-semibold text-gray-700">{sub.absentTeacher.name}</p>
+              <p className="text-[10px] text-gray-500">Reason: {sub.reason}</p>
             </div>
           </div>
 
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Select Substitute</p>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Select Substitute</p>
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
             {available.map(t => (
               <button
                 key={t.id}
                 onClick={() => setPicked(t.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                   picked === t.id
-                    ? 'border-indigo-300 bg-indigo-50 ring-2 ring-indigo-100'
-                    : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'
+                    ? 'border-violet-300 bg-violet-50 ring-2 ring-violet-100'
+                    : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 <div className={`w-8 h-8 rounded-full ${t.color} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
                   {t.avatar}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-semibold text-slate-700">{t.name}</p>
-                  <p className="text-[10px] text-slate-400">{t.subject}</p>
+                  <p className="text-[12px] font-semibold text-gray-700">{t.name}</p>
+                  <p className="text-[10px] text-gray-400">{t.subject}</p>
                 </div>
-                {picked === t.id && <CheckCircle2 size={16} className="text-indigo-500 shrink-0" />}
+                {picked === t.id && <CheckCircle2 size={16} className="text-violet-600 shrink-0" />}
               </button>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 px-5 py-4 border-t border-slate-50 mt-4">
+        <div className="flex gap-3 px-5 py-4 border-t border-gray-100 mt-4">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+            className="flex-1 py-2.5 rounded-lg border border-gray-200 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             disabled={!picked}
             onClick={() => { onAssign(sub.id, picked); onClose() }}
-            className="flex-1 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-100 disabled:text-slate-400 text-white disabled:cursor-not-allowed text-[12px] font-semibold transition-colors flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[12px] font-semibold transition-all flex items-center justify-center gap-2"
           >
             <Save size={13} /> Confirm Assignment
           </button>
@@ -300,38 +300,37 @@ export default function SubstitutionsPage() {
   }
 
   return (
-    <>
-      {assignModal && (
-        <AssignModal
-          sub={assignModal}
-          onClose={() => setAssignModal(null)}
-          onAssign={handleAssign}
-        />
-      )}
-
-      <div className="space-y-6">
+    <div className="bg-violet-50 min-h-screen p-6">
+      <div className="max-w-[1300px] mx-auto space-y-6">
+        {assignModal && (
+          <AssignModal
+            sub={assignModal}
+            onClose={() => setAssignModal(null)}
+            onAssign={handleAssign}
+          />
+        )}
 
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <UsersRound size={20} className="text-indigo-500" />
-              <h1 className="text-[22px] font-bold text-slate-800">Substitutions</h1>
+              <UsersRound size={20} className="text-violet-600" />
+              <h1 className="text-[22px] font-bold text-gray-800">Substitutions</h1>
               {pendingCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[11px] font-bold">
                   {pendingCount} pending
                 </span>
               )}
             </div>
-            <p className="text-[13px] text-slate-500">Manage teacher absences and assign substitute coverage</p>
+            <p className="text-[13px] text-gray-500">Manage teacher absences and assign substitute coverage</p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors">
+            <button className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-600 hover:bg-white/50 transition-colors">
               <Download size={13} /> Export
             </button>
             <button
               onClick={() => setAssignModal(subs.find(s => s.status === 'pending') || null)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-[12px] font-semibold transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 text-white text-[12px] font-semibold transition-all"
             >
               <Plus size={13} /> New Substitution
             </button>
@@ -345,7 +344,7 @@ export default function SubstitutionsPage() {
 
         {/* ── Pending alert banner ── */}
         {pendingCount > 0 && (
-          <div className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-amber-50 border border-amber-200">
+          <div className="flex items-start gap-3 px-5 py-4 rounded-lg bg-amber-50 border border-amber-200">
             <AlertCircle size={16} className="text-amber-500 mt-0.5 shrink-0" />
             <div className="flex-1">
               <p className="text-[13px] font-semibold text-amber-700">
@@ -353,7 +352,7 @@ export default function SubstitutionsPage() {
               </p>
               <div className="mt-1 flex flex-wrap gap-2">
                 {subs.filter(s => s.status === 'pending').map(s => (
-                  <span key={s.id} className="text-[11px] text-amber-600 bg-amber-100 px-2 py-0.5 rounded-lg">
+                  <span key={s.id} className="text-[11px] text-amber-600 bg-amber-100 px-2 py-0.5 rounded-md">
                     {s.period} · {s.class} · {s.subject}
                   </span>
                 ))}
@@ -361,7 +360,7 @@ export default function SubstitutionsPage() {
             </div>
             <button
               onClick={() => setStatusFilter('Pending')}
-              className="shrink-0 px-3 py-1.5 rounded-xl bg-amber-500 text-white text-[11px] font-semibold hover:bg-amber-600 transition-colors"
+              className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-[11px] font-semibold hover:bg-amber-600 transition-colors"
             >
               Assign Now
             </button>
@@ -369,28 +368,28 @@ export default function SubstitutionsPage() {
         )}
 
         {/* ── Absent teachers strip ── */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-violet-100 p-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[13px] font-bold text-slate-800">Absent Today</p>
-            <Link href="/school/teachers" className="text-[11px] text-sky-500 font-medium flex items-center gap-1">
+            <p className="text-[13px] font-semibold text-gray-800">Absent Today</p>
+            <Link href="/school/teachers" className="text-[11px] text-violet-600 font-medium flex items-center gap-1">
               All teachers <ChevronRight size={11} />
             </Link>
           </div>
           <div className="flex flex-wrap gap-3">
             {TEACHERS.filter(t => !t.available).map(t => (
-              <div key={t.id} className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-rose-50 border border-rose-200">
+              <div key={t.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200">
                 <div className={`w-7 h-7 rounded-full ${t.color} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
                   {t.avatar}
                 </div>
                 <div>
-                  <p className="text-[12px] font-semibold text-slate-700">{t.name}</p>
-                  <p className="text-[10px] text-slate-400">{t.subject}</p>
+                  <p className="text-[12px] font-semibold text-gray-700">{t.name}</p>
+                  <p className="text-[10px] text-gray-400">{t.subject}</p>
                 </div>
                 <span className="ml-1 text-[10px] font-semibold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded-full">Absent</span>
               </div>
             ))}
             {TEACHERS.filter(t => !t.available).length === 0 && (
-              <p className="text-[12px] text-slate-400">All teachers present today 🎉</p>
+              <p className="text-[12px] text-gray-400">All teachers present today 🎉</p>
             )}
           </div>
         </div>
@@ -399,29 +398,29 @@ export default function SubstitutionsPage() {
         <div className={`grid gap-5 ${selectedSub ? 'lg:grid-cols-[1fr_360px]' : 'grid-cols-1'}`}>
 
           {/* ── Table panel ── */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-violet-100 overflow-hidden">
 
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-slate-50">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-violet-100">
               <div className="relative flex-1 max-w-xs">
-                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search class, teacher, subject…"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all"
                 />
               </div>
 
               {/* Date tabs */}
-              <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-0.5">
+              <div className="flex items-center bg-violet-50 rounded-lg p-1 gap-0.5">
                 {DATE_FILTERS.map(f => (
                   <button
                     key={f}
                     onClick={() => setDateFilter(f)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap ${
-                      dateFilter === f ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-medium transition-all whitespace-nowrap ${
+                      dateFilter === f ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     {f}
@@ -434,11 +433,11 @@ export default function SubstitutionsPage() {
                 <select
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value)}
-                  className="appearance-none pl-3 pr-7 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-white cursor-pointer"
+                  className="appearance-none pl-3 pr-7 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-100 bg-white cursor-pointer"
                 >
                   {STATUS_FILTERS.map(f => <option key={f}>{f}</option>)}
                 </select>
-                <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -446,9 +445,9 @@ export default function SubstitutionsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-50">
+                  <tr className="border-b border-gray-100">
                     {['Period & Time', 'Class & Subject', 'Absent Teacher', 'Substitute', 'Status', 'Date', ''].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">
+                      <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                         {h}
                       </th>
                     ))}
@@ -458,9 +457,9 @@ export default function SubstitutionsPage() {
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-16 text-center">
-                        <UsersRound size={32} className="mx-auto text-slate-200 mb-3" />
-                        <p className="text-[13px] text-slate-400 font-medium">No substitutions found</p>
-                        <p className="text-[11px] text-slate-300 mt-1">Try adjusting your filters</p>
+                        <UsersRound size={32} className="mx-auto text-gray-200 mb-3" />
+                        <p className="text-[13px] text-gray-400 font-medium">No substitutions found</p>
+                        <p className="text-[11px] text-gray-300 mt-1">Try adjusting your filters</p>
                       </td>
                     </tr>
                   ) : (
@@ -470,24 +469,24 @@ export default function SubstitutionsPage() {
                         <tr
                           key={sub.id}
                           onClick={() => setSelected(isSelected ? null : sub.id)}
-                          className={`border-b border-slate-50 cursor-pointer transition-colors ${
-                            isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50/40'
+                          className={`border-b border-gray-50 cursor-pointer transition-colors ${
+                            isSelected ? 'bg-violet-50/30' : 'hover:bg-gray-50/50'
                           }`}
                         >
                           {/* Period */}
                           <td className="px-4 py-3.5">
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-bold">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-100 text-violet-700 text-[11px] font-bold">
                               {sub.period}
                             </span>
-                            <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                            <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                               <Clock size={9} /> {sub.time}
                             </p>
                           </td>
 
                           {/* Class & Subject */}
                           <td className="px-4 py-3.5">
-                            <p className="text-[12.5px] font-semibold text-slate-700">{sub.class}</p>
-                            <p className="text-[11px] text-slate-400 flex items-center gap-1">
+                            <p className="text-[12.5px] font-semibold text-gray-700">{sub.class}</p>
+                            <p className="text-[11px] text-gray-400 flex items-center gap-1">
                               <BookOpen size={9} /> {sub.subject}
                             </p>
                           </td>
@@ -504,7 +503,7 @@ export default function SubstitutionsPage() {
                               : (
                                 <button
                                   onClick={e => { e.stopPropagation(); setAssignModal(sub) }}
-                                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-semibold hover:bg-amber-100 transition-colors"
+                                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-semibold hover:bg-amber-100 transition-colors"
                                 >
                                   <Plus size={11} /> Assign
                                 </button>
@@ -519,12 +518,12 @@ export default function SubstitutionsPage() {
 
                           {/* Date */}
                           <td className="px-4 py-3.5">
-                            <p className="text-[12px] text-slate-500 whitespace-nowrap">{sub.date}</p>
+                            <p className="text-[12px] text-gray-500 whitespace-nowrap">{sub.date}</p>
                           </td>
 
                           {/* Action */}
                           <td className="px-4 py-3.5">
-                            <button className={`p-1.5 rounded-lg transition-colors ${isSelected ? 'bg-indigo-100 text-indigo-600' : 'text-slate-300 hover:bg-slate-100 hover:text-slate-600'}`}>
+                            <button className={`p-1.5 rounded-md transition-colors ${isSelected ? 'bg-violet-100 text-violet-600' : 'text-gray-300 hover:bg-gray-100 hover:text-gray-600'}`}>
                               <Eye size={14} />
                             </button>
                           </td>
@@ -537,9 +536,9 @@ export default function SubstitutionsPage() {
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 border-t border-slate-50 flex items-center justify-between">
-              <p className="text-[11px] text-slate-400">Showing {filtered.length} of {subs.length} substitutions</p>
-              <Link href="/school/timetable" className="text-[11px] text-sky-500 hover:text-sky-600 font-medium flex items-center gap-1">
+            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
+              <p className="text-[11px] text-gray-400">Showing {filtered.length} of {subs.length} substitutions</p>
+              <Link href="/school/timetable" className="text-[11px] text-violet-600 hover:text-violet-700 font-medium flex items-center gap-1">
                 View full timetable <ChevronRight size={11} />
               </Link>
             </div>
@@ -547,13 +546,13 @@ export default function SubstitutionsPage() {
 
           {/* ── Detail Panel ── */}
           {selectedSub && (
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-fit">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
+            <div className="bg-white rounded-lg border border-violet-100 overflow-hidden h-fit">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <div>
-                  <p className="text-[14px] font-bold text-slate-800">Substitution Detail</p>
-                  <p className="text-[11px] font-mono text-slate-400 mt-0.5">{selectedSub.id}</p>
+                  <p className="text-[14px] font-semibold text-gray-800">Substitution Detail</p>
+                  <p className="text-[11px] font-mono text-gray-400 mt-0.5">{selectedSub.id}</p>
                 </div>
-                <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+                <button onClick={() => setSelected(null)} className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 transition-colors">
                   <XCircle size={16} />
                 </button>
               </div>
@@ -567,10 +566,10 @@ export default function SubstitutionsPage() {
                     { label: 'Class',   value: selectedSub.class,   icon: Users       },
                     { label: 'Subject', value: selectedSub.subject, icon: BookOpen    },
                   ].map(item => (
-                    <div key={item.label} className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                      <item.icon size={13} className="text-slate-400 mb-1" />
-                      <p className="text-[13px] font-bold text-slate-700">{item.value}</p>
-                      <p className="text-[10px] text-slate-400">{item.label}</p>
+                    <div key={item.label} className="p-3 rounded-lg bg-gray-50 border border-gray-100">
+                      <item.icon size={13} className="text-gray-400 mb-1" />
+                      <p className="text-[13px] font-semibold text-gray-700">{item.value}</p>
+                      <p className="text-[10px] text-gray-400">{item.label}</p>
                     </div>
                   ))}
                 </div>
@@ -578,46 +577,46 @@ export default function SubstitutionsPage() {
                 {/* Status + date */}
                 <div className="flex items-center gap-2">
                   <StatusBadge status={selectedSub.status} />
-                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
                     <CalendarDays size={10} /> {selectedSub.date}
                   </span>
                 </div>
 
                 {/* Absent teacher */}
                 <div>
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Absent Teacher</p>
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-rose-50 border border-rose-200">
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Absent Teacher</p>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-rose-50 border border-rose-200">
                     <div className={`w-9 h-9 rounded-full ${selectedSub.absentTeacher.color} flex items-center justify-center text-white text-[11px] font-bold shrink-0`}>
                       {selectedSub.absentTeacher.avatar}
                     </div>
                     <div>
-                      <p className="text-[12px] font-semibold text-slate-700">{selectedSub.absentTeacher.name}</p>
-                      <p className="text-[10px] text-slate-500">Reason: {selectedSub.reason}</p>
+                      <p className="text-[12px] font-semibold text-gray-700">{selectedSub.absentTeacher.name}</p>
+                      <p className="text-[10px] text-gray-500">Reason: {selectedSub.reason}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Substitute teacher */}
                 <div>
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Substitute Teacher</p>
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Substitute Teacher</p>
                   {selectedSub.substituteTeacher ? (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
                       <div className={`w-9 h-9 rounded-full ${selectedSub.substituteTeacher.color} flex items-center justify-center text-white text-[11px] font-bold shrink-0`}>
                         {selectedSub.substituteTeacher.avatar}
                       </div>
                       <div className="flex-1">
-                        <p className="text-[12px] font-semibold text-slate-700">{selectedSub.substituteTeacher.name}</p>
-                        <p className="text-[10px] text-slate-500">{TEACHERS.find(t => t.id === selectedSub.substituteTeacher.id)?.subject}</p>
+                        <p className="text-[12px] font-semibold text-gray-700">{selectedSub.substituteTeacher.name}</p>
+                        <p className="text-[10px] text-gray-500">{TEACHERS.find(t => t.id === selectedSub.substituteTeacher.id)?.subject}</p>
                       </div>
                       <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center py-5 gap-3 rounded-xl bg-amber-50 border border-amber-200">
+                    <div className="flex flex-col items-center py-5 gap-3 rounded-lg bg-amber-50 border border-amber-200">
                       <UserX size={22} className="text-amber-400" />
                       <p className="text-[12px] text-amber-700 font-medium">No substitute assigned yet</p>
                       <button
                         onClick={() => setAssignModal(selectedSub)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-500 text-white text-[11px] font-semibold hover:bg-indigo-600 transition-colors"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 text-white text-[11px] font-semibold hover:opacity-90 transition-all"
                       >
                         <Plus size={11} /> Assign Substitute
                       </button>
@@ -626,25 +625,25 @@ export default function SubstitutionsPage() {
                 </div>
 
                 {/* Parent notification */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100">
                   <div className="flex items-center gap-2">
-                    <Bell size={13} className="text-slate-400" />
-                    <p className="text-[12px] text-slate-600 font-medium">Parents Notified</p>
+                    <Bell size={13} className="text-gray-400" />
+                    <p className="text-[12px] text-gray-600 font-medium">Parents Notified</p>
                   </div>
                   {selectedSub.notifiedParents
                     ? <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600"><CheckCircle2 size={12} /> Yes</span>
-                    : <button className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:underline"><Bell size={11} /> Notify now</button>
+                    : <button className="flex items-center gap-1 text-[11px] font-semibold text-violet-600 hover:underline"><Bell size={11} /> Notify now</button>
                   }
                 </div>
 
                 {/* Actions */}
                 {selectedSub.status !== 'completed' && (
                   <div className="space-y-2 pt-1">
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Actions</p>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Actions</p>
                     {selectedSub.status === 'pending' && (
                       <button
                         onClick={() => setAssignModal(selectedSub)}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-[12px] font-semibold transition-colors"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-violet-700 hover:opacity-90 text-white text-[12px] font-semibold transition-all"
                       >
                         <Plus size={13} /> Assign Substitute
                       </button>
@@ -652,12 +651,12 @@ export default function SubstitutionsPage() {
                     {selectedSub.substituteTeacher && (
                       <button
                         onClick={() => setAssignModal(selectedSub)}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-[12px] font-semibold hover:bg-slate-50 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-[12px] font-semibold hover:bg-gray-50 transition-colors"
                       >
                         <Edit2 size={13} /> Change Substitute
                       </button>
                     )}
-                    <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[12px] font-semibold transition-colors">
+                    <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[12px] font-semibold transition-colors">
                       <Trash2 size={13} /> Remove Substitution
                     </button>
                   </div>
@@ -667,6 +666,6 @@ export default function SubstitutionsPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
