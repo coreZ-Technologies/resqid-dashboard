@@ -33,14 +33,14 @@ export default function ExportButton({
                 <Download
                     size={14}
                     className={cn(
-                        "absolute transition-transform duration-400 ease-in-out",
+                        "absolute transition-transform duration-[400ms] ease-in-out",
                         animating ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
                     )}
                 />
                 <Download
                     size={14}
                     className={cn(
-                        "absolute transition-transform duration-400 ease-in-out",
+                        "absolute transition-transform duration-[400ms] ease-in-out",
                         animating ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                     )}
                 />

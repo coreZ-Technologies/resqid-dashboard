@@ -172,13 +172,6 @@ const SCHOOL_SIDEBAR = [
                 description: 'Weekly schedule',
             },
             {
-                id: 'substitutions',
-                label: 'Substitutions',
-                href: '/school/timetable/substitutions',
-                icon: 'UsersRound',
-                description: 'Teacher substitutions',
-            },
-            {
                 id: 'teachers',
                 label: 'Teachers',
                 href: '/school/teachers',
