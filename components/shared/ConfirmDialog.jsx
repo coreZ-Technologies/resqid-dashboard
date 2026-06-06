@@ -54,41 +54,6 @@ const variants = {
   },
 }
 
-// ── ConfirmDialog ─────────────────────────────────────────────────────────────
-
-/**
- * ConfirmDialog
- *
- * A reusable confirmation dialog built on shadcn/ui Dialog.
- *
- * Props:
- *   open            — controlled open state
- *   onOpenChange    — setter for open state
- *   variant         — "danger" | "delete" | "warning" | "logout" | "security" | "info"  (default: "danger")
- *   title           — dialog heading
- *   description     — supporting text (string or ReactNode)
- *   confirmLabel    — confirm button text  (default: "Confirm")
- *   cancelLabel     — cancel button text   (default: "Cancel")
- *   onConfirm       — async or sync callback on confirm
- *   onCancel        — optional callback on cancel / close
- *   loading         — show loading spinner on confirm button
- *   destructive     — force red confirm button regardless of variant
- *   children        — optional extra content rendered between description and footer
- *
- * Usage:
- *   const [open, setOpen] = React.useState(false)
- *
- *   <ConfirmDialog
- *     open={open}
- *     onOpenChange={setOpen}
- *     variant="delete"
- *     title="Delete student?"
- *     description="This will permanently remove Riya Sen and all associated records."
- *     confirmLabel="Delete"
- *     onConfirm={handleDelete}
- *   />
- */
-
 const ConfirmDialog = ({
   open,
   onOpenChange,
@@ -128,8 +93,8 @@ const ConfirmDialog = ({
     destructive
       ? variants.danger.confirmClass
       : !config.confirmClass
-      ? ""
-      : config.confirmClass
+        ? ""
+        : config.confirmClass
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -141,7 +106,6 @@ const ConfirmDialog = ({
       >
         {/* Header area */}
         <div className="flex flex-col items-center gap-3 px-6 pt-6 pb-4 text-center">
-          {/* Icon badge */}
           <div
             className={cn(
               "flex h-12 w-12 items-center justify-center rounded-full",
@@ -152,7 +116,7 @@ const ConfirmDialog = ({
             <Icon className={cn("h-6 w-6", config.iconClass)} aria-hidden />
           </div>
 
-          <DialogHeader className="space-y-1.5">
+          <div className="space-y-1.5">
             <DialogTitle className="text-base font-semibold leading-tight">
               {title}
             </DialogTitle>
@@ -161,7 +125,7 @@ const ConfirmDialog = ({
                 {description}
               </DialogDescription>
             )}
-          </DialogHeader>
+          </div>
         </div>
 
         {/* Optional extra content */}
@@ -174,8 +138,8 @@ const ConfirmDialog = ({
         {/* Divider */}
         <div className="h-px bg-border" />
 
-        {/* Footer */}
-        <DialogFooter className="flex flex-row justify-end gap-2 px-6 py-4">
+        {/* Footer — plain div, not DialogFooter */}
+        <div className="flex flex-row justify-end gap-2 px-6 py-4">
           <Button
             variant="outline"
             onClick={handleCancel}
@@ -211,40 +175,12 @@ const ConfirmDialog = ({
             )}
             {confirmLabel}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   )
 }
 
-// ── useConfirmDialog hook ─────────────────────────────────────────────────────
-
-/**
- * useConfirmDialog
- *
- * Imperative hook — call confirm() and await the user's decision
- * without manually managing open state.
- *
- * Usage:
- *   const { confirmDialog, confirm } = useConfirmDialog()
- *
- *   const handleDelete = async () => {
- *     const ok = await confirm({
- *       variant: "delete",
- *       title: "Delete student?",
- *       description: "This cannot be undone.",
- *       confirmLabel: "Delete",
- *     })
- *     if (ok) await deleteStudent(id)
- *   }
- *
- *   return (
- *     <>
- *       <button onClick={handleDelete}>Delete</button>
- *       {confirmDialog}
- *     </>
- *   )
- */
 
 const useConfirmDialog = () => {
   const [open, setOpen] = React.useState(false)

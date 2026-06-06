@@ -10,12 +10,13 @@ const moduleRoutes = {
     emergency: "/school/emergency/import",
     timetable: "/school/timetable/import",
     communication: "/school/communication/import",
-    students: "/school/students/import",
+    students: "/school/students/add?mode=bulk",
     default: "/school/import",
 }
 
 export default function BulkImportButton({
     module = "default",
+    href,        // 👈 new: override route directly
     label = "Bulk Import",
     variant = "outline",
     className
@@ -23,7 +24,7 @@ export default function BulkImportButton({
     const router = useRouter()
     const [animating, setAnimating] = useState(false)
 
-    const route = moduleRoutes[module] || moduleRoutes.default
+    const route = href || moduleRoutes[module] || moduleRoutes.default
 
     const handleClick = () => {
         setAnimating(true)
@@ -45,19 +46,17 @@ export default function BulkImportButton({
             )}
         >
             <span className="relative inline-flex overflow-hidden" style={{ width: 16, height: 16 }}>
-                {/* First icon - moves up and fades out */}
                 <Upload
                     size={16}
                     className={cn(
-                        "absolute transition-all duration-300 ease-in-out",
+                        "absolute transition-all duration-[300ms] ease-in-out",
                         animating ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
                     )}
                 />
-                {/* Second icon - moves up from below to replace */}
                 <Upload
                     size={16}
                     className={cn(
-                        "absolute transition-all duration-300 ease-in-out",
+                        "absolute transition-all duration-[300ms] ease-in-out",
                         animating ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
                     )}
                 />
