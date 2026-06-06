@@ -1,755 +1,377 @@
-'use client';
+"use client"
 
-import { useState, useRef } from 'react';
-import PrintShareProfile from '@/components/shared/PrintShareProfile';
+import { useState, useRef } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import {
+  Plus, Upload, Download, Check, ArrowLeft, AlertCircle,
+  FileSpreadsheet, Trash2, User, GraduationCap, Users, Heart,
+  ChevronLeft, ChevronRight, X, Loader2
+} from "lucide-react"
+import { PageBreadcrumb } from "@/components/shared/Breadcrumb"
+import { StatusBadge } from "@/components/shared/StatusBadge"
+import { cn } from "@/lib/utils"
 
-// ─── Constants ───────────────────────────────────────────────
-const CLASSES  = ['Nursery','LKG','UKG','1','2','3','4','5','6','7','8','9','10','11','12'];
-const SECTIONS = ['A','B','C','D'];
-const BLOOD_GROUPS = ['A+','A-','B+','B-','O+','O-','AB+','AB-'];
-const RELS = ['Father','Mother','Guardian','Other'];
+const CLASSES = ['Nursery', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+const SECTIONS = ['A', 'B', 'C', 'D']
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+const RELATIONS = ['Father', 'Mother', 'Guardian', 'Other']
+
+const STEPS = [
+  { id: 1, label: 'Personal', icon: User },
+  { id: 2, label: 'Academic', icon: GraduationCap },
+  { id: 3, label: 'Parents', icon: Users },
+  { id: 4, label: 'Medical', icon: Heart },
+]
 
 const INITIAL_FORM = {
-  firstName:'', lastName:'', gender:'MALE', dob:'', bloodGroup:'',
-  cls:'', section:'', roll:'', prevSchool:'',
-  email:'', phone:'', address:'', city:'', st:'', pin:'',
-  p1name:'', p1rel:'Father', p1phone:'', p1email:'', p1occ:'',
-  p2name:'', p2rel:'Mother', p2phone:'', p2email:'',
-  emgName:'', emgPhone:'', emgRel:'',
-  allergy:'', cond:'', meds:'', docName:'', docPhone:'', emgInstr:'',
-};
-
-// ─── Helpers ──────────────────────────────────────────────────
-function cn(...classes) { return classes.filter(Boolean).join(' '); }
-
-// ─── Field Component — FONT SIZES INCREASED ──────────────────
-// label:       11px → 13px
-// input/select: 12px → 14px
-// error:       10px → 12px
-function Field({ id, label, type = 'text', value, onChange, placeholder, required, error, options, rows }) {
-  const base = 'w-full px-3 py-2.5 rounded-[8px] border !text-[14px] font-[\'DM_Sans\'] focus:outline-none transition-colors';
-  const borderCls = error
-    ? 'border-red-400 focus:border-red-400'
-    : 'border-[#ede9fe] focus:border-[#c4b5fd] focus:ring-2 focus:ring-[#c4b5fd]/20';
-
-  return (
-    <div>
-      <label htmlFor={id} className="block !text-[13px] font-semibold text-[#4b3d6e] mb-1 tracking-wide">
-        {label}{required && <span className="text-red-500"> *</span>}
-      </label>
-      {type === 'select' ? (
-        <select id={id} value={value} onChange={e => onChange(e.target.value)}
-          className={cn(base, borderCls, 'bg-white')}>
-          {options.map(o => (
-            <option key={o.v ?? o} value={o.v ?? o}>{o.l ?? o}</option>
-          ))}
-        </select>
-      ) : type === 'textarea' ? (
-        <textarea id={id} value={value} onChange={e => onChange(e.target.value)}
-          rows={rows || 2} placeholder={placeholder}
-          className={cn(base, borderCls, 'resize-none')} />
-      ) : (
-        <input id={id} type={type} value={value} onChange={e => onChange(e.target.value)}
-          placeholder={placeholder} className={cn(base, borderCls)} />
-      )}
-      {error && <p className="!text-[12px] text-red-500 mt-1">{error}</p>}
-    </div>
-  );
+  firstName: '', lastName: '', gender: 'MALE', dob: '', bloodGroup: '',
+  cls: '', section: '', roll: '',
+  email: '', phone: '', address: '', city: '', state: '', pin: '',
+  parent1Name: '', parent1Relation: 'Father', parent1Phone: '', parent1Email: '',
+  parent2Name: '', parent2Relation: 'Mother', parent2Phone: '', parent2Email: '',
+  emergencyName: '', emergencyPhone: '', emergencyRelation: '',
+  allergies: '', conditions: '', medications: '', doctorName: '', doctorPhone: '',
 }
 
-// ─── Icons ───────────────────────────────────────────────────
-const Icon = ({ d, cls = 'w-4 h-4', stroke = 2 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-    strokeWidth={stroke} stroke="currentColor" className={cls}>{d}</svg>
-);
-const BackIcon    = () => <Icon d={<polyline points="15 18 9 12 15 6"/>}/>;
-const UserIcon    = () => <Icon d={<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>}/>;
-const GradIcon    = () => <Icon d={<><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>}/>;
-const UsersIcon   = () => <Icon d={<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}/>;
-const HeartIcon   = () => <Icon d={<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>}/>;
-const CheckIcon   = () => <Icon d={<polyline points="20 6 9 13 4 10"/>}/>;
-const CheckCircle = () => <Icon d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>} cls="w-6 h-6"/>;
-const UploadIcon  = () => <Icon d={<><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></>}/>;
-const FileIcon    = () => <Icon d={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>} cls="w-12 h-12"/>;
-const DownloadIcon= () => <Icon d={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>}/>;
-const InfoIcon    = () => <Icon d={<><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></>}/>;
-const AlertIcon   = () => <Icon d={<><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17"/></>}/>;
-const AlertCircle = () => <Icon d={<><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></>}/>;
-const ChevLeft    = () => <Icon d={<polyline points="15 18 9 12 15 6"/>}/>;
-const ChevRight   = () => <Icon d={<polyline points="9 18 15 12 9 6"/>}/>;
-const XIcon       = () => <Icon d={<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>}/>;
-const ViewIcon    = () => <Icon d={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>}/>;
-const Loader = ({ cls = 'w-4 h-4' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-    stroke="currentColor" strokeWidth={2} className={cn(cls, 'animate-spin')}>
-    <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
-    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
-    <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
-  </svg>
-);
+// ─── Bulk Upload Demo CSV ─────────────────────────────────────────────────────
+const DEMO_CSV_CONTENT = `firstName,lastName,gender,dateOfBirth,class,section,parent1Name,parent1Phone
+Aarav,Sharma,MALE,2010-05-15,10,A,Rajesh Sharma,9876543210
+Ananya,Patel,FEMALE,2011-03-22,9,B,Priya Patel,9876543211`
 
-// ─── Button styles ────────────────────────────────────────────
-const BTN_BASE    = 'inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[8px] !text-[14px] font-semibold cursor-pointer transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed';
-const BTN_PRIMARY = cn(BTN_BASE, 'text-white border-none bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] shadow-[0_2px_12px_rgba(124,58,237,.3)] hover:opacity-90');
-const BTN_GHOST   = cn(BTN_BASE, 'bg-transparent border border-[#ede9fe] text-[#4b3d6e] hover:bg-[#f5f3ff]');
-const BTN_OUTLINE = cn(BTN_BASE, 'bg-transparent border border-[#ede9fe] text-[#4b3d6e] hover:bg-[#f5f3ff]');
+const DEMO_CSV_HEADERS = ["firstName", "lastName", "gender", "dateOfBirth", "class", "section", "parent1Name", "parent1Phone"]
 
-// ─── Steps ────────────────────────────────────────────────────
-// FONT SIZES INCREASED: step label 12px → 14px
-const STEPS = [
-  { id: 1, label: 'Personal',  Icon: UserIcon  },
-  { id: 2, label: 'Academic',  Icon: GradIcon  },
-  { id: 3, label: 'Parents',   Icon: UsersIcon },
-  { id: 4, label: 'Medical',   Icon: HeartIcon },
-];
-
-function StepNav({ current }) {
-  return (
-    <div className="bg-white border border-[#f0edfb] rounded-[12px] p-5 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        {STEPS.map((s, i) => {
-          const done   = current > s.id;
-          const active = current === s.id;
-          return (
-            <div key={s.id} className="flex items-center">
-              <div className="flex items-center gap-2">
-                <div className={cn('w-9 h-9 rounded-full flex items-center justify-center',
-                  done   ? 'bg-emerald-100 text-emerald-600' :
-                  active ? 'bg-[#f5f3ff] text-[#7c3aed]'    : 'bg-[#f0edfb] text-[#b8afd1]')}>
-                  {done ? <CheckIcon /> : <s.Icon />}
-                </div>
-                {/* INCREASED: 12px → 14px */}
-                <span className={cn('!text-[14px] font-semibold hidden sm:block',
-                  done   ? 'text-emerald-600' :
-                  active ? 'text-[#7c3aed]'   : 'text-[#b8afd1]')}>
-                  {s.label}
-                </span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className="w-10 md:w-14 h-[1.5px] mx-2 bg-[#f0edfb] relative overflow-hidden">
-                  <div className="absolute inset-y-0 left-0 bg-[#7c3aed] transition-all duration-300"
-                    style={{ width: done ? '100%' : '0%' }} />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div className="w-full h-[5px] bg-[#f0edfb] rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all duration-300"
-          style={{ width: `${(current / 4) * 100}%`, background: 'linear-gradient(90deg,#a78bfa,#7c3aed)' }} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Form Steps — SECTION HEADING FONT SIZES INCREASED ───────
-// Section headings: 15px → 17px
-// Sub-headings: 13px → 15px
-function Step1({ form, setForm, errors }) {
-  const f = (key) => (val) => setForm(p => ({ ...p, [key]: val }));
-  return (
-    <div>
-      <h2 className="flex items-center gap-2 !text-[17px] font-bold text-[#1c1026] mb-4">
-        <span className="text-[#8b5cf6]"><UserIcon /></span>Personal Information
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field id="firstName" label="First Name" value={form.firstName} onChange={f('firstName')} placeholder="Enter first name" required error={errors.firstName} />
-        <Field id="lastName"  label="Last Name"  value={form.lastName}  onChange={f('lastName')}  placeholder="Enter last name"  required error={errors.lastName} />
-        <Field id="gender"    label="Gender"     type="select" value={form.gender} onChange={f('gender')}
-          options={[{ v:'MALE', l:'Male' }, { v:'FEMALE', l:'Female' }, { v:'OTHER', l:'Other' }]} />
-        <Field id="dob"       label="Date of Birth" type="date" value={form.dob} onChange={f('dob')} required error={errors.dob} />
-        <Field id="bloodGroup" label="Blood Group" type="select" value={form.bloodGroup} onChange={f('bloodGroup')}
-          options={[{ v:'', l:'Select Blood Group' }, ...BLOOD_GROUPS.map(b => ({ v:b, l:b }))]} />
-      </div>
-    </div>
-  );
-}
-
-function Step2({ form, setForm, errors }) {
-  const f = (key) => (val) => setForm(p => ({ ...p, [key]: val }));
-  return (
-    <div>
-      <h2 className="flex items-center gap-2 !text-[17px] font-bold text-[#1c1026] mb-4">
-        <span className="text-[#8b5cf6]"><GradIcon /></span>Academic Information
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field id="cls"     label="Class"   type="select" value={form.cls}    onChange={f('cls')}    required error={errors.cls}
-          options={[{ v:'', l:'Select Class' }, ...CLASSES.map(c => ({ v:c, l:c }))]} />
-        <Field id="section" label="Section" type="select" value={form.section} onChange={f('section')} required error={errors.section}
-          options={[{ v:'', l:'Select Section' }, ...SECTIONS.map(s => ({ v:s, l:s }))]} />
-        <Field id="roll"       label="Roll Number"     value={form.roll}       onChange={f('roll')}       placeholder="Enter roll number" />
-        <Field id="prevSchool" label="Previous School" value={form.prevSchool} onChange={f('prevSchool')} placeholder="Previous school name" />
-      </div>
-      <hr className="my-5 border-[#f0edfb]" />
-      {/* Sub-heading: 13px → 15px */}
-      <h3 className="!text-[15px] font-semibold text-[#4b3d6e] mb-3">
-        Contact Information <span className="text-[#b8afd1] font-normal">(Optional)</span>
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field id="email" label="Email" type="email" value={form.email} onChange={f('email')} placeholder="student@email.com" />
-        <Field id="phone" label="Phone" type="tel"   value={form.phone} onChange={f('phone')} placeholder="Phone number" />
-        <div className="sm:col-span-2">
-          <Field id="address" label="Address" value={form.address} onChange={f('address')} placeholder="Full address" />
-        </div>
-        <Field id="city" label="City"    value={form.city} onChange={f('city')} placeholder="City" />
-        <Field id="st"   label="State"   value={form.st}   onChange={f('st')}   placeholder="State" />
-        <Field id="pin"  label="Pincode" value={form.pin}  onChange={f('pin')}  placeholder="Pincode" />
-      </div>
-    </div>
-  );
-}
-
-function Step3({ form, setForm, errors }) {
-  const f = (key) => (val) => setForm(p => ({ ...p, [key]: val }));
-  const relOpts = RELS.map(r => ({ v: r, l: r }));
-  return (
-    <div>
-      <h2 className="flex items-center gap-2 !text-[17px] font-bold text-[#1c1026] mb-4">
-        <span className="text-[#8b5cf6]"><UsersIcon /></span>Parent / Guardian Information
-      </h2>
-      {/* Primary */}
-      <div className="p-4 rounded-[10px] border border-[#ede9fe] bg-[#f5f3ff]/40 mb-3">
-        {/* Section label: 12px → 14px */}
-        <p className="!text-[14px] font-bold text-[#7c3aed] mb-3">
-          Primary Parent / Guardian <span className="text-red-500">*</span>
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field id="p1name"  label="Name"         value={form.p1name}  onChange={f('p1name')}  placeholder="Parent name" required error={errors.p1name} />
-          <Field id="p1rel"   label="Relationship" type="select" value={form.p1rel} onChange={f('p1rel')} options={relOpts} />
-          <Field id="p1phone" label="Phone"         type="tel"   value={form.p1phone} onChange={f('p1phone')} placeholder="Phone number" required error={errors.p1phone} />
-          <Field id="p1email" label="Email"         type="email" value={form.p1email} onChange={f('p1email')} placeholder="parent@email.com" />
-          <Field id="p1occ"   label="Occupation"    value={form.p1occ}  onChange={f('p1occ')}  placeholder="Occupation" />
-        </div>
-      </div>
-      {/* Secondary */}
-      <div className="p-4 rounded-[10px] border border-gray-200 bg-gray-50 mb-3">
-        <p className="!text-[14px] font-bold text-[#4b3d6e] mb-3">
-          Second Parent / Guardian <span className="text-[#b8afd1] font-normal">(Optional)</span>
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field id="p2name"  label="Name"         value={form.p2name}  onChange={f('p2name')}  placeholder="Second parent name" />
-          <Field id="p2rel"   label="Relationship" type="select" value={form.p2rel} onChange={f('p2rel')} options={relOpts} />
-          <Field id="p2phone" label="Phone"         type="tel"   value={form.p2phone} onChange={f('p2phone')} placeholder="Phone number" />
-          <Field id="p2email" label="Email"         type="email" value={form.p2email} onChange={f('p2email')} placeholder="parent2@email.com" />
-        </div>
-      </div>
-      {/* Emergency */}
-      <div className="p-4 rounded-[10px] border border-red-200 bg-red-50/60">
-        <p className="!text-[14px] font-bold text-red-700 mb-3">
-          Emergency Contact <span className="text-red-400 font-normal">(Optional)</span>
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field id="emgName"  label="Name"         value={form.emgName}  onChange={f('emgName')}  placeholder="Emergency contact name" />
-          <Field id="emgPhone" label="Phone"         type="tel" value={form.emgPhone} onChange={f('emgPhone')} placeholder="Emergency phone" />
-          <Field id="emgRel"   label="Relationship" value={form.emgRel}   onChange={f('emgRel')}   placeholder="Relationship" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Step4({ form, setForm }) {
-  const f = (key) => (val) => setForm(p => ({ ...p, [key]: val }));
-  return (
-    <div>
-      <h2 className="flex items-center gap-2 !text-[17px] font-bold text-[#1c1026] mb-4">
-        <span className="text-rose-500"><HeartIcon /></span>
-        Medical Information
-        <span className="text-[#b8afd1] !text-[13px] font-normal ml-1">(Optional)</span>
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field id="allergy"  label="Allergies"          value={form.allergy}  onChange={f('allergy')}  placeholder="e.g. Peanuts, Dust" />
-        <Field id="cond"     label="Medical Conditions"  value={form.cond}     onChange={f('cond')}     placeholder="e.g. Asthma, Diabetes" />
-        <Field id="meds"     label="Medications"         value={form.meds}     onChange={f('meds')}     placeholder="e.g. Inhaler, Insulin" />
-        <Field id="docName"  label="Doctor Name"         value={form.docName}  onChange={f('docName')}  placeholder="Family doctor name" />
-        <Field id="docPhone" label="Doctor Phone"        type="tel" value={form.docPhone} onChange={f('docPhone')} placeholder="Doctor phone" />
-        <div className="sm:col-span-2">
-          <Field id="emgInstr" label="Emergency Instructions" type="textarea" value={form.emgInstr} onChange={f('emgInstr')} placeholder="What to do in case of emergency..." />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Success Banner ───────────────────────────────────────────
-// Shown after student is successfully submitted.
-// Contains a profile summary card + PrintShareProfile buttons.
-function SuccessBanner({ form, onAddAnother, onViewStudents }) {
-  const initials = ((form.firstName?.[0] || '') + (form.lastName?.[0] || '')).toUpperCase() || 'S';
-
-  return (
-    <div className="space-y-4">
-      {/* Green success strip */}
-      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-[12px]">
-        <span className="text-emerald-600"><CheckCircle /></span>
-        <div>
-          <p className="!text-[15px] font-bold text-emerald-800">Student Added Successfully!</p>
-          <p className="!text-[13px] text-emerald-600">
-            {form.firstName} {form.lastName} has been enrolled.
-          </p>
-        </div>
-      </div>
-
-      {/* Profile summary card */}
-      <div className="bg-white border border-[#ede9fe] rounded-[14px] overflow-hidden">
-        {/* Purple header */}
-        <div className="bg-gradient-to-r from-[#8b5cf6] to-[#6d28d9] px-6 py-5 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white !text-[20px] font-bold flex-shrink-0">
-            {initials}
-          </div>
-          <div className="text-white">
-            <p className="!text-[18px] font-bold">{form.firstName} {form.lastName}</p>
-            <p className="!text-[13px] opacity-85 mt-0.5">
-              {form.cls ? `Class ${form.cls}${form.section ? '-' + form.section : ''}` : 'No class assigned'}
-              {form.roll ? ` · Roll No. ${form.roll}` : ''}
-            </p>
-          </div>
-        </div>
-
-        {/* Detail grid */}
-        <div className="px-6 py-5 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
-          {[
-            { label: 'Gender',     value: form.gender === 'MALE' ? 'Male' : form.gender === 'FEMALE' ? 'Female' : 'Other' },
-            { label: 'Date of Birth', value: form.dob    || '—' },
-            { label: 'Blood Group',   value: form.bloodGroup || '—' },
-            { label: 'Parent',        value: form.p1name || '—' },
-            { label: 'Parent Phone',  value: form.p1phone || '—' },
-            { label: 'Email',         value: form.email  || '—' },
-          ].map(item => (
-            <div key={item.label}>
-              <p className="!text-[11px] font-semibold text-[#8e82a8] uppercase tracking-wider mb-0.5">{item.label}</p>
-              <p className="!text-[14px] text-[#1c1026] font-medium truncate">{item.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Action footer */}
-        <div className="px-6 py-4 border-t border-[#f0edfb] flex items-center justify-between flex-wrap gap-3">
-          {/* Print & Share — component drop-in */}
-          <PrintShareProfile student={form} />
-
-          {/* Navigation buttons */}
-          <div className="flex gap-2">
-            <button onClick={onAddAnother} className={BTN_OUTLINE}>
-              + Add Another
-            </button>
-            <button onClick={onViewStudents} className={BTN_PRIMARY}>
-              <ViewIcon /> View Students
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Single Student Wizard ────────────────────────────────────
+// ─── Single Student Form ──────────────────────────────────────────────────────
 function SingleStudentForm() {
-  const [step, setStep]             = useState(1);
-  const [form, setForm]             = useState(INITIAL_FORM);
-  const [errors, setErrors]         = useState({});
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess]       = useState(false);
+  const router = useRouter()
+  const [step, setStep] = useState(1)
+  const [form, setForm] = useState(INITIAL_FORM)
+  const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
 
-  function validate(s) {
-    const e = {};
-    if (s === 1) {
-      if (!form.firstName.trim()) e.firstName = 'Required';
-      if (!form.lastName.trim())  e.lastName  = 'Required';
-      if (!form.dob)              e.dob       = 'Required';
-    }
-    if (s === 2) {
-      if (!form.cls)     e.cls     = 'Required';
-      if (!form.section) e.section = 'Required';
-    }
-    if (s === 3) {
-      if (!form.p1name.trim())  e.p1name  = 'Required';
-      if (!form.p1phone.trim()) e.p1phone = 'Required';
-    }
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  const f = (key) => (val) => setForm(p => ({ ...p, [key]: val }))
+
+  const validate = (s) => {
+    const e = {}
+    if (s === 1) { if (!form.firstName.trim()) e.firstName = 'Required'; if (!form.lastName.trim()) e.lastName = 'Required'; if (!form.dob) e.dob = 'Required' }
+    if (s === 2) { if (!form.cls) e.cls = 'Required'; if (!form.section) e.section = 'Required' }
+    if (s === 3) { if (!form.parent1Name.trim()) e.parent1Name = 'Required'; if (!form.parent1Phone.trim()) e.parent1Phone = 'Required' }
+    setErrors(e)
+    return Object.keys(e).length === 0
   }
 
-  function next() { if (validate(step)) setStep(s => Math.min(s + 1, 4)); }
-  function prev() { setStep(s => Math.max(s - 1, 1)); setErrors({}); }
+  const next = () => { if (validate(step)) setStep(s => Math.min(s + 1, 4)) }
+  const prev = () => { setStep(s => Math.max(s - 1, 1)); setErrors({}) }
 
-  async function submit() {
-    if (!validate(4)) return;
-    setSubmitting(true);
-    // TODO: replace with real API call
-    await new Promise(r => setTimeout(r, 2000));
-    setSubmitting(false);
-    setSuccess(true);
-  }
-
-  function handleAddAnother() {
-    setForm(INITIAL_FORM);
-    setStep(1);
-    setErrors({});
-    setSuccess(false);
-  }
-
-  function handleViewStudents() {
-    window.location.href = '/school/students';
+  const handleSubmit = async () => {
+    if (!validate(4)) return
+    setSubmitting(true)
+    await new Promise(r => setTimeout(r, 1500))
+    console.log("Student added:", form)
+    setSubmitting(false)
+    setSuccess(true)
   }
 
   if (success) {
     return (
-      <SuccessBanner
-        form={form}
-        onAddAnother={handleAddAnother}
-        onViewStudents={handleViewStudents}
-      />
-    );
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto"><Check size={28} className="text-emerald-600" /></div>
+        <div>
+          <h3 className="text-lg font-bold text-slate-800">{form.firstName} {form.lastName} added!</h3>
+          <p className="text-sm text-slate-500">Student successfully enrolled</p>
+        </div>
+        <div className="flex justify-center gap-3">
+          <button onClick={() => { setForm(INITIAL_FORM); setStep(1); setSuccess(false) }}
+            className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50">Add Another</button>
+          <button onClick={() => router.push("/school/students")}
+            className="px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700">View Students</button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div>
-      <StepNav current={step} />
-      <div className="bg-white border border-[#f0edfb] rounded-[12px] p-[22px]">
-        {step === 1 && <Step1 form={form} setForm={setForm} errors={errors} />}
-        {step === 2 && <Step2 form={form} setForm={setForm} errors={errors} />}
-        {step === 3 && <Step3 form={form} setForm={setForm} errors={errors} />}
-        {step === 4 && <Step4 form={form} setForm={setForm} />}
+    <div className="space-y-4">
+      {/* Step Indicator */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+        <div className="flex items-center justify-between">
+          {STEPS.map((s, i) => (
+            <div key={s.id} className="flex items-center">
+              <div className="flex items-center gap-2">
+                <div className={cn("w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold",
+                  step > s.id ? "bg-emerald-100 text-emerald-600" :
+                    step === s.id ? "bg-violet-100 text-violet-600" : "bg-slate-100 text-slate-400")}>
+                  {step > s.id ? <Check size={16} /> : <s.icon size={16} />}
+                </div>
+                <span className={cn("text-sm font-semibold hidden sm:block",
+                  step === s.id ? "text-violet-700" : "text-slate-400")}>{s.label}</span>
+              </div>
+              {i < STEPS.length - 1 && <div className="w-8 h-px bg-slate-200 mx-2" />}
+            </div>
+          ))}
+        </div>
+        <div className="w-full h-1.5 bg-slate-100 rounded-full mt-3 overflow-hidden">
+          <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${(step / 4) * 100}%` }} />
+        </div>
+      </div>
 
-        <div className="flex justify-between items-center mt-6 pt-5 border-t border-[#f0edfb]">
-          <button onClick={prev} disabled={step === 1} className={BTN_GHOST}>
-            <ChevLeft />Previous
+      {/* Form Content */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        {step === 1 && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-slate-800 flex items-center gap-2"><User size={18} className="text-violet-500" /> Personal Info</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="First Name *" value={form.firstName} onChange={f('firstName')} error={errors.firstName} />
+              <Field label="Last Name *" value={form.lastName} onChange={f('lastName')} error={errors.lastName} />
+              <Field label="Gender" type="select" value={form.gender} onChange={f('gender')} options={[{ v: 'MALE', l: 'Male' }, { v: 'FEMALE', l: 'Female' }, { v: 'OTHER', l: 'Other' }]} />
+              <Field label="Date of Birth *" type="date" value={form.dob} onChange={f('dob')} error={errors.dob} />
+              <Field label="Blood Group" type="select" value={form.bloodGroup} onChange={f('bloodGroup')} options={[{ v: '', l: 'Select' }, ...BLOOD_GROUPS.map(b => ({ v: b, l: b }))]} />
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-slate-800 flex items-center gap-2"><GraduationCap size={18} className="text-violet-500" /> Academic Info</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Class *" type="select" value={form.cls} onChange={f('cls')} error={errors.cls} options={[{ v: '', l: 'Select Class' }, ...CLASSES.map(c => ({ v: c, l: c }))]} />
+              <Field label="Section *" type="select" value={form.section} onChange={f('section')} error={errors.section} options={[{ v: '', l: 'Select Section' }, ...SECTIONS.map(s => ({ v: s, l: s }))]} />
+              <Field label="Roll Number" value={form.roll} onChange={f('roll')} />
+              <Field label="Email" type="email" value={form.email} onChange={f('email')} />
+              <Field label="Phone" value={form.phone} onChange={f('phone')} />
+              <Field label="Address" value={form.address} onChange={f('address')} className="sm:col-span-2" />
+              <Field label="City" value={form.city} onChange={f('city')} />
+              <Field label="State" value={form.state} onChange={f('state')} />
+              <Field label="Pincode" value={form.pin} onChange={f('pin')} />
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-slate-800 flex items-center gap-2"><Users size={18} className="text-violet-500" /> Parent Info</h2>
+            <div className="p-4 rounded-lg border border-violet-100 bg-violet-50/30 space-y-3">
+              <p className="text-sm font-semibold text-violet-700">Primary Parent *</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Name *" value={form.parent1Name} onChange={f('parent1Name')} error={errors.parent1Name} />
+                <Field label="Phone *" value={form.parent1Phone} onChange={f('parent1Phone')} error={errors.parent1Phone} />
+                <Field label="Email" type="email" value={form.parent1Email} onChange={f('parent1Email')} />
+                <Field label="Relation" type="select" value={form.parent1Relation} onChange={f('parent1Relation')} options={RELATIONS.map(r => ({ v: r, l: r }))} />
+              </div>
+            </div>
+            <div className="p-4 rounded-lg border border-slate-200 bg-slate-50 space-y-3">
+              <p className="text-sm font-semibold text-slate-600">Second Parent (Optional)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Name" value={form.parent2Name} onChange={f('parent2Name')} />
+                <Field label="Phone" value={form.parent2Phone} onChange={f('parent2Phone')} />
+                <Field label="Email" type="email" value={form.parent2Email} onChange={f('parent2Email')} />
+                <Field label="Relation" type="select" value={form.parent2Relation} onChange={f('parent2Relation')} options={RELATIONS.map(r => ({ v: r, l: r }))} />
+              </div>
+            </div>
+            <div className="p-4 rounded-lg border border-red-200 bg-red-50/30 space-y-3">
+              <p className="text-sm font-semibold text-red-700">Emergency Contact</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Name" value={form.emergencyName} onChange={f('emergencyName')} />
+                <Field label="Phone" value={form.emergencyPhone} onChange={f('emergencyPhone')} />
+                <Field label="Relation" value={form.emergencyRelation} onChange={f('emergencyRelation')} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-slate-800 flex items-center gap-2"><Heart size={18} className="text-red-500" /> Medical Info <span className="text-xs text-slate-400 font-normal">(Optional)</span></h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Allergies" value={form.allergies} onChange={f('allergies')} />
+              <Field label="Medical Conditions" value={form.conditions} onChange={f('conditions')} />
+              <Field label="Medications" value={form.medications} onChange={f('medications')} />
+              <Field label="Doctor Name" value={form.doctorName} onChange={f('doctorName')} />
+              <Field label="Doctor Phone" value={form.doctorPhone} onChange={f('doctorPhone')} />
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex justify-between items-center mt-6 pt-5 border-t border-slate-100">
+          <button onClick={prev} disabled={step === 1}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
+            <ChevronLeft size={14} /> Previous
           </button>
           {step < 4 ? (
-            <button onClick={next} className={BTN_PRIMARY}>
-              Next<ChevRight />
+            <button onClick={next}
+              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors">
+              Next <ChevronRight size={14} />
             </button>
           ) : (
-            <button onClick={submit} disabled={submitting} className={BTN_PRIMARY}>
-              {submitting ? <><Loader />Adding...</> : <><CheckIcon />Add Student</>}
+            <button onClick={handleSubmit} disabled={submitting}
+              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-50 transition-colors">
+              {submitting ? <><Loader2 size={14} className="animate-spin" /> Adding...</> : <><Check size={14} /> Add Student</>}
             </button>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-// ─── Bulk Import (unchanged except button font sizes) ─────────
-function BulkImport() {
-  const fileRef = useRef(null);
-  const [importStep, setImportStep] = useState('upload');
-  const [csvData, setCsvData]       = useState([]);
-  const [csvHeaders, setCsvHeaders] = useState([]);
-  const [valErrors, setValErrors]   = useState([]);
-  const [progress, setProgress]     = useState(0);
-  const [results, setResults]       = useState(null);
+// ─── Field Component ──────────────────────────────────────────────────────────
+function Field({ label, type = 'text', value, onChange, placeholder, required, error, options, className }) {
+  return (
+    <div className={className}>
+      <label className="block text-sm font-semibold text-slate-700 mb-1.5">{label}</label>
+      {type === 'select' ? (
+        <select value={value} onChange={e => onChange(e.target.value)}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition-all bg-white">
+          {options.map(o => <option key={o.v ?? o} value={o.v ?? o}>{o.l ?? o}</option>)}
+        </select>
+      ) : (
+        <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition-all" />
+      )}
+      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    </div>
+  )
+}
 
-  function download(name, content) {
-    const a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content);
-    a.download = name; a.click();
-  }
+// ─── Bulk Upload ──────────────────────────────────────────────────────────────
+function BulkUploadSection() {
+  const fileRef = useRef(null)
+  const [file, setFile] = useState(null)
+  const [preview, setPreview] = useState(null)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  function downloadTemplate() {
-    const headers = 'firstName,lastName,gender,dateOfBirth,bloodGroup,class,section,rollNumber,parent1Name,parent1Phone,email';
-    const sample  = 'Aarav,Sharma,MALE,2010-05-15,O+,10,A,24,Rajesh Sharma,9876543210,aarav@email.com';
-    download('student_import_template.csv', `${headers}\n${sample}`);
-  }
-
-  function handleFile(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImportStep('validating');
-    const reader = new FileReader();
-    reader.onload = ev => parseCSV(ev.target.result);
-    reader.readAsText(file);
-  }
-
-  function parseCSV(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-    if (lines.length < 2) { setImportStep('upload'); return; }
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    const data = lines.slice(1).map(line => {
-      const vals = line.split(',').map(v => v.trim().replace(/"/g, ''));
-      const row = {}; headers.forEach((h, i) => row[h] = vals[i] || '');
-      return row;
-    });
-    setCsvHeaders(headers); setCsvData(data);
-    setTimeout(() => {
-      const errs = [];
-      const req = ['firstName','lastName','class','section','parent1Name','parent1Phone'];
-      data.forEach((row, i) => {
-        const rowErrs = [];
-        req.forEach(f => { if (!row[f]?.trim()) rowErrs.push(`Missing ${f}`); });
-        if (row.gender && !['MALE','FEMALE','OTHER'].includes(row.gender.toUpperCase()))
-          rowErrs.push('Invalid gender');
-        if (rowErrs.length) errs.push({ row: i + 2, errors: rowErrs });
-      });
-      setValErrors(errs); setImportStep('preview');
-    }, 800);
-  }
-
-  function startImport() {
-    setImportStep('importing'); setProgress(0);
-    const valid = csvData.filter((_, i) => !valErrors.find(e => e.row === i + 2));
-    let imported = 0, failed = valErrors.length;
-    const failedRecs = [...valErrors];
-    let i = 0;
-    function batch() {
-      if (i >= valid.length) {
-        setResults({ total: csvData.length, imported, failed, failedRecords: failedRecs });
-        setImportStep('complete'); return;
-      }
-      const chunk = valid.slice(i, i + 10);
-      imported += chunk.length; i += 10;
-      setProgress(Math.min(100, Math.round((i / valid.length) * 100)));
-      setTimeout(batch, 300);
+  const parseCSV = (text) => {
+    const lines = text.trim().split("\n")
+    if (lines.length < 2) { setError("File must contain a header row and at least one data row"); return }
+    const headers = lines[0].split(",").map(h => h.trim().toLowerCase())
+    const required = ["firstname", "lastname", "class", "section", "parent1name", "parent1phone"]
+    const missing = required.filter(h => !headers.includes(h))
+    if (missing.length > 0) { setError(`Missing columns: ${missing.join(", ")}`); return }
+    const data = []
+    for (let i = 1; i < lines.length; i++) {
+      const vals = lines[i].split(",").map(v => v.trim().replace(/"/g, ""))
+      const row = {}; headers.forEach((h, idx) => { row[h] = vals[idx] || "" })
+      data.push(row)
     }
-    setTimeout(batch, 400);
+    setPreview(data)
+    setError("")
   }
 
-  function reset() {
-    setImportStep('upload'); setCsvData([]); setCsvHeaders([]);
-    setValErrors([]); setResults(null); setProgress(0);
+  const handleFileChange = (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setFile(f); setError(""); setPreview(null)
+    const reader = new FileReader()
+    reader.onload = (ev) => parseCSV(ev.target.result)
+    reader.readAsText(f)
   }
 
-  const validCount = csvData.length - valErrors.length;
+  const handleUpload = async () => {
+    if (!preview) return
+    setLoading(true)
+    await new Promise(r => setTimeout(r, 1500))
+    console.log("Imported:", preview.length, "students")
+    setLoading(false)
+  }
 
-  if (importStep === 'upload') return (
-    <div className="bg-white border border-[#f0edfb] rounded-[12px] p-8">
-      <div className="max-w-[480px] mx-auto text-center">
-        <div className="w-[72px] h-[72px] rounded-full bg-[#f5f3ff] flex items-center justify-center mx-auto mb-4 text-[#8b5cf6]">
-          <Icon d={<><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></>} cls="w-9 h-9"/>
+  const handleDownloadDemo = () => {
+    const blob = new Blob([DEMO_CSV_CONTENT], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a"); a.href = url; a.download = "demo-students.csv"; a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center"><Upload size={14} className="text-sky-600" /></div>
+          <h2 className="font-semibold text-slate-800">Bulk Upload (CSV)</h2>
         </div>
-        <h2 className="!text-[20px] font-bold text-[#1c1026] mb-2">Bulk Import Students</h2>
-        <p className="!text-[14px] text-[#8e82a8] mb-6">Upload a CSV file with student data. You can import up to 5000 students at once.</p>
-        <label htmlFor="csvInput" className="block cursor-pointer">
-          <div className="border-2 border-dashed border-[#ede9fe] rounded-[10px] p-10 hover:border-[#c4b5fd] hover:bg-[#f5f3ff]/40 transition-colors">
-            <div className="flex justify-center mb-3 text-[#b8afd1]"><FileIcon /></div>
-            <p className="!text-[15px] font-semibold text-[#4b3d6e]">Click to upload CSV file</p>
-            <p className="!text-[13px] text-[#b8afd1] mt-1">or drag and drop</p>
-          </div>
-        </label>
-        <input ref={fileRef} id="csvInput" type="file" accept=".csv" className="hidden" onChange={handleFile} />
-        <div className="flex justify-center mt-4">
-          <button onClick={downloadTemplate} className={BTN_OUTLINE}><DownloadIcon />Download Template</button>
-        </div>
-        <div className="mt-6 p-4 bg-[#f5f3ff]/40 border border-[#ede9fe] rounded-[10px] text-left">
-          <h4 className="!text-[13px] font-bold text-[#7c3aed] mb-2 flex items-center gap-1.5"><InfoIcon />CSV File Requirements</h4>
-          <ul className="!text-[12px] text-[#6d28d9] space-y-1 list-none">
-            {['File must be in CSV format','First row must contain column headers',
-              'Required: firstName, lastName, class, section, parent1Name, parent1Phone',
-              'Date format: YYYY-MM-DD (e.g. 2010-05-15)','Gender: MALE, FEMALE, or OTHER',
-              'Maximum 5000 students per file'].map(t => (
-              <li key={t} className="flex items-start gap-1.5"><span>•</span>{t}</li>
-            ))}
-          </ul>
-        </div>
+        <button onClick={handleDownloadDemo} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors">
+          <Download size={12} /> Download Demo CSV
+        </button>
       </div>
-    </div>
-  );
 
-  if (importStep === 'validating') return (
-    <div className="bg-white border border-[#f0edfb] rounded-[12px] p-16 text-center">
-      <div className="flex justify-center mb-4 text-[#8b5cf6]"><Loader cls="w-14 h-14"/></div>
-      <h2 className="!text-[20px] font-bold text-[#1c1026] mb-2">Validating Data...</h2>
-      <p className="!text-[14px] text-[#8e82a8]">Checking {csvData.length} records for errors</p>
-    </div>
-  );
+      <div onClick={() => fileRef.current?.click()}
+        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${file ? (preview ? "border-emerald-300 bg-emerald-50/50" : "border-amber-300 bg-amber-50/50") : "border-slate-200 hover:border-sky-300 hover:bg-sky-50/50"}`}>
+        <input ref={fileRef} type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
+        {!file ? (
+          <><FileSpreadsheet size={32} className="mx-auto mb-3 text-slate-300" />
+            <p className="text-sm font-medium text-slate-600 mb-1">Drop your CSV file here or click to browse</p>
+            <p className="text-xs text-slate-400">Required: firstName, lastName, class, section, parent1Name, parent1Phone</p></>
+        ) : preview ? (
+          <><Check size={32} className="mx-auto mb-3 text-emerald-500" />
+            <p className="text-sm font-medium text-emerald-700">{file.name} — {preview.length} students ready</p></>
+        ) : (
+          <><AlertCircle size={32} className="mx-auto mb-3 text-amber-500" />
+            <p className="text-sm font-medium text-amber-700">{file.name}</p><p className="text-xs text-amber-500">{error}</p></>
+        )}
+      </div>
 
-  if (importStep === 'preview') {
-    const previewHeaders = csvHeaders.slice(0, 7);
-    return (
-      <div>
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {[
-            { label:'Total Records', value: csvData.length,  cls:'bg-gray-50',    numCls:'text-[#1c1026]',    lblCls:'text-[#8e82a8]'   },
-            { label:'Valid Records', value: validCount,       cls:'bg-emerald-50', numCls:'text-emerald-600',  lblCls:'text-emerald-500'  },
-            { label:'With Errors',   value: valErrors.length, cls:'bg-red-50',     numCls:'text-red-500',      lblCls:'text-red-400'      },
-          ].map(s => (
-            <div key={s.label} className={cn('text-center p-4 rounded-[10px]', s.cls)}>
-              <p className={cn('!text-[28px] font-bold', s.numCls)}>{s.value}</p>
-              <p className={cn('!text-[13px] mt-1', s.lblCls)}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-        <div className="bg-white border border-[#f0edfb] rounded-[12px] overflow-hidden mb-4">
-          <div className="px-4 py-3 border-b border-[#f0edfb]">
-            <h3 className="!text-[15px] font-bold text-[#1c1026]">
-              Data Preview <span className="text-[#8e82a8] font-normal !text-[13px]">(first 10 rows)</span>
-            </h3>
+      {preview && (
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <div className="px-4 py-2 bg-slate-50 border-b flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase">Preview ({preview.length} rows)</span>
+            <button onClick={() => { setFile(null); setPreview(null) }} className="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1"><Trash2 size={11} /> Clear</button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left py-2 px-3 !text-[11px] font-bold text-[#8e82a8] uppercase tracking-wider border-b border-[#f0edfb]"></th>
-                  <th className="text-left py-2 px-3 !text-[11px] font-bold text-[#8e82a8] uppercase tracking-wider border-b border-[#f0edfb]">#</th>
-                  {previewHeaders.map(h => (
-                    <th key={h} className="text-left py-2 px-3 !text-[11px] font-bold text-[#8e82a8] uppercase tracking-wider border-b border-[#f0edfb]">{h}</th>
-                  ))}
-                  {csvHeaders.length > 7 && <th className="py-2 px-3 border-b border-[#f0edfb]"/>}
-                </tr>
-              </thead>
-              <tbody>
-                {csvData.slice(0, 10).map((row, i) => {
-                  const hasErr = valErrors.find(e => e.row === i + 2);
-                  return (
-                    <tr key={i} className={cn('border-b border-[#f0edfb] hover:bg-[#f5f3ff]', hasErr ? 'bg-red-50' : '')}>
-                      <td className="py-2 px-3">
-                        {hasErr
-                          ? <span className="text-red-500"><AlertCircle/></span>
-                          : <span className="text-emerald-500"><CheckCircle/></span>}
-                      </td>
-                      <td className="py-2 px-3 !text-[13px] text-[#4b3d6e]">{i + 2}</td>
-                      {previewHeaders.map(h => (
-                        <td key={h} className="py-2 px-3 !text-[13px] text-[#4b3d6e] max-w-[130px] truncate">{row[h]}</td>
-                      ))}
-                      {csvHeaders.length > 7 && (
-                        <td className="py-2 px-3 !text-[12px] text-[#b8afd1]">+{csvHeaders.length - 7} more</td>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
+          <div className="overflow-x-auto max-h-48">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-slate-100">{DEMO_CSV_HEADERS.map(h => <th key={h} className="px-3 py-2 text-left font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
+              <tbody>{preview.slice(0, 10).map((row, i) => <tr key={i} className="border-b border-slate-50">{DEMO_CSV_HEADERS.map(h => <td key={h} className="px-3 py-2 text-slate-700">{row[h.toLowerCase()] || "—"}</td>)}</tr>)}</tbody>
             </table>
           </div>
         </div>
-        {valErrors.length > 0 && (
-          <div className="border border-red-200 rounded-[10px] overflow-hidden mb-4">
-            <div className="px-4 py-3 border-b border-red-200 !text-[13px] font-bold text-red-700 flex items-center gap-1.5 bg-red-50">
-              <AlertIcon/>Validation Errors ({valErrors.length} rows)
-            </div>
-            <div className="max-h-[200px] overflow-y-auto">
-              {valErrors.slice(0, 15).map((e, idx) => (
-                <div key={idx} className="px-4 py-2 border-b border-red-100 last:border-0">
-                  <p className="!text-[13px] font-semibold text-red-700">Row {e.row}</p>
-                  <p className="!text-[12px] text-red-500">{e.errors.join(', ')}</p>
-                </div>
-              ))}
-              {valErrors.length > 15 && (
-                <p className="px-4 py-2 !text-[12px] text-[#8e82a8]">...and {valErrors.length - 15} more</p>
-              )}
-            </div>
-          </div>
-        )}
-        <div className="flex gap-2 flex-wrap">
-          <button onClick={reset} className={BTN_GHOST}><XIcon/>Cancel</button>
-          <button onClick={startImport} disabled={validCount === 0} className={BTN_PRIMARY}>
-            <UploadIcon/>Import {validCount} Valid Records
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (importStep === 'importing') return (
-    <div className="bg-white border border-[#f0edfb] rounded-[12px] p-16 text-center">
-      <div className="flex justify-center mb-4 text-[#8b5cf6]"><Loader cls="w-14 h-14"/></div>
-      <h2 className="!text-[20px] font-bold text-[#1c1026] mb-2">Importing Students...</h2>
-      <p className="!text-[14px] text-[#8e82a8] mb-4">Please wait, this may take a few minutes</p>
-      <div className="max-w-[320px] mx-auto">
-        <div className="w-full h-2 bg-[#f0edfb] rounded-full overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-300"
-            style={{ width: `${progress}%`, background: 'linear-gradient(90deg,#a78bfa,#7c3aed)' }}/>
-        </div>
-        <p className="!text-[13px] text-[#8e82a8] mt-2">{progress}% Complete</p>
-      </div>
-    </div>
-  );
-
-  if (importStep === 'complete' && results) return (
-    <div>
-      <div className="bg-white border border-[#f0edfb] rounded-[12px] p-8 text-center mb-4">
-        <div className="w-[72px] h-[72px] rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4 text-emerald-600">
-          <Icon d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>} cls="w-9 h-9"/>
-        </div>
-        <h2 className="!text-[20px] font-bold text-[#1c1026] mb-5">Import Complete!</h2>
-        <div className="grid grid-cols-3 gap-3 max-w-[360px] mx-auto">
-          {[
-            { label:'Total',    value: results.total,    cls:'bg-gray-50',    numCls:'text-[#1c1026]',   lblCls:'text-[#8e82a8]'  },
-            { label:'Imported', value: results.imported, cls:'bg-emerald-50', numCls:'text-emerald-600', lblCls:'text-emerald-500' },
-            { label:'Failed',   value: results.failed,   cls:'bg-red-50',     numCls:'text-red-500',     lblCls:'text-red-400'    },
-          ].map(s => (
-            <div key={s.label} className={cn('text-center p-3 rounded-[10px]', s.cls)}>
-              <p className={cn('!text-[24px] font-bold', s.numCls)}>{s.value}</p>
-              <p className={cn('!text-[13px] mt-1', s.lblCls)}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      {results.failedRecords.length > 0 && (
-        <div className="border border-red-200 rounded-[10px] overflow-hidden mb-4">
-          <div className="px-4 py-3 border-b border-red-200 !text-[13px] font-bold text-red-700 flex items-center gap-1.5 bg-red-50">
-            <AlertIcon/>Failed Records ({results.failedRecords.length})
-          </div>
-          <div className="max-h-[180px] overflow-y-auto">
-            {results.failedRecords.map((r, i) => (
-              <div key={i} className="px-4 py-2 border-b border-red-100 last:border-0">
-                <p className="!text-[12px] text-red-600">Row {r.row}: {r.errors.join(', ')}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       )}
-      <div className="flex gap-2 flex-wrap">
-        <button className={BTN_PRIMARY}><UsersIcon/>View All Students</button>
-        {results.failedRecords.length > 0 && (
-          <button onClick={() => {
-            let csv = 'Row,Errors\n';
-            results.failedRecords.forEach(r => csv += `${r.row},"${r.errors.join('; ')}"\n`);
-            const a = document.createElement('a');
-            a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-            a.download = 'import_errors.csv'; a.click();
-          }} className={BTN_OUTLINE}><DownloadIcon/>Download Error Report</button>
-        )}
-        <button onClick={reset} className={BTN_OUTLINE}><UploadIcon/>Import Another File</button>
+
+      <div className="flex justify-end">
+        <button onClick={handleUpload} disabled={!preview || loading}
+          className="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-semibold flex items-center gap-2 disabled:opacity-50 hover:bg-sky-700 transition-colors">
+          {loading ? <><Loader2 size={14} className="animate-spin" /> Importing...</> : <><Upload size={14} /> Import {preview?.length || 0} Students</>}
+        </button>
       </div>
     </div>
-  );
-
-  return null;
+  )
 }
 
-// ─── Page Root ────────────────────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function AddStudentPage() {
-  const [mode, setMode] = useState('single');
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialMode = searchParams.get("mode") === "bulk" ? "bulk" : "single"
+  const [mode, setMode] = useState(initialMode)
 
   return (
-    <div className="min-h-screen" style={{ background: '#fbfaff', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-      <div className="max-w-[1100px] mx-auto px-6 py-8">
+    <div className="max-w-[900px] mx-auto space-y-6">
+      <PageBreadcrumb items={[
+        { label: "Dashboard", href: "/school" },
+        { label: "Students", href: "/school/students" },
+        { label: "Add Student" },
+      ]} />
 
-        {/* Back link */}
-        <a href="/school/students"
-          className="inline-flex items-center gap-1.5 !text-[13px] font-semibold text-[#8e82a8] hover:text-[#7c3aed] transition-colors mb-5">
-          <BackIcon />Back to Students
-        </a>
-
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="!text-[32px] font-bold text-[#1c1026]">Add Students</h1>
-          <p className="!text-[16px] text-[#8e82a8] mt-1">Add a single student or import multiple students via CSV</p>
+      <div className="flex items-center gap-4">
+        <button onClick={() => router.back()} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"><ArrowLeft size={18} /></button>
+        <div>
+          <h1 className="text-[22px] font-bold text-slate-800">Add Students</h1>
+          <p className="text-[13px] text-slate-500">Add a single student or import multiple via CSV</p>
         </div>
-
-        {/* Mode toggle — label 12px → 14px */}
-        <div className="inline-flex bg-white border border-[#f0edfb] rounded-[12px] p-1 gap-1 mb-6">
-          {[
-            { id: 'single', label: 'Single Student', Icon: UserIcon  },
-            { id: 'bulk',   label: 'Bulk Import',    Icon: UploadIcon },
-          ].map(m => (
-            <button key={m.id} onClick={() => setMode(m.id)}
-              className={cn('flex items-center gap-1.5 px-5 py-2 rounded-[8px] !text-[14px] font-semibold transition-all',
-                mode === m.id
-                  ? 'text-white shadow-[0_2px_12px_rgba(124,58,237,.3)]'
-                  : 'text-[#8e82a8] hover:bg-[#f5f3ff]')}
-              style={mode === m.id ? { background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' } : {}}>
-              <m.Icon />{m.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Content */}
-        {mode === 'single' ? <SingleStudentForm /> : <BulkImport />}
       </div>
+
+      <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+        {[
+          { id: "single", label: "Single Entry", icon: Plus },
+          { id: "bulk", label: "Bulk Upload", icon: Upload },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setMode(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === tab.id ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+            <tab.icon size={14} />{tab.label}
+          </button>
+        ))}
+      </div>
+
+      {mode === "single" ? <SingleStudentForm /> : <BulkUploadSection />}
     </div>
-  );
+  )
 }

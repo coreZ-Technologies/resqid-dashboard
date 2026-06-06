@@ -1,595 +1,144 @@
-'use client';
+"use client"
 
-/**
- * SCHOOL ADMIN — QR MANAGEMENT
- * Next.js App Router version (converted from React Router)
- * Place at: app/(school)/school/qr/page.jsx
- *
- * Changes from old frontend:
- * - Added 'use client' directive (required for useState, event handlers)
- * - Removed useAuth (update import path to match your new frontend's auth)
- * - Removed useDebounce (update import path to match your new frontend's hooks)
- * - Removed toast import (update to match your new frontend's toast/notification util)
- * - All import paths updated — adjust to your actual lib/utils structure
- */
+import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { CreditCard, AlertTriangle, RefreshCw, Check, Plus, Eye, Download, Printer, Lock, RotateCcw } from "lucide-react"
+import PageHeader from "@/components/shared/PageHeader"
+import { PageBreadcrumb } from "@/components/shared/Breadcrumb"
+import { KpiCard } from "@/components/shared/KpiCard"
+import { StatusBadge } from "@/components/shared/StatusBadge"
+import { EmptyState } from "@/components/shared/EmptyState"
+import { useConfirmDialog } from "@/components/shared/ConfirmDialog"
+import CardFilters from "@/components/modules/cards/CardFilters"
+import ToolbarActions from "@/components/shared/ToolbarActions"
+import { MOCK_CARDS } from "@/lib/mock-data"
 
-import { useState } from 'react';
-import {
-    QrCode, Download, RefreshCw, User, Printer, Search, Eye,
-    CheckCircle, XCircle, Clock, AlertTriangle, FileImage,
-    FileCode, FileText, DownloadCloud, RotateCcw, ChevronDown,
-    Shield, Check, Loader2, Image, Code, File, Zap
-} from 'lucide-react';
+export default function CardsPage() {
+    const router = useRouter()
+    const [cards, setCards] = useState(MOCK_CARDS)
+    const [search, setSearch] = useState("")
+    const [classFilter, setClassFilter] = useState("")
+    const [sectionFilter, setSectionFilter] = useState("")
+    const [statusFilter, setStatusFilter] = useState("All")
+    const { confirmDialog, confirm } = useConfirmDialog()
 
-// ─── UPDATE THESE IMPORT PATHS to match your new frontend ─────────────────────
-// Old: '../../../utils/formatters.js'   →   New: '@/lib/utils'  (or wherever these live)
-// Old: '../../../hooks/useAuth.js'      →   New: '@/lib/hooks'  (or your auth hook)
-// Old: '../../../hooks/useDebounce.js'  →   New: '@/lib/hooks'  (or your debounce hook)
-// Old: '../../../utils/toast.js'        →   New: your toast utility
+    const filtered = useMemo(() => cards.filter(c => {
+        const matchClass = !classFilter || c.class === classFilter
+        const matchSection = !sectionFilter || c.section === sectionFilter
+        const matchStatus = statusFilter === "All" || c.status === statusFilter
+        const matchSearch = !search || c.studentName.toLowerCase().includes(search.toLowerCase()) || c.cardNumber.toLowerCase().includes(search.toLowerCase()) || c.qrCodeId.toLowerCase().includes(search.toLowerCase())
+        return matchClass && matchSection && matchStatus && matchSearch
+    }), [cards, search, classFilter, sectionFilter, statusFilter])
 
-// Example imports — adjust paths as needed:
-// import { getFullName, getInitials, maskTokenHash, formatDate, formatRelativeTime, humanizeEnum } from '@/lib/utils';
-// import { useAuth } from '@/lib/auth';
-// import { useDebounce } from '@/lib/hooks';
+    const activeCount = cards.filter(c => c.status === "active").length
+    const lostCount = cards.filter(c => c.status === "lost").length
+    const replacedCount = cards.filter(c => c.status === "replaced").length
+    const needsAction = cards.filter(c => c.status === "lost" && c.printCount < 2).length
 
-// ─── Temporary inline helpers (remove once you wire up real imports above) ─────
-const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '??';
-const maskTokenHash = (hash) => hash ? `${hash.slice(0, 4)}••••${hash.slice(-4)}` : '';
-const formatRelativeTime = (iso) => {
-    if (!iso) return '';
-    const diff = Date.now() - new Date(iso).getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    return `${days} days ago`;
-};
+    const handleReportLost = async (cardId) => {
+        const ok = await confirm({ variant: "warning", title: "Report card as lost?", description: "This will deactivate the card. A replacement can be issued.", confirmLabel: "Report Lost" })
+        if (ok) setCards(prev => prev.map(c => c.id === cardId ? { ...c, status: "lost", history: [...c.history, { date: new Date().toISOString().split('T')[0], action: "lost", note: "Reported lost by admin" }] } : c))
+    }
 
-// ─── Token Status Config (Matches TokenStatus Enum) ───────────────────────────
-const STATUS_CONFIG = {
-    ACTIVE:      { label: 'Active',      color: '#10B981', bg: '#ECFDF5', Icon: CheckCircle },
-    UNASSIGNED:  { label: 'Unassigned',  color: '#6B7280', bg: '#F3F4F6', Icon: Clock },
-    ISSUED:      { label: 'Issued',      color: '#3B82F6', bg: '#EFF6FF', Icon: Eye },
-    INACTIVE:    { label: 'Inactive',    color: '#9CA3AF', bg: '#F9FAFB', Icon: XCircle },
-    REVOKED:     { label: 'Revoked',     color: '#EF4444', bg: '#FEF2F2', Icon: AlertTriangle },
-    EXPIRED:     { label: 'Expired',     color: '#F59E0B', bg: '#FFFBEB', Icon: AlertTriangle },
-};
+    const handleReplace = (cardId) => {
+        setCards(prev => prev.map(c => c.id === cardId ? { ...c, status: "replaced", printCount: c.printCount + 1, lastPrinted: new Date().toISOString().split('T')[0], cardNumber: `RESQID-2024-${String(Math.floor(Math.random() * 9000) + 1000)}`, history: [...c.history, { date: new Date().toISOString().split('T')[0], action: "replaced", note: "Replacement card issued" }] } : c))
+    }
 
-// ─── QR Format Options (Matches QrFormat Enum) ────────────────────────────────
-const QR_FORMATS = [
-    { id: 'PNG', label: 'PNG', icon: Image, color: '#3B82F6', bg: '#EFF6FF', mime: 'image/png',       extension: 'png' },
-    { id: 'SVG', label: 'SVG', icon: Code,  color: '#8B5CF6', bg: '#F5F3FF', mime: 'image/svg+xml',   extension: 'svg' },
-    { id: 'PDF', label: 'PDF', icon: File,  color: '#EF4444', bg: '#FEF2F2', mime: 'application/pdf', extension: 'pdf' },
-];
-
-// ─── QR Size Options ──────────────────────────────────────────────────────────
-const QR_SIZES = [
-    { label: 'Small (256px)',      width: 256,  height: 256  },
-    { label: 'Medium (512px)',     width: 512,  height: 512  },
-    { label: 'Large (1024px)',     width: 1024, height: 1024 },
-    { label: 'Extra Large (2048px)', width: 2048, height: 2048 },
-];
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const MOCK_TOKENS = Array.from({ length: 20 }, (_, i) => ({
-    id: `tok_${i + 1}`,
-    token_hash: `QR${Math.random().toString(36).slice(2, 18).toUpperCase()}`,
-    status: ['ACTIVE', 'ACTIVE', 'ACTIVE', 'UNASSIGNED', 'ACTIVE', 'ISSUED', 'ACTIVE', 'REVOKED'][i % 8],
-    student_id: i % 4 !== 3 ? `stu_${i + 1}` : null,
-    student_name: i % 4 !== 3 ? ['Aarav Sharma', 'Priya Patel', 'Rohit Singh', 'Sneha Gupta', 'Karan Kumar', 'Divya Joshi', 'Arjun Verma', 'Meera Shah', 'Vikram Mehta', 'Ananya Reddy'][i % 10] : null,
-    student_class: i % 4 !== 3 ? `${Math.floor(Math.random() * 12) + 1}${['A', 'B', 'C'][i % 3]}` : null,
-    student_section: i % 4 !== 3 ? ['A', 'B', 'C', 'D'][i % 4] : null,
-    school_id: 'sch_001',
-    expires_at: new Date(Date.now() + 86400000 * (Math.random() * 300 + 30)).toISOString(),
-    created_at: new Date(Date.now() - 86400000 * (i % 90 + 10)).toISOString(),
-    qr_asset: i % 4 !== 3 ? {
-        id: `qr_${i + 1}`,
-        format: ['PNG', 'SVG', 'PNG', 'PNG'][i % 4],
-        width_px: 512,
-        height_px: 512,
-        file_size_kb: Math.floor(Math.random() * 100 + 20),
-        public_url: `https://storage.example.com/qr/${Math.random().toString(36).slice(2, 10)}.png`,
-        generated_at: new Date(Date.now() - 86400000 * (i % 30 + 5)).toISOString(),
-    } : null,
-}));
-
-// ─── Simple toast fallback (replace with your actual toast utility) ───────────
-const toast = {
-    success: (msg) => console.log('[toast success]', msg),
-    error:   (msg) => console.error('[toast error]', msg),
-};
-
-// ─── Simple debounce hook fallback (replace with your useDebounce from @/lib/hooks) ─
-function useDebounce(value, delay) {
-    const [debounced, setDebounced] = useState(value);
-    useState(() => {
-        const timer = setTimeout(() => setDebounced(value), delay);
-        return () => clearTimeout(timer);
-    });
-    return debounced;
-}
-
-// ─── QR Code Display Component ────────────────────────────────────────────────
-const QRCodeDisplay = ({ token, format, onFormatChange, onSizeChange, selectedSize, onRegenerate, regenerating }) => {
-    const statusCfg = STATUS_CONFIG[token.status] || STATUS_CONFIG.UNASSIGNED;
-    const StatusIcon = statusCfg.Icon;
-    const qrAsset = token.qr_asset;
-    const currentFormat = QR_FORMATS.find(f => f.id === format) || QR_FORMATS[0];
-    const FormatIcon = currentFormat.icon;
-
-    const handleDownload = () => {
-        if (!qrAsset?.public_url) { toast.error('QR code not available for download'); return; }
-        const link = document.createElement('a');
-        link.href = qrAsset.public_url;
-        link.download = `qr_${token.student_name?.replace(/\s/g, '_') || 'token'}_${token.token_hash.slice(0, 8)}.${currentFormat.extension}`;
-        link.click();
-        toast.success('Download started');
-    };
-
-    const handlePrint = () => {
-        if (!qrAsset?.public_url) { toast.error('QR code not available for printing'); return; }
-        const printWindow = window.open();
-        printWindow.document.write(`
-            <html>
-                <head><title>QR Code - ${token.student_name || 'Token'}</title></head>
-                <body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0">
-                    <img src="${qrAsset.public_url}" style="max-width:90%;height:auto" />
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    };
+    const handleDeactivate = async (cardId) => {
+        const ok = await confirm({ variant: "danger", title: "Deactivate card?", description: "This card will no longer work for attendance or emergency scans.", confirmLabel: "Deactivate" })
+        if (ok) setCards(prev => prev.map(c => c.id === cardId ? { ...c, status: "deactivated", history: [...c.history, { date: new Date().toISOString().split('T')[0], action: "deactivated", note: "Deactivated by admin" }] } : c))
+    }
 
     return (
-        <div className="flex flex-col items-center gap-5">
-            {/* QR Code Visual */}
-            <div className="relative">
-                <div className="w-48 h-48 bg-white border-2 border-slate-200 rounded-xl p-4 flex items-center justify-center shadow-lg">
-                    {qrAsset ? (
-                        <img
-                            src={qrAsset.public_url}
-                            alt="QR Code"
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3f4f6"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%239ca3af" font-family="monospace" font-size="14"%3ENo QR%3C/text%3E%3C/svg%3E';
-                            }}
-                        />
-                    ) : (
-                        <div className="flex flex-col items-center gap-2 text-slate-400">
-                            <QrCode size={48} strokeWidth={1} />
-                            <span className="text-xs">Not generated</span>
-                        </div>
-                    )}
-                </div>
-                {token.status === 'ACTIVE' && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">
-                        <Check size={12} className="text-white" />
-                    </div>
-                )}
-            </div>
+        <div className="max-w-[1300px] space-y-6">
+            {confirmDialog}
 
-            {/* Token Info */}
-            <div className="w-full p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Token Status</span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: statusCfg.bg, color: statusCfg.color }}>
-                        <StatusIcon size={10} /> {statusCfg.label}
-                    </span>
-                </div>
-                <code className="text-xs font-mono text-slate-600 break-all">{maskTokenHash(token.token_hash)}</code>
-                {qrAsset && (
-                    <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-500">
-                        Generated: {formatRelativeTime(qrAsset.generated_at)}
-                        {qrAsset.file_size_kb && <span className="ml-2">· {qrAsset.file_size_kb} KB</span>}
-                    </div>
-                )}
-            </div>
+            <PageBreadcrumb items={[{ label: "Dashboard", href: "/school" }, { label: "ID Cards" }]} />
 
-            {/* Format & Size Controls */}
-            <div className="w-full space-y-3">
-                <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase block mb-2">Format</label>
-                    <div className="flex gap-2">
-                        {QR_FORMATS.map(fmt => {
-                            const Icon = fmt.icon;
-                            const isActive = format === fmt.id;
-                            return (
-                                <button
-                                    key={fmt.id}
-                                    onClick={() => onFormatChange(fmt.id)}
-                                    className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${isActive
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                    }`}
-                                >
-                                    <Icon size={14} /> {fmt.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase block mb-2">Size</label>
-                    <div className="grid grid-cols-2 gap-2">
-                        {QR_SIZES.map(size => (
-                            <button
-                                key={size.label}
-                                onClick={() => onSizeChange(size)}
-                                className={`py-1.5 px-2 rounded-lg border text-xs font-medium transition-all ${selectedSize?.width === size.width
-                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                }`}
-                            >
-                                {size.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="w-full flex gap-2">
-                <button
-                    onClick={handleDownload}
-                    disabled={!qrAsset}
-                    className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
-                >
-                    <Download size={15} /> Download {currentFormat.label}
-                </button>
-                <button
-                    onClick={handlePrint}
-                    disabled={!qrAsset}
-                    className="py-2.5 px-4 rounded-lg border border-slate-200 bg-white text-slate-600 font-medium flex items-center gap-2 disabled:opacity-50 hover:bg-slate-50 transition-colors"
-                >
-                    <Printer size={15} />
-                </button>
-                <button
-                    onClick={onRegenerate}
-                    disabled={regenerating || token.status !== 'ACTIVE'}
-                    className="py-2.5 px-4 rounded-lg border border-slate-200 bg-white text-slate-600 font-medium flex items-center gap-2 disabled:opacity-50 hover:bg-slate-50 transition-colors"
-                    title="Regenerate QR"
-                >
-                    {regenerating ? <Loader2 size={15} className="animate-spin" /> : <RotateCcw size={15} />}
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// ─── Generate QR Modal ────────────────────────────────────────────────────────
-const GenerateQRModal = ({ token, onClose, onGenerate }) => {
-    const [format, setFormat] = useState('PNG');
-    const [size, setSize] = useState(QR_SIZES[1]);
-    const [generating, setGenerating] = useState(false);
-
-    const handleGenerate = async () => {
-        setGenerating(true);
-        await new Promise(r => setTimeout(r, 1000));
-        onGenerate(token.id, format, size);
-        setGenerating(false);
-        onClose();
-    };
-
-    const selectedFormat = QR_FORMATS.find(f => f.id === format);
-
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4" onClick={onClose}>
-            <div className="bg-white rounded-2xl w-full max-w-[420px] shadow-2xl" onClick={e => e.stopPropagation()}>
-                <div className="px-6 py-5 border-b border-slate-100">
-                    <h3 className="text-xl font-bold text-slate-900 m-0">Generate QR Code</h3>
-                    <p className="text-sm text-slate-500 mt-0.5">For {token.student_name || 'Unassigned Token'}</p>
-                </div>
-                <div className="p-6 space-y-4">
-                    <div>
-                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">Format</label>
-                        <div className="flex gap-2">
-                            {QR_FORMATS.map(fmt => {
-                                const Icon = fmt.icon;
-                                return (
-                                    <button
-                                        key={fmt.id}
-                                        onClick={() => setFormat(fmt.id)}
-                                        className={`flex-1 py-2 rounded-lg border-2 text-sm font-medium flex items-center justify-center gap-1.5 ${format === fmt.id
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-slate-200 bg-white text-slate-600'
-                                        }`}
-                                    >
-                                        <Icon size={14} /> {fmt.label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div>
-                        <label className="text-sm font-semibold text-slate-700 mb-1.5 block">Size</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {QR_SIZES.map(s => (
-                                <button
-                                    key={s.label}
-                                    onClick={() => setSize(s)}
-                                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium ${size.width === s.width
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-slate-200 bg-white text-slate-600'
-                                    }`}
-                                >
-                                    {s.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-blue-50 text-sm text-blue-800">
-                        <p className="font-semibold mb-1">Generation Preview</p>
-                        <p>• Format: {selectedFormat?.label}</p>
-                        <p>• Dimensions: {size.width}×{size.height}px</p>
-                        <p>• Will be stored in cloud storage</p>
-                    </div>
-                </div>
-                <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50"
-                    >
-                        Cancel
+            <PageHeader title="ID Card Management" description="Manage student ID cards, QR codes, and card status"
+                badge={needsAction > 0 ? `${needsAction} need action` : null}>
+                <div className="flex items-center gap-2">
+                    <ToolbarActions onRefresh={() => console.log("Refreshing...")} onExport={() => console.log("Exporting...")} />
+                    <button onClick={() => router.push("/school/cards/generate")}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-semibold shadow-sm shadow-violet-200 hover:from-violet-600 hover:to-violet-800 transition-all"><Plus size={16} /> Generate QR
                     </button>
+
                     <button
-                        onClick={handleGenerate}
-                        disabled={generating}
-                        className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-2 disabled:opacity-50 transition-colors"
+                        onClick={() => router.push("/school/cards/lost")}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 hover:border-amber-300 transition-all shadow-sm"
                     >
-                        {generating ? <Loader2 size={16} className="animate-spin" /> : <DownloadCloud size={16} />}
-                        Generate QR
+                        <AlertTriangle size={15} /> Lost Cards
                     </button>
                 </div>
-            </div>
-        </div>
-    );
-};
+            </PageHeader>
 
-// ─── Main Page Component (default export required for Next.js App Router) ──────
-export default function QRManagementPage() {
-    // Replace with your actual auth hook, e.g.: const { user } = useAuth();
-    const user = { school_id: 'sch_001' };
-
-    const [tokens, setTokens] = useState(MOCK_TOKENS);
-    const [search, setSearch] = useState('');
-    const [selectedTokenId, setSelectedTokenId] = useState(null);
-    const [qrFormat, setQrFormat] = useState('PNG');
-    const [qrSize, setQrSize] = useState(QR_SIZES[1]);
-    const [showGenerateModal, setShowGenerateModal] = useState(false);
-    const [regeneratingTokenId, setRegeneratingTokenId] = useState(null);
-    const debouncedSearch = useDebounce(search, 300);
-
-    const myTokens = tokens.filter(t => t.school_id === (user?.school_id || 'sch_001'));
-
-    const filtered = myTokens.filter(t =>
-        !debouncedSearch ||
-        (t.student_name || '').toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        (t.student_class || '').toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        t.token_hash.toLowerCase().includes(debouncedSearch.toLowerCase())
-    );
-
-    const selectedToken = myTokens.find(t => t.id === selectedTokenId);
-    const hasQr = selectedToken?.qr_asset !== null;
-    const isActive = selectedToken?.status === 'ACTIVE';
-
-    const handleGenerateQR = (tokenId, format, size) => {
-        setTokens(prev => prev.map(t => {
-            if (t.id !== tokenId) return t;
-            return {
-                ...t,
-                qr_asset: {
-                    id: `qr_${Date.now()}`,
-                    format,
-                    width_px: size.width,
-                    height_px: size.height,
-                    file_size_kb: Math.floor(Math.random() * 100 + 20),
-                    public_url: `https://storage.example.com/qr/${Date.now()}_${t.token_hash.slice(0, 8)}.${format.toLowerCase()}`,
-                    generated_at: new Date().toISOString(),
-                }
-            };
-        }));
-        toast.success('QR code generated successfully');
-    };
-
-    const handleRegenerateQR = async (tokenId) => {
-        setRegeneratingTokenId(tokenId);
-        await new Promise(r => setTimeout(r, 1000));
-        setTokens(prev => prev.map(t => {
-            if (t.id !== tokenId || !t.qr_asset) return t;
-            return {
-                ...t,
-                qr_asset: {
-                    ...t.qr_asset,
-                    public_url: `https://storage.example.com/qr/${Date.now()}_${t.token_hash.slice(0, 8)}.${t.qr_asset.format.toLowerCase()}`,
-                    generated_at: new Date().toISOString(),
-                    file_size_kb: Math.floor(Math.random() * 100 + 20),
-                }
-            };
-        }));
-        setRegeneratingTokenId(null);
-        toast.success('QR code regenerated');
-    };
-
-    const stats = {
-        total:  myTokens.filter(t => t.student_name).length,
-        withQr: myTokens.filter(t => t.qr_asset && t.student_name).length,
-        active: myTokens.filter(t => t.status === 'ACTIVE' && t.student_name).length,
-    };
-
-    return (
-        <div className="max-w-[1300px] mx-auto px-4 py-6">
-            {showGenerateModal && selectedToken && (
-                <GenerateQRModal
-                    token={selectedToken}
-                    onClose={() => setShowGenerateModal(false)}
-                    onGenerate={handleGenerateQR}
-                />
-            )}
-
-            {/* Header */}
-            <div className="mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
-                        <QrCode size={18} className="text-white" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900 m-0">QR Management</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">Generate and download student QR codes for ID cards</p>
-                    </div>
-                </div>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <KpiCard title="Total Cards" value={cards.length} icon={CreditCard} iconColor="blue" />
+                <KpiCard title="Active" value={activeCount} icon={Check} iconColor="green" />
+                <KpiCard title="Lost" value={lostCount} icon={AlertTriangle} iconColor={lostCount > 0 ? "red" : "green"} />
+                <KpiCard title="Replaced" value={replacedCount} icon={RefreshCw} iconColor="amber" />
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
-                    <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
-                    <div className="text-xs text-slate-500">Students with Tokens</div>
-                </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
-                    <div className="text-2xl font-bold text-emerald-600">{stats.withQr}</div>
-                    <div className="text-xs text-slate-500">QR Generated</div>
-                </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
-                    <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
-                    <div className="text-xs text-slate-500">Active Tokens</div>
-                </div>
-            </div>
+            <CardFilters search={search} onSearchChange={setSearch} classFilter={classFilter} onClassChange={setClassFilter}
+                sectionFilter={sectionFilter} onSectionChange={setSectionFilter} statusFilter={statusFilter} onStatusChange={setStatusFilter} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Student / Token List */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-slate-100">
-                        <div className="relative">
-                            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input
-                                value={search}
-                                onChange={e => { setSearch(e.target.value); setSelectedTokenId(null); }}
-                                placeholder="Search by student name, class, or token hash..."
-                                className="w-full py-2 pl-9 pr-3 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500"
-                            />
-                        </div>
-                    </div>
-                    <div className="max-h-[520px] overflow-y-auto divide-y divide-slate-100">
-                        {filtered.length === 0 ? (
-                            <div className="p-8 text-center text-slate-400">
-                                <QrCode size={32} className="mx-auto mb-2 opacity-30" />
-                                <p className="text-sm">No students found</p>
-                            </div>
-                        ) : (
-                            filtered.map(token => {
-                                const statusCfg = STATUS_CONFIG[token.status] || STATUS_CONFIG.UNASSIGNED;
-                                const StatusIcon = statusCfg.Icon;
-                                const isSelected = selectedTokenId === token.id;
-                                const hasQrAsset = token.qr_asset !== null;
+            <p className="text-sm text-slate-500">Showing <span className="font-semibold text-slate-700">{filtered.length}</span> card{filtered.length !== 1 ? "s" : ""}</p>
 
-                                return (
-                                    <div
-                                        key={token.id}
-                                        onClick={() => setSelectedTokenId(token.id)}
-                                        className={`p-4 cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : 'hover:bg-slate-50'}`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelected ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>
-                                                {token.student_name ? getInitials(token.student_name) : '?'}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="font-semibold text-slate-900">
-                                                    {token.student_name || 'Unassigned Token'}
+            {filtered.length === 0 ? (
+                <EmptyState preset="search" title="No cards found" description="Try adjusting your filters"
+                    action={{ label: "Generate QR Codes", onClick: () => router.push("/school/cards/generate") }} />
+            ) : (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-slate-100 bg-slate-50/50">
+                                    {["Card #", "Student", "Class", "QR ID", "Status", "Printed", "Actions"].map(h => (
+                                        <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wide">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map(card => (
+                                    <tr key={card.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                                        <td className="px-4 py-3 font-mono text-xs text-slate-600">{card.cardNumber}</td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-violet-700 font-semibold text-xs">
+                                                    {card.studentName.split(' ').map(n => n[0]).join('')}
                                                 </div>
-                                                {token.student_name && (
-                                                    <div className="text-xs text-slate-500">
-                                                        {token.student_class} · {token.student_section}
-                                                    </div>
-                                                )}
-                                                <code className="text-xs font-mono text-slate-400 mt-1 block truncate">
-                                                    {maskTokenHash(token.token_hash)}
-                                                </code>
+                                                <span className="font-medium text-slate-700">{card.studentName}</span>
                                             </div>
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span
-                                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                                                    style={{ background: statusCfg.bg, color: statusCfg.color }}
-                                                >
-                                                    <StatusIcon size={10} /> {statusCfg.label}
-                                                </span>
-                                                {hasQrAsset && (
-                                                    <span className="text-xs text-emerald-600 flex items-center gap-0.5">
-                                                        <Check size={10} /> QR Ready
-                                                    </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-xs text-slate-500">{card.class}-{card.section}</td>
+                                        <td className="px-4 py-3 font-mono text-xs text-slate-400">{card.qrCodeId}</td>
+                                        <td className="px-4 py-3">
+                                            <StatusBadge status={card.status === "active" ? "present" : card.status === "lost" ? "absent" : card.status === "replaced" ? "pending" : "inactive"} size="sm" label={card.status} />
+                                        </td>
+                                        <td className="px-4 py-3 text-xs text-slate-400">{card.lastPrinted}</td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-1">
+                                                <button onClick={() => router.push(`/school/cards/${card.id}`)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-violet-600 transition-colors"><Eye size={14} /></button>
+                                                <button onClick={() => window.print()} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"><Printer size={14} /></button>
+                                                {card.status === "active" && (
+                                                    <>
+                                                        <button onClick={() => handleReportLost(card.id)} className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-600 transition-colors"><AlertTriangle size={14} /></button>
+                                                        <button onClick={() => handleDeactivate(card.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"><Lock size={14} /></button>
+                                                    </>
+                                                )}
+                                                {card.status === "lost" && (
+                                                    <button onClick={() => handleReplace(card.id)} className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"><RotateCcw size={14} /></button>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                {/* QR Preview Panel */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    {!selectedToken ? (
-                        <div className="p-12 text-center text-slate-400">
-                            <QrCode size={48} className="mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">Select a student</p>
-                            <p className="text-sm">Click any student to view their QR code</p>
-                        </div>
-                    ) : !selectedToken.student_name ? (
-                        <div className="p-12 text-center">
-                            <AlertTriangle size={40} className="mx-auto mb-3 text-amber-500 opacity-50" />
-                            <p className="font-medium text-slate-700">Token Not Assigned</p>
-                            <p className="text-sm text-slate-500 mb-4">This token is not assigned to any student</p>
-                            <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium">
-                                Assign to Student
-                            </button>
-                        </div>
-                    ) : !isActive ? (
-                        <div className="p-12 text-center">
-                            <XCircle size={40} className="mx-auto mb-3 text-red-500 opacity-50" />
-                            <p className="font-medium text-slate-700">Token {selectedToken.status?.toLowerCase()}</p>
-                            <p className="text-sm text-slate-500">QR codes are only available for active tokens</p>
-                        </div>
-                    ) : (
-                        <div className="p-6">
-                            {/* Student Header */}
-                            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
-                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
-                                    {getInitials(selectedToken.student_name)}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-slate-900">{selectedToken.student_name}</h3>
-                                    <p className="text-sm text-slate-500">{selectedToken.student_class} · {selectedToken.student_section}</p>
-                                </div>
-                            </div>
-
-                            {/* QR Display or Generate Prompt */}
-                            {hasQr ? (
-                                <QRCodeDisplay
-                                    token={selectedToken}
-                                    format={qrFormat}
-                                    onFormatChange={setQrFormat}
-                                    onSizeChange={setQrSize}
-                                    selectedSize={qrSize}
-                                    onRegenerate={() => handleRegenerateQR(selectedToken.id)}
-                                    regenerating={regeneratingTokenId === selectedToken.id}
-                                />
-                            ) : (
-                                <div className="flex flex-col items-center gap-4 py-8">
-                                    <QrCode size={64} className="text-slate-300" />
-                                    <p className="text-slate-500 text-center">No QR code generated yet</p>
-                                    <button
-                                        onClick={() => setShowGenerateModal(true)}
-                                        className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-2 transition-colors"
-                                    >
-                                        <Zap size={15} /> Generate QR Code
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
+            )}
         </div>
-    );
+    )
 }

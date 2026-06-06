@@ -116,14 +116,7 @@ const SCHOOL_SIDEBAR = [
                 href: '/school/anomalies',
                 icon: 'Shield',
                 description: 'Security alerts',
-            },
-            {
-                id: 'emergency-contacts',
-                label: 'Emergency Contacts',
-                href: '/school/emergency-contacts',
-                icon: 'AlertTriangle',
-                description: 'Student contacts',
-            },
+            }
         ],
     },
     {
@@ -136,13 +129,6 @@ const SCHOOL_SIDEBAR = [
                 href: '/school/attendance',
                 icon: 'CalendarCheck',
                 description: 'Daily overview',
-            },
-            {
-                id: 'attendance-sessions',
-                label: 'Sessions',
-                href: '/school/attendance/sessions',
-                icon: 'Clock',
-                description: 'Open / close sessions',
             },
             {
                 id: 'attendance-reports',

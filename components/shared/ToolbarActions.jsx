@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { RefreshCw, Download } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
+import ExportButton from "@/components/shared/ExportButton"
 
 export default function ToolbarActions({
     onRefresh,
@@ -30,22 +31,19 @@ export default function ToolbarActions({
             <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <RefreshCw
-                    size={13}
+                    size={15}
                     className={cn(isLoading && "animate-rotate")}
                 />
                 {refreshLabel}
             </button>
 
-            <button
+            <ExportButton
                 onClick={onExport}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors"
-            >
-                <Download size={13} />
-                {exportLabel}
-            </button>
+                label={exportLabel}
+            />
         </div>
     )
 }
