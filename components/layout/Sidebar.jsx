@@ -185,11 +185,18 @@ const SCHOOL_SIDEBAR = [
         module: MODULES.PARENT_COMMUNICATION,
         items: [
             {
+                id: 'communication-overview',
+                label: 'Overview',
+                href: '/school/communication',
+                icon: 'MessageCircle',
+                description: 'Communication dashboard',
+            },
+            {
                 id: 'announcements',
                 label: 'Announcements',
                 href: '/school/communication/announcements',
                 icon: 'Megaphone',
-                description: 'School-wide announcements',
+                description: 'School-wide broadcasts',
             },
             {
                 id: 'messages',
@@ -203,7 +210,7 @@ const SCHOOL_SIDEBAR = [
                 label: 'Delivery Log',
                 href: '/school/communication/log',
                 icon: 'Activity',
-                description: 'Track notification delivery',
+                description: 'Track delivery status',
             },
         ],
     },
