@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ScrollArea as ScrollAreaPrimitive } from "radix-ui/react-slot"
+import { ScrollArea as ScrollAreaPrimitive } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
 

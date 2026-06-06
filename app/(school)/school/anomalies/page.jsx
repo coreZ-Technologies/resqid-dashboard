@@ -10,7 +10,7 @@ import {
   CalendarDays, ChevronDown
 } from 'lucide-react'
 import Link from 'next/link'
-
+import RefreshButton from '@/components/shared/RefreshButton';
 // ── Mock Data ──────────────────────────────────────────────────────────────────
 
 const ANOMALY_STATS = [
@@ -184,23 +184,23 @@ const ANOMALIES = [
 ]
 
 const ANOMALY_TYPE_META = {
-  duplicate_scan:   { label: 'Duplicate Scan',    icon: QrCode,       color: 'text-rose-600',   bg: 'bg-rose-50',   border: 'border-rose-200'   },
-  unknown_card:     { label: 'Unknown Card',       icon: ScanLine,     color: 'text-amber-600',  bg: 'bg-amber-50',  border: 'border-amber-200'  },
-  outside_hours:    { label: 'Outside Hours',      icon: Clock,        color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200' },
-  multiple_exits:   { label: 'Multiple Exits',     icon: ArrowRight,   color: 'text-sky-600',    bg: 'bg-sky-50',    border: 'border-sky-200'    },
-  suspicious_timing:{ label: 'Suspicious Timing',  icon: AlertTriangle,color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' },
+  duplicate_scan: { label: 'Duplicate Scan', icon: QrCode, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200' },
+  unknown_card: { label: 'Unknown Card', icon: ScanLine, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
+  outside_hours: { label: 'Outside Hours', icon: Clock, color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200' },
+  multiple_exits: { label: 'Multiple Exits', icon: ArrowRight, color: 'text-sky-600', bg: 'bg-sky-50', border: 'border-sky-200' },
+  suspicious_timing: { label: 'Suspicious Timing', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' },
 }
 
 const SEVERITY_META = {
-  high:   { label: 'High',   color: 'text-rose-700',    bg: 'bg-rose-100',    dot: 'bg-rose-500'    },
-  medium: { label: 'Medium', color: 'text-amber-700',   bg: 'bg-amber-100',   dot: 'bg-amber-500'   },
-  low:    { label: 'Low',    color: 'text-slate-600',   bg: 'bg-slate-100',   dot: 'bg-slate-400'   },
+  high: { label: 'High', color: 'text-rose-700', bg: 'bg-rose-100', dot: 'bg-rose-500' },
+  medium: { label: 'Medium', color: 'text-amber-700', bg: 'bg-amber-100', dot: 'bg-amber-500' },
+  low: { label: 'Low', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-400' },
 }
 
 const STATUS_META = {
-  open:          { label: 'Open',          color: 'text-rose-700',    bg: 'bg-rose-50',    border: 'border-rose-200',    dot: 'bg-rose-500'    },
-  investigating: { label: 'Investigating', color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200',   dot: 'bg-amber-500'   },
-  resolved:      { label: 'Resolved',      color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', dot: 'bg-emerald-500' },
+  open: { label: 'Open', color: 'text-rose-700', bg: 'bg-rose-50', border: 'border-rose-200', dot: 'bg-rose-500' },
+  investigating: { label: 'Investigating', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', dot: 'bg-amber-500' },
+  resolved: { label: 'Resolved', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', dot: 'bg-emerald-500' },
 }
 
 const FILTERS = ['All', 'Open', 'Investigating', 'Resolved']
@@ -216,9 +216,8 @@ function KpiCard({ label, value, change, icon: Icon, color, bg, text }) {
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
           <Icon size={18} className="text-white" />
         </div>
-        <div className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg ${
-          positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-        }`}>
+        <div className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg ${positive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+          }`}>
           {positive ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
           {positive ? '+' : ''}{change} this week
         </div>
@@ -300,16 +299,7 @@ export default function AnomaliesPage() {
           </div>
           <p className="text-[13px] text-slate-500">Security alerts and suspicious scan activity for your school</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors">
-            <RefreshCw size={13} />
-            Refresh
-          </button>
-          <button className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-600 hover:bg-slate-50 transition-colors">
-            <Download size={13} />
-            Export
-          </button>
-        </div>
+        <RefreshButton />
       </div>
 
       {/* ── KPI Cards ── */}
@@ -343,11 +333,10 @@ export default function AnomaliesPage() {
                 <button
                   key={f}
                   onClick={() => setStatusFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
-                    statusFilter === f
-                      ? 'bg-white text-slate-800 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${statusFilter === f
+                    ? 'bg-white text-slate-800 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                    }`}
                 >
                   {f}
                 </button>
@@ -395,9 +384,8 @@ export default function AnomaliesPage() {
                       <tr
                         key={anomaly.id}
                         onClick={() => setSelected(isSelected ? null : anomaly.id)}
-                        className={`border-b border-slate-50 cursor-pointer transition-colors ${
-                          isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50/50'
-                        }`}
+                        className={`border-b border-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50/50'
+                          }`}
                       >
                         {/* ID */}
                         <td className="px-4 py-3.5">
@@ -512,10 +500,10 @@ export default function AnomaliesPage() {
               <div className="space-y-2.5">
                 <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Details</p>
                 {[
-                  { icon: MapPin,       label: 'Location',    value: selectedAnomaly.location },
-                  { icon: Clock,        label: 'Time',        value: `${selectedAnomaly.date} · ${selectedAnomaly.time}` },
-                  { icon: CalendarDays, label: 'Date',        value: selectedAnomaly.date },
-                  { icon: ScanLine,     label: 'Detected By', value: selectedAnomaly.detectedBy },
+                  { icon: MapPin, label: 'Location', value: selectedAnomaly.location },
+                  { icon: Clock, label: 'Time', value: `${selectedAnomaly.date} · ${selectedAnomaly.time}` },
+                  { icon: CalendarDays, label: 'Date', value: selectedAnomaly.date },
+                  { icon: ScanLine, label: 'Detected By', value: selectedAnomaly.detectedBy },
                 ].map(row => (
                   <div key={row.label} className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
