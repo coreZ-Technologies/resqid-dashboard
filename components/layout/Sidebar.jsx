@@ -226,14 +226,24 @@ const SCHOOL_SIDEBAR = [
                 module: null,
                 description: 'Add / remove staff',
             },
+            // ── ADD THESE TWO ──
             {
-                id: 'subscription',
-                label: 'Subscription',
-                href: '/school/subscription',
-                icon: 'CreditCard',
+                id: 'activity-log',
+                label: 'Activity Log',
+                href: '/school/activity-log',
+                icon: 'Activity',
                 module: null,
-                description: 'Plan & billing',
+                description: 'Audit trail',
             },
+            {
+                id: 'notifications',
+                label: 'Notifications',
+                href: '/school/notifications',
+                icon: 'Bell',
+                module: null,
+                description: 'All alerts',
+            },
+            // ──────────────────
             {
                 id: 'help',
                 label: 'Help & Support',
