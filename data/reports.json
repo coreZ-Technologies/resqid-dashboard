@@ -1,0 +1,156 @@
+{
+  "moduleName": "Reports & Analytics",
+  "description": "School-wide analytics dashboard showing attendance trends, student demographics, class performance, enrollment history, and high absenteeism alerts.",
+  "dataModels": {
+    "attendanceMonthly": {
+      "month": "string (Aug, Sep, ...)",
+      "present": "number (percentage)",
+      "absent": "number (percentage)"
+    },
+    "classAttendance": {
+      "class": "string (e.g., 'Class 1')",
+      "rate": "number (percentage)"
+    },
+    "genderDistribution": {
+      "name": "string (Male, Female, Other)",
+      "value": "number"
+    },
+    "enrollmentTrend": {
+      "year": "string (e.g., '2020')",
+      "students": "number"
+    },
+    "highAbsenteeism": {
+      "name": "string",
+      "class": "string",
+      "absences": "number",
+      "trend": "string (up, down)"
+    },
+    "kpi": {
+      "label": "string",
+      "value": "string or number",
+      "change": "string (e.g., '5.2%')",
+      "positive": "boolean"
+    }
+  },
+  "keyMetrics": {
+    "totalStudents": 614,
+    "totalTeachers": 42,
+    "avgAttendance": "91.4%",
+    "atRiskStudents": 23,
+    "attendanceTrend": "present vs absent monthly",
+    "classAttendanceRange": "82% to 96%",
+    "enrollmentGrowth": "from 480 (2020) to 614 (2024)",
+    "topAbsenteeCount": "up to 18 days"
+  },
+  "uiComponents": {
+    "customComponents": [
+      "KpiCard",
+      "SectionCard",
+      "ChartTooltip"
+    ],
+    "sharedComponentsUsed": [],
+    "iconsUsed": [
+      "Users", "UserCheck", "UsersRound", "CalendarCheck", "BarChart2",
+      "TrendingUp", "TrendingDown", "Download", "Calendar", "ChevronDown",
+      "ArrowUpRight", "ArrowDownRight", "FileText", "AlertTriangle",
+      "Clock", "BookOpen", "Filter", "RefreshCw"
+    ],
+    "chartLibraries": ["recharts"]
+  },
+  "actionsAndRoutes": {
+    "tabSwitch": "Overview / Attendance / Students / Teachers (UI only, content not fully implemented for all tabs)",
+    "dateRangeFilter": "This Week, This Month, This Term, This Year",
+    "exportPDF": "triggers download of report (mock, console log)",
+    "quickExportButtons": [
+      "Attendance Report",
+      "Student List",
+      "Teacher Summary",
+      "Academic Report"
+    ],
+    "viewFullReport": "navigate to detailed attendance or absentee list (assumed)"
+  },
+  "dependencies": {
+    "mockData": [
+      "attendanceMonthly",
+      "classAttendance",
+      "genderData",
+      "enrollmentTrend",
+      "topAbsent"
+    ],
+    "recharts": "BarChart, LineChart, PieChart, Cell, Tooltip, Legend, ResponsiveContainer",
+    "utilityLibraries": ["@/lib/utils (cn)"],
+    "reactHooks": ["useState"]
+  },
+  "monitorDashboardSuggestions": {
+    "widgets": [
+      {
+        "type": "kpi",
+        "title": "School Health Snapshot",
+        "metrics": ["Total Students", "Total Teachers", "Avg Attendance", "At-Risk Students"]
+      },
+      {
+        "type": "trendChart",
+        "title": "Monthly Attendance Trend (Present vs Absent)",
+        "dataSource": "attendanceMonthly",
+        "chartType": "stacked bar"
+      },
+      {
+        "type": "horizontalBar",
+        "title": "Class-wise Attendance with Threshold Coloring",
+        "dataSource": "classAttendance",
+        "thresholds": [90, 85]
+      },
+      {
+        "type": "lineChart",
+        "title": "Year-over-Year Enrollment Growth",
+        "dataSource": "enrollmentTrend"
+      },
+      {
+        "type": "pieChart",
+        "title": "Student Gender Distribution",
+        "dataSource": "genderData"
+      },
+      {
+        "type": "table",
+        "title": "High Absenteeism Alerts",
+        "dataSource": "topAbsent",
+        "columns": ["Student", "Class", "Absences", "Trend"]
+      },
+      {
+        "type": "exportUsage",
+        "title": "Report Exports (track via analytics)",
+        "display": "Count per report type"
+      }
+    ],
+    "alertTriggers": [
+      "Class attendance < 85% (displayed as red bar)",
+      "Student absences >= 15 days (highlight in table)",
+      "Overall attendance drop > 5% month-over-month",
+      "Gender imbalance > 60-40 split (flag for review)"
+    ],
+    "realTimeNeeds": [
+      "Live attendance updates to refresh monthly trend chart",
+      "Push alert to admin when at-risk student count increases significantly"
+    ]
+  },
+  "importantFilesForMonitoring": {
+    "frontend": [
+      "app/(school)/school/reports/page.jsx",
+      "components/shared/KpiCard.jsx (if extracted – but currently inline)",
+      "lib/mock-data.js (for real data source later)"
+    ],
+    "backendIntegration": {
+      "apiEndpointsInferred": [
+        "GET /api/reports/attendance/monthly",
+        "GET /api/reports/class/attendance",
+        "GET /api/reports/enrollment",
+        "GET /api/reports/gender",
+        "GET /api/reports/high-absenteeism",
+        "POST /api/reports/export (PDF/CSV for selected report)"
+      ],
+      "webhooks": [
+        "Daily attendance summary → update analytics cache"
+      ]
+    }
+  }
+}

@@ -1,143 +1,268 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "resqid/attendance",
-  "title": "AttendanceSession + Records",
-  "description": "Attendance module schemas: Session, Tap, StudentRecord, StaffRecord, Settings. Module: attendance.",
-
-  "definitions": {
-
-    "AttendanceSession": {
-      "title": "AttendanceSession",
-      "description": "A time-bounded session during which taps are processed. Maps to attendance_sessions table.",
-      "type": "object",
-      "required": ["id", "schoolId", "name", "type", "mode", "scheduledStart", "createdById"],
-      "properties": {
-        "id": { "type": "string" },
-        "schoolId": { "type": "string" },
-        "name": { "type": "string", "examples": ["Morning Attendance - Class 10A"] },
-        "type": {
-          "type": "string",
-          "enum": ["MORNING", "AFTERNOON", "FULL_DAY", "EVENT", "EXAM", "STAFF_MEETING", "DUTY"]
-        },
-        "mode": {
-          "type": "string",
-          "enum": ["RFID", "BIOMETRIC", "QR_CODE", "MANUAL", "GPS", "SELF"]
-        },
-        "grade": { "type": ["string", "null"] },
-        "section": { "type": ["string", "null"] },
-        "subject": { "type": ["string", "null"] },
-        "classGroupId": { "type": ["string", "null"] },
-        "isStaffSession": { "type": "boolean", "default": false },
-        "scheduledStart": { "type": "string", "format": "date-time" },
-        "scheduledEnd": { "type": ["string", "null"], "format": "date-time" },
-        "startedAt": { "type": ["string", "null"], "format": "date-time" },
-        "endedAt": { "type": ["string", "null"], "format": "date-time" },
-        "lateThreshold": { "type": "integer", "default": 15, "description": "Minutes after which tap is marked LATE" },
-        "createdById": { "type": "string", "description": "FK → school_users.id" },
-        "isActive": { "type": "boolean", "default": true },
-        "isArchived": { "type": "boolean", "default": false },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      }
+  "moduleName": "Attendance Module",
+  "description": "Full attendance management system including RFID devices, manual marking, logs, and reports.",
+  "dataModels": {
+    "dailyAttendance": {
+      "totalStudents": "number",
+      "present": "number",
+      "absent": "number",
+      "late": "number",
+      "classes": [
+        {
+          "classId": "string",
+          "grade": "string",
+          "section": "string",
+          "total": "number",
+          "present": "number",
+          "absent": "number",
+          "late": "number",
+          "percentage": "number"
+        }
+      ]
     },
-
-    "AttendanceTap": {
-      "title": "AttendanceTap",
-      "description": "Raw hardware/device tap event — processed into attendance records. Maps to attendance_taps table.",
-      "type": "object",
-      "required": ["id", "sessionId", "schoolId", "uidHash", "tapType"],
-      "properties": {
-        "id": { "type": "string" },
-        "sessionId": { "type": "string" },
-        "schoolId": { "type": "string" },
-        "studentId": { "type": ["string", "null"] },
-        "staffId": { "type": ["string", "null"] },
-        "uidHash": { "type": "string", "description": "Hashed RFID card / fingerprint ID" },
-        "tapType": { "type": "string", "enum": ["RFID_CARD", "FINGERPRINT", "QR_CODE", "FACE"] },
-        "deviceId": { "type": ["string", "null"] },
-        "deviceName": { "type": ["string", "null"] },
-        "latitude": { "type": ["number", "null"] },
-        "longitude": { "type": ["number", "null"] },
-        "location": { "type": ["string", "null"] },
-        "tappedAt": { "type": "string", "format": "date-time" },
-        "processed": { "type": "boolean", "default": false },
-        "processedAt": { "type": ["string", "null"], "format": "date-time" },
-        "error": { "type": ["string", "null"] },
-        "isDuplicate": { "type": "boolean", "default": false },
-        "duplicateOfId": { "type": ["string", "null"] },
-        "metadata": { "type": ["object", "null"] }
-      }
+    "rfidDevice": {
+      "id": "string",
+      "name": "string",
+      "type": "string (Gate Scanner, RFID Reader, etc.)",
+      "location": "string",
+      "status": "string (online, offline)",
+      "battery": "number (0-100)",
+      "firmware": "string",
+      "lastSync": "string",
+      "totalScans": "number"
     },
-
-    "StudentAttendanceRecord": {
-      "title": "StudentAttendanceRecord",
-      "description": "Final attendance decision for a student in a session. Maps to student_attendance_records table.",
-      "type": "object",
-      "required": ["id", "sessionId", "studentId", "schoolId", "status"],
-      "properties": {
-        "id": { "type": "string" },
-        "sessionId": { "type": "string" },
-        "studentId": { "type": "string" },
-        "schoolId": { "type": "string" },
-        "status": {
-          "type": "string",
-          "enum": ["PRESENT", "ABSENT", "LATE", "EXCUSED", "HALF_DAY", "HOLIDAY"],
-          "default": "PRESENT"
-        },
-        "mode": {
-          "type": "string",
-          "enum": ["RFID", "BIOMETRIC", "QR_CODE", "MANUAL", "GPS", "SELF"],
-          "default": "RFID"
-        },
-        "scheduledTime": { "type": ["string", "null"], "format": "date-time" },
-        "markedAt": { "type": "string", "format": "date-time" },
-        "lateBy": { "type": ["integer", "null"], "description": "Minutes late" },
-        "markedBy": { "type": ["string", "null"] },
-        "tapId": { "type": ["string", "null"] },
-        "reason": { "type": ["string", "null"] },
-        "remark": { "type": ["string", "null"] },
-        "isVerified": { "type": "boolean", "default": false },
-        "verifiedBy": { "type": ["string", "null"] },
-        "parentNotified": { "type": "boolean", "default": false },
-        "parentNotifiedAt": { "type": ["string", "null"], "format": "date-time" },
-        "parentAcknowledged": { "type": "boolean", "default": false },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      },
-      "x-unique": ["sessionId", "studentId"]
+    "deviceScanLog": {
+      "time": "string (HH:MM AM/PM)",
+      "student": "string",
+      "class": "string",
+      "cardId": "string",
+      "type": "string (tap-in, tap-out)",
+      "status": "string (success, late, failed)"
     },
-
-    "AttendanceSettings": {
-      "title": "AttendanceSettings",
-      "description": "School-level attendance configuration. One per school. Maps to attendance_settings table.",
-      "type": "object",
-      "required": ["id", "schoolId"],
-      "properties": {
-        "id": { "type": "string" },
-        "schoolId": { "type": "string" },
-        "studentCheckInStart": { "type": "string", "default": "07:00" },
-        "studentCheckInEnd": { "type": "string", "default": "09:00" },
-        "studentLateThreshold": { "type": "integer", "default": 15 },
-        "studentHalfDayAfter": { "type": "integer", "default": 120 },
-        "staffCheckInStart": { "type": "string", "default": "07:00" },
-        "staffCheckInEnd": { "type": "string", "default": "10:00" },
-        "staffLateThreshold": { "type": "integer", "default": 15 },
-        "staffWorkingHours": { "type": "number", "default": 8.0 },
-        "autoMarkAbsent": { "type": "boolean", "default": true },
-        "autoMarkAfter": { "type": "integer", "default": 60, "description": "Minutes after session close to auto-mark absent" },
-        "notifyParentsOnAbsent": { "type": "boolean", "default": true },
-        "notifyParentsOnLate": { "type": "boolean", "default": true },
-        "notifyAdminsOnStaffAbsent": { "type": "boolean", "default": true },
-        "gpsEnabled": { "type": "boolean", "default": false },
-        "gpsRadius": { "type": ["integer", "null"], "description": "Meters" },
-        "updatedById": { "type": ["string", "null"] },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      }
+    "attendanceLogEntry": {
+      "id": "number",
+      "studentName": "string",
+      "class": "string",
+      "cardId": "string",
+      "tapIn": "string (HH:MM AM/PM)",
+      "tapOut": "string (HH:MM AM/PM)",
+      "gate": "string",
+      "status": "string (success, late, absent, failed, duplicate)"
+    },
+    "classReport": {
+      "id": "string",
+      "grade": "string",
+      "section": "string",
+      "total": "number",
+      "presentAvg": "number",
+      "trend": "string (up, down)"
+    },
+    "weeklyAttendance": {
+      "day": "string",
+      "date": "string",
+      "present": "number",
+      "absent": "number",
+      "late": "number",
+      "total": "number"
     }
   },
-
-  "x-module": "attendance",
-  "x-plan-required": ["module_attendance", "bundle_safety", "bundle_ops", "bundle_connect", "resqid_complete"],
-  "x-hardware": "AttendanceDevice records taps — rate limited to 10 taps/second per device"
+  "keyMetrics": {
+    "dashboard": {
+      "totalStudents": "number",
+      "presentCount": "number",
+      "absentCount": "number",
+      "lateCount": "number",
+      "attendancePercentage": "string"
+    },
+    "devices": {
+      "totalDevices": "number",
+      "onlineCount": "number",
+      "offlineCount": "number",
+      "totalScansToday": "number"
+    },
+    "reports": {
+      "avgAttendance": "string (e.g., 485/542)",
+      "avgPercentage": "string",
+      "bestDay": "string",
+      "lowestDay": "string"
+    }
+  },
+  "uiComponents": {
+    "pages": [
+      "/school/attendance/page.jsx",
+      "/school/attendance/devices/page.jsx",
+      "/school/attendance/devices/[deviceId]/page.jsx",
+      "/school/attendance/devices/[deviceId]/logs/page.jsx",
+      "/school/attendance/logs/page.jsx",
+      "/school/attendance/mark/page.jsx",
+      "/school/attendance/reports/page.jsx"
+    ],
+    "sharedComponentsUsed": [
+      "PageBreadcrumb",
+      "PageHeader",
+      "ToolbarActions",
+      "KpiCard",
+      "StatusBadge"
+    ],
+    "customHooks": [],
+    "helperFunctions": [
+      "formatRelativeDate (in anomalies)",
+      "exportToCSV"
+    ],
+    "iconsUsed": [
+      "Calendar", "Users", "UserCheck", "Clock", "AlertTriangle", "ChevronRight", "Eye", "Wifi",
+      "ArrowLeft", "WifiOff", "Battery", "RefreshCw", "MapPin", "Activity", "Cpu", "RotateCcw",
+      "Power", "Download", "Filter", "X", "Check", "TrendingUp", "TrendingDown", "BarChart3", "Save"
+    ]
+  },
+  "actionsAndRoutes": {
+    "attendanceMain": {
+      "viewLogs": "/school/attendance/logs",
+      "reports": "/school/attendance/reports",
+      "markAttendance": "/school/attendance/mark?class={classId}",
+      "viewClassDetail": "/school/attendance/{classId}"
+    },
+    "devices": {
+      "syncAll": "refresh devices list",
+      "restartDevice": "simulated restart, updates status",
+      "viewDeviceProfile": "/school/attendance/devices/{deviceId}",
+      "viewDeviceLogs": "/school/attendance/devices/{deviceId}/logs"
+    },
+    "markAttendance": {
+      "selectClass": "dropdown",
+      "markStatus": "present/absent/late per student",
+      "markAllPresent": "bulk action",
+      "reset": "clear all marks",
+      "save": "POST /api/attendance/mark"
+    },
+    "reports": {
+      "tabSwitch": "daily/weekly/monthly (only weekly implemented in mock)",
+      "classFilter": "All or specific class",
+      "exportReport": "download CSV/PDF"
+    }
+  },
+  "dependencies": {
+    "mockDataFiles": [
+      "@/lib/mock-data"
+    ],
+    "mockDataExports": [
+      "MOCK_ATTENDANCE_TODAY",
+      "MOCK_DEVICES",
+      "MOCK_RFID_LOGS",
+      "MOCK_CLASSES"
+    ],
+    "utilityLibraries": [
+      "@/lib/utils (cn)",
+      "next/navigation (useRouter, useParams, useSearchParams)",
+      "react (useState, useEffect, useMemo, useCallback)"
+    ]
+  },
+  "monitorDashboardSuggestions": {
+    "widgets": [
+      {
+        "type": "kpi",
+        "title": "Today's Attendance",
+        "dataSource": "MOCK_ATTENDANCE_TODAY",
+        "metrics": ["present", "absent", "late", "percentage"]
+      },
+      {
+        "type": "deviceHealth",
+        "title": "RFID Device Status",
+        "dataSource": "MOCK_DEVICES",
+        "metrics": ["onlineCount", "offlineCount", "lowBatteryDevices (battery < 25%)"]
+      },
+      {
+        "type": "recentScans",
+        "title": "Recent Tap Logs",
+        "dataSource": "MOCK_RFID_LOGS",
+        "columns": ["time", "student", "gate", "status"]
+      },
+      {
+        "type": "classAttendanceGrid",
+        "title": "Class-wise Attendance",
+        "dataSource": "MOCK_ATTENDANCE_TODAY.classes",
+        "display": "percentage bar + counts"
+      },
+      {
+        "type": "weeklyTrend",
+        "title": "Weekly Attendance Trend",
+        "dataSource": "MOCK_WEEKLY_DATA (reports page)",
+        "chartType": "bar"
+      }
+    ],
+    "alertTriggers": [
+      "Device offline for > 5 minutes",
+      "Device battery < 20%",
+      "Attendance percentage falls below 75% for a class",
+      "High number of 'failed' scans within 10 minutes (potential card cloning)",
+      "Late attendance count exceeds 10% of total students"
+    ],
+    "realTimeNeeds": [
+      "WebSocket or SSE for live device status updates",
+      "Real-time scan events (push to dashboard)"
+    ]
+  },
+  "importantFilesForMonitoring": {
+    "frontend": [
+      "app/(school)/school/attendance/page.jsx",
+      "app/(school)/school/attendance/devices/page.jsx",
+      "app/(school)/school/attendance/devices/[deviceId]/page.jsx",
+      "app/(school)/school/attendance/logs/page.jsx",
+      "app/(school)/school/attendance/reports/page.jsx",
+      "components/shared/KpiCard.jsx",
+      "components/shared/StatusBadge.jsx",
+      "lib/mock-data.js",
+      "lib/utils.js"
+    ],
+    "backendIntegration": {
+      "apiEndpointsInferred": [
+        "GET /api/attendance/today",
+        "GET /api/attendance/class/{classId}",
+        "POST /api/attendance/mark",
+        "GET /api/attendance/devices",
+        "GET /api/attendance/devices/{deviceId}",
+        "POST /api/attendance/devices/{deviceId}/restart",
+        "GET /api/attendance/logs",
+        "GET /api/attendance/reports/weekly",
+        "GET /api/attendance/reports/class-wise"
+      ],
+      "webhooks": [
+        "Device status change (online/offline)",
+        "New scan event (tap-in/tap-out)"
+      ]
+    }
+  },
+  "sampleMockDataStructures": {
+    "MOCK_ATTENDANCE_TODAY": {
+      "totalStudents": 542,
+      "present": 487,
+      "absent": 38,
+      "late": 17,
+      "classes": [
+        {
+          "classId": "c7",
+          "grade": "Class 6",
+          "section": "A",
+          "total": 45,
+          "present": 42,
+          "absent": 3,
+          "late": 2,
+          "percentage": 93
+        }
+      ]
+    },
+    "MOCK_DEVICES": [
+      {
+        "id": "d1",
+        "name": "Gate A Scanner",
+        "type": "Gate Scanner",
+        "location": "Main Gate",
+        "status": "online",
+        "battery": 87,
+        "firmware": "v2.1.4",
+        "lastSync": "2 min ago",
+        "totalScans": 487
+      }
+    ]
+  }
 }

@@ -1,0 +1,213 @@
+{
+  "moduleName": "Classes Management",
+  "description": "Manage school classes including class details, students, teacher assignment, and bulk import via CSV.",
+  "dataModels": {
+    "class": {
+      "id": "string",
+      "grade": "string (e.g., 'Cls 6', 'Nursery')",
+      "section": "string (A, B, C, D, E)",
+      "classTeacher": "string (optional)",
+      "room": "string (optional)",
+      "status": "string (Active, Inactive)",
+      "subjects": "array of strings",
+      "students": "number (derived)"
+    },
+    "studentInClass": {
+      "id": "string",
+      "name": "string",
+      "rollNo": "number",
+      "gender": "string",
+      "attendance": "number (percentage)",
+      "avatar": "string (initials)",
+      "avatarColor": "string (Tailwind bg class)",
+      "status": "string (present, absent, late)"
+    },
+    "classActivity": {
+      "type": "string (attendance, message, edit, student)",
+      "text": "string",
+      "time": "string",
+      "date": "string"
+    }
+  },
+  "keyMetrics": {
+    "overview": {
+      "totalClasses": "number (MOCK_CLASSES length)",
+      "activeClasses": "number (status = 'Active')",
+      "inactiveClasses": "number"
+    },
+    "classDetail": {
+      "totalStudents": "number",
+      "presentToday": "number",
+      "absentToday": "number",
+      "lateToday": "number",
+      "attendanceRate": "string (percentage)"
+    }
+  },
+  "uiComponents": {
+    "pages": [
+      "/school/classes/page.jsx",
+      "/school/classes/[id]/page.jsx",
+      "/school/classes/add/page.jsx",
+      "/school/classes/edit/page.jsx"
+    ],
+    "sharedComponentsUsed": [
+      "PageBreadcrumb",
+      "PageHeader",
+      "ToolbarActions",
+      "KpiCard",
+      "StatusBadge",
+      "EmptyState",
+      "ConfirmDialog",
+      "AvatarWithStatus",
+      "Skeleton"
+    ],
+    "moduleComponents": [
+      "ClassFilters",
+      "ClassCard"
+    ],
+    "customHooks": [
+      "useConfirmDialog"
+    ],
+    "iconsUsed": [
+      "Plus", "ArrowLeft", "Users", "UserCheck", "LayoutGrid", "BookOpen",
+      "Edit2", "MessageCircle", "Download", "Phone", "Mail", "ChevronRight",
+      "Clock", "CalendarDays", "Check", "X", "GraduationCap", "DoorOpen",
+      "MoreHorizontal", "Upload", "FileText", "AlertCircle", "FileSpreadsheet",
+      "Trash2", "Loader2"
+    ]
+  },
+  "actionsAndRoutes": {
+    "listPage": {
+      "addClass": "/school/classes/add",
+      "editClass": "/school/classes/edit?id={classId}",
+      "viewClass": "/school/classes/{classId}",
+      "deleteClass": "inline confirmation & state update",
+      "refresh": "reload mock data",
+      "export": "export filtered classes"
+    },
+    "detailPage": {
+      "editClass": "/school/classes/edit?id={classId}",
+      "messageTeacher": "open message modal (mock)",
+      "viewStudent": "/school/students/{studentId}",
+      "addStudent": "/school/students/add?class={classId}",
+      "exportStudents": "export student list",
+      "callTeacher": "mock phone action",
+      "emailTeacher": "mock email action"
+    },
+    "addPage": {
+      "singleMode": "add one class via form",
+      "bulkMode": "upload CSV file to add multiple classes",
+      "downloadDemoCSV": "download sample CSV",
+      "cancel": "go back",
+      "successModal": "shows added count, options to add more or view all"
+    },
+    "editPage": {
+      "updateClass": "submit updated class details",
+      "cancel": "go back"
+    }
+  },
+  "dependencies": {
+    "mockDataFiles": [
+      "@/lib/mock-data"
+    ],
+    "mockDataExports": [
+      "MOCK_CLASSES"
+    ],
+    "constantsFiles": [
+      "@/lib/constants"
+    ],
+    "constantsExports": [
+      "GRADE_GROUP_MAP",
+      "GROUP_COLORS",
+      "GRADES"
+    ],
+    "utilityLibraries": [
+      "@/lib/utils (cn)",
+      "next/navigation (useRouter, useParams, useSearchParams)",
+      "react (useState, useEffect, useMemo, useRef)"
+    ]
+  },
+  "monitorDashboardSuggestions": {
+    "widgets": [
+      {
+        "type": "kpi",
+        "title": "Class Overview",
+        "metrics": ["Total Classes", "Active Classes", "Inactive Classes"]
+      },
+      {
+        "type": "table",
+        "title": "Class List (Quick View)",
+        "columns": ["Class", "Teacher", "Students", "Status"],
+        "dataSource": "MOCK_CLASSES"
+      },
+      {
+        "type": "chart",
+        "title": "Students per Grade Group",
+        "chartType": "bar",
+        "dataSource": "aggregated from MOCK_CLASSES + student counts"
+      },
+      {
+        "type": "alert",
+        "title": "Low Attendance Classes",
+        "condition": "Class attendance rate < 75%",
+        "action": "Highlight in dashboard"
+      },
+      {
+        "type": "recentActivity",
+        "title": "Recent Class Changes",
+        "dataSource": "MOCK_ACTIVITY per class"
+      }
+    ],
+    "alertTriggers": [
+      "Class teacher missing (classTeacher empty)",
+      "Class has no students assigned",
+      "Class status inactive for > 30 days",
+      "Multiple sections with same teacher (potential overload)"
+    ],
+    "realTimeNeeds": [
+      "Live updates when a student is added/removed from class",
+      "Push notification when class teacher is changed"
+    ]
+  },
+  "importantFilesForMonitoring": {
+    "frontend": [
+      "app/(school)/school/classes/page.jsx",
+      "app/(school)/school/classes/[id]/page.jsx",
+      "app/(school)/school/classes/add/page.jsx",
+      "app/(school)/school/classes/edit/page.jsx",
+      "components/modules/classes/ClassFilters.jsx",
+      "components/modules/classes/ClassCard.jsx",
+      "components/shared/ConfirmDialog.jsx",
+      "components/shared/Avatar.jsx",
+      "lib/mock-data.js",
+      "lib/constants.js"
+    ],
+    "backendIntegration": {
+      "apiEndpointsInferred": [
+        "GET /api/classes",
+        "GET /api/classes/:id",
+        "POST /api/classes",
+        "POST /api/classes/bulk",
+        "PUT /api/classes/:id",
+        "DELETE /api/classes/:id",
+        "GET /api/classes/:id/students"
+      ],
+      "webhooks": [
+        "Class created/updated → refresh timetable generator",
+        "Student enrolled/unenrolled → update class count"
+      ]
+    }
+  },
+  "sampleMockDataStructures": {
+    "MOCK_CLASS": {
+      "id": "c7",
+      "grade": "Cls 6",
+      "section": "A",
+      "classTeacher": "Mrs. Kavita Reddy",
+      "room": "R-10",
+      "status": "Active",
+      "students": 45,
+      "subjects": ["Mathematics", "Science", "English", "Social Studies", "Hindi"]
+    }
+  }
+}
