@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { Plus, Upload, Eye, Edit2, Trash2, Mail, Phone, Search } from "lucide-react"
+import { Plus, Upload, Eye, Edit2, Trash2, Mail, Phone, Search, ArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import PageHeader from "@/components/shared/PageHeader"
@@ -90,6 +90,11 @@ export default function StudentsPage() {
                     <button onClick={() => router.push("/school/students/add")}
                         className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-semibold shadow-sm shadow-violet-200 hover:from-violet-600 hover:to-violet-800 transition-all">
                         <Plus size={16} /> Add Student
+                    </button>
+
+                    <button onClick={() => router.push("/school/students/promote")}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 transition-colors shadow-sm">
+                        <ArrowUp size={15} /> Promote Students
                     </button>
                 </div>
             </PageHeader>
