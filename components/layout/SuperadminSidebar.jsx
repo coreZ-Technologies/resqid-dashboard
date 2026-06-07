@@ -48,25 +48,11 @@ const SUPERADMIN_SIDEBAR = [
         icon: 'Building2',
         description: 'Manage onboarded schools',
       },
-      {
-        id: 'subscriptions',
-        label: 'Subscriptions',
-        href: '/superadmin/subscriptions',
-        icon: 'CreditCard',
-        description: 'Plans & billing',
-      },
     ],
   },
   {
     section: 'Platform',
     items: [
-      {
-        id: 'students',
-        label: 'All Students',
-        href: '/superadmin/students',
-        icon: 'Users',
-        description: 'Global student registry',
-      },
       {
         id: 'scan-logs',
         label: 'Scan Logs',
@@ -113,18 +99,25 @@ const SUPERADMIN_SIDEBAR = [
     section: 'Settings',
     items: [
       {
-        id: 'admins',
-        label: 'Admin Accounts',
-        href: '/superadmin/admins',
-        icon: 'UserCog',
-        description: 'Manage super admins',
-      },
-      {
         id: 'settings',
         label: 'Platform Settings',
         href: '/superadmin/settings',
         icon: 'Settings',
         description: 'Global configuration',
+      },
+      {
+        id: 'admins',
+        label: 'Admin Accounts',
+        href: '/superadmin/settings/admins',
+        icon: 'UserCog',
+        description: 'Manage super admins',
+      },
+      {
+        id: 'roles',
+        label: 'Roles & Permissions',
+        href: '/superadmin/settings/roles',
+        icon: 'Shield',
+        description: 'Access control',
       },
     ],
   },

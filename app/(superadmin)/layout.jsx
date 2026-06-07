@@ -3,10 +3,17 @@
 
 import { useState } from 'react';
 import SuperadminSidebar from '@/components/layout/SuperadminSidebar';
+import Topbar from '@/components/layout/Topbar';
 import { cn } from '@/lib/utils';
 
 export default function SuperadminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
+
+  const user = {
+    name: 'Animesh Karan',
+    email: 'admin@resqid.com',
+    role: 'Super Admin',
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -17,6 +24,7 @@ export default function SuperadminLayout({ children }) {
           collapsed ? 'ml-[60px]' : 'ml-[260px]',
         )}
       >
+        <Topbar user={user} />
         <div className="p-6">
           {children}
         </div>

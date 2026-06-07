@@ -100,7 +100,7 @@ function ServiceCard({ service }) {
 function MetricCard({ title, value, unit, icon: Icon, trend, history, color }) {
   const [showHistory, setShowHistory] = useState(false);
   const maxHistory = Math.max(...(history || [0]));
-  
+
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-3">
@@ -193,7 +193,7 @@ export default function SystemHealthPage() {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  
+
   // Overall status
   const overallStatus = useMemo(() => {
     const hasOutage = services.some(s => s.status === 'outage');
@@ -202,11 +202,11 @@ export default function SystemHealthPage() {
     if (hasDegraded) return { status: 'degraded', label: 'Degraded Performance', color: 'bg-amber-100 text-amber-800' };
     return { status: 'operational', label: 'All Systems Operational', color: 'bg-emerald-100 text-emerald-800' };
   }, [services]);
-  
+
   const operationalCount = services.filter(s => s.status === 'operational').length;
   const degradedCount = services.filter(s => s.status === 'degraded').length;
   const outageCount = services.filter(s => s.status === 'outage').length;
-  
+
   // Simulate refresh
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -220,17 +220,17 @@ export default function SystemHealthPage() {
     setLastUpdated(new Date());
     setRefreshing(false);
   };
-  
+
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(handleRefresh, 30000);
     return () => clearInterval(interval);
   }, [autoRefresh]);
-  
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-screen-2xl mx-auto p-6 space-y-5">
-        
+
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div>
@@ -255,7 +255,7 @@ export default function SystemHealthPage() {
             </button>
           </div>
         </div>
-        
+
         {/* Overall Status Banner */}
         <div className={cn('rounded-2xl p-4 flex items-center justify-between', overallStatus.color, 'border')}>
           <div className="flex items-center gap-3">
@@ -271,7 +271,7 @@ export default function SystemHealthPage() {
             {outageCount > 0 && <span className="text-red-800">{outageCount} Outage</span>}
           </div>
         </div>
-        
+
         {/* System Metrics Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard title="CPU Usage" value={SYSTEM_METRICS.cpu.usage} unit="%" icon={Cpu} trend={+2} history={SYSTEM_METRICS.cpu.history} color="bg-blue-100" />
@@ -279,7 +279,7 @@ export default function SystemHealthPage() {
           <MetricCard title="Disk Usage" value={SYSTEM_METRICS.disk.percentage} unit="%" icon={HardDrive} trend={+1} history={SYSTEM_METRICS.disk.history} color="bg-amber-100" />
           <MetricCard title="Network" value={SYSTEM_METRICS.network.in} unit="Mbps" icon={Wifi} trend={+3} history={SYSTEM_METRICS.network.history} color="bg-emerald-100" />
         </div>
-        
+
         {/* Services Grid */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -296,7 +296,7 @@ export default function SystemHealthPage() {
             ))}
           </div>
         </div>
-        
+
         {/* Two column layout for Incidents and Logs */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Recent Incidents */}
@@ -313,7 +313,7 @@ export default function SystemHealthPage() {
               ))}
             </div>
           </div>
-          
+
           {/* System Logs */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
@@ -329,7 +329,7 @@ export default function SystemHealthPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Additional Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl border border-slate-200 p-4">
@@ -365,7 +365,7 @@ export default function SystemHealthPage() {
             <p className="text-xs text-emerald-600 mt-1">↑ 3% from last week</p>
           </div>
         </div>
-        
+
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 flex items-center justify-center gap-2">
           <Shield size={12} /> Real‑time monitoring · Data refreshed every 30 seconds
