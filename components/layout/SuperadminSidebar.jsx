@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, Activity, AlertTriangle, CreditCard, Bell,
+  LayoutDashboard, Activity, AlertTriangle, CreditCard, Bell, Clock,
   Building2, Settings, Users, HeartPulse, LogOut, ChevronsLeft,
   Shield, GraduationCap, ScanLine, BarChart2, UserCog, ChevronRight,
 } from 'lucide-react';
@@ -18,7 +18,7 @@ import Image from 'next/image';
 const ICON_MAP = {
   LayoutDashboard, Activity, AlertTriangle, CreditCard, Bell,
   Building2, Settings, Users, HeartPulse, LogOut, Shield,
-  GraduationCap, ScanLine, BarChart2, UserCog, ChevronRight,
+  GraduationCap, ScanLine, BarChart2, UserCog, ChevronRight, Clock
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -78,6 +78,13 @@ const SUPERADMIN_SIDEBAR = [
         href: '/superadmin/audit-logs',
         icon: 'Activity',
         description: 'Admin action history',
+      },
+      {
+        id: 'activity-log',
+        label: 'Activity Log',
+        href: '/superadmin/activity-logs',
+        icon: 'Clock',
+        description: 'All user activity',
       },
       {
         id: 'health',
