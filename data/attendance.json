@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/attendance",
+  "title": "AttendanceSession + Records",
+  "description": "Attendance module schemas: Session, Tap, StudentRecord, StaffRecord, Settings. Module: attendance.",
+
+  "definitions": {
+
+    "AttendanceSession": {
+      "title": "AttendanceSession",
+      "description": "A time-bounded session during which taps are processed. Maps to attendance_sessions table.",
+      "type": "object",
+      "required": ["id", "schoolId", "name", "type", "mode", "scheduledStart", "createdById"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "name": { "type": "string", "examples": ["Morning Attendance - Class 10A"] },
+        "type": {
+          "type": "string",
+          "enum": ["MORNING", "AFTERNOON", "FULL_DAY", "EVENT", "EXAM", "STAFF_MEETING", "DUTY"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["RFID", "BIOMETRIC", "QR_CODE", "MANUAL", "GPS", "SELF"]
+        },
+        "grade": { "type": ["string", "null"] },
+        "section": { "type": ["string", "null"] },
+        "subject": { "type": ["string", "null"] },
+        "classGroupId": { "type": ["string", "null"] },
+        "isStaffSession": { "type": "boolean", "default": false },
+        "scheduledStart": { "type": "string", "format": "date-time" },
+        "scheduledEnd": { "type": ["string", "null"], "format": "date-time" },
+        "startedAt": { "type": ["string", "null"], "format": "date-time" },
+        "endedAt": { "type": ["string", "null"], "format": "date-time" },
+        "lateThreshold": { "type": "integer", "default": 15, "description": "Minutes after which tap is marked LATE" },
+        "createdById": { "type": "string", "description": "FK → school_users.id" },
+        "isActive": { "type": "boolean", "default": true },
+        "isArchived": { "type": "boolean", "default": false },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "AttendanceTap": {
+      "title": "AttendanceTap",
+      "description": "Raw hardware/device tap event — processed into attendance records. Maps to attendance_taps table.",
+      "type": "object",
+      "required": ["id", "sessionId", "schoolId", "uidHash", "tapType"],
+      "properties": {
+        "id": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "studentId": { "type": ["string", "null"] },
+        "staffId": { "type": ["string", "null"] },
+        "uidHash": { "type": "string", "description": "Hashed RFID card / fingerprint ID" },
+        "tapType": { "type": "string", "enum": ["RFID_CARD", "FINGERPRINT", "QR_CODE", "FACE"] },
+        "deviceId": { "type": ["string", "null"] },
+        "deviceName": { "type": ["string", "null"] },
+        "latitude": { "type": ["number", "null"] },
+        "longitude": { "type": ["number", "null"] },
+        "location": { "type": ["string", "null"] },
+        "tappedAt": { "type": "string", "format": "date-time" },
+        "processed": { "type": "boolean", "default": false },
+        "processedAt": { "type": ["string", "null"], "format": "date-time" },
+        "error": { "type": ["string", "null"] },
+        "isDuplicate": { "type": "boolean", "default": false },
+        "duplicateOfId": { "type": ["string", "null"] },
+        "metadata": { "type": ["object", "null"] }
+      }
+    },
+
+    "StudentAttendanceRecord": {
+      "title": "StudentAttendanceRecord",
+      "description": "Final attendance decision for a student in a session. Maps to student_attendance_records table.",
+      "type": "object",
+      "required": ["id", "sessionId", "studentId", "schoolId", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["PRESENT", "ABSENT", "LATE", "EXCUSED", "HALF_DAY", "HOLIDAY"],
+          "default": "PRESENT"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["RFID", "BIOMETRIC", "QR_CODE", "MANUAL", "GPS", "SELF"],
+          "default": "RFID"
+        },
+        "scheduledTime": { "type": ["string", "null"], "format": "date-time" },
+        "markedAt": { "type": "string", "format": "date-time" },
+        "lateBy": { "type": ["integer", "null"], "description": "Minutes late" },
+        "markedBy": { "type": ["string", "null"] },
+        "tapId": { "type": ["string", "null"] },
+        "reason": { "type": ["string", "null"] },
+        "remark": { "type": ["string", "null"] },
+        "isVerified": { "type": "boolean", "default": false },
+        "verifiedBy": { "type": ["string", "null"] },
+        "parentNotified": { "type": "boolean", "default": false },
+        "parentNotifiedAt": { "type": ["string", "null"], "format": "date-time" },
+        "parentAcknowledged": { "type": "boolean", "default": false },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "x-unique": ["sessionId", "studentId"]
+    },
+
+    "AttendanceSettings": {
+      "title": "AttendanceSettings",
+      "description": "School-level attendance configuration. One per school. Maps to attendance_settings table.",
+      "type": "object",
+      "required": ["id", "schoolId"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "studentCheckInStart": { "type": "string", "default": "07:00" },
+        "studentCheckInEnd": { "type": "string", "default": "09:00" },
+        "studentLateThreshold": { "type": "integer", "default": 15 },
+        "studentHalfDayAfter": { "type": "integer", "default": 120 },
+        "staffCheckInStart": { "type": "string", "default": "07:00" },
+        "staffCheckInEnd": { "type": "string", "default": "10:00" },
+        "staffLateThreshold": { "type": "integer", "default": 15 },
+        "staffWorkingHours": { "type": "number", "default": 8.0 },
+        "autoMarkAbsent": { "type": "boolean", "default": true },
+        "autoMarkAfter": { "type": "integer", "default": 60, "description": "Minutes after session close to auto-mark absent" },
+        "notifyParentsOnAbsent": { "type": "boolean", "default": true },
+        "notifyParentsOnLate": { "type": "boolean", "default": true },
+        "notifyAdminsOnStaffAbsent": { "type": "boolean", "default": true },
+        "gpsEnabled": { "type": "boolean", "default": false },
+        "gpsRadius": { "type": ["integer", "null"], "description": "Meters" },
+        "updatedById": { "type": ["string", "null"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+
+  "x-module": "attendance",
+  "x-plan-required": ["module_attendance", "bundle_safety", "bundle_ops", "bundle_connect", "resqid_complete"],
+  "x-hardware": "AttendanceDevice records taps — rate limited to 10 taps/second per device"
+}

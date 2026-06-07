@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/api-responses",
+  "title": "RESQID API Response Shapes",
+  "description": "Standard API response envelopes. Matches ApiResponse.js in backend. Used by frontend lib/api.js to parse responses.",
+
+  "definitions": {
+
+    "SuccessResponse": {
+      "title": "SuccessResponse",
+      "description": "Standard success response envelope",
+      "type": "object",
+      "required": ["success", "message", "data"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [true] },
+        "message": { "type": "string", "examples": ["Student created successfully"] },
+        "data": { "description": "Response payload — varies by endpoint" }
+      }
+    },
+
+    "ErrorResponse": {
+      "title": "ErrorResponse",
+      "type": "object",
+      "required": ["success", "message"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [false] },
+        "message": { "type": "string" },
+        "errors": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        },
+        "code": { "type": ["string", "null"], "description": "Machine-readable error code" },
+        "statusCode": { "type": "integer" }
+      }
+    },
+
+    "PaginatedResponse": {
+      "title": "PaginatedResponse",
+      "description": "Paginated list response. Matches paginate.js output.",
+      "type": "object",
+      "required": ["success", "data", "pagination"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [true] },
+        "data": {
+          "type": "array",
+          "description": "Array of items for current page"
+        },
+        "pagination": {
+          "type": "object",
+          "required": ["page", "limit", "total", "totalPages", "hasNextPage", "hasPrevPage"],
+          "properties": {
+            "page": { "type": "integer", "minimum": 1 },
+            "limit": { "type": "integer" },
+            "total": { "type": "integer", "description": "Total record count" },
+            "totalPages": { "type": "integer" },
+            "hasNextPage": { "type": "boolean" },
+            "hasPrevPage": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "AuthResponse": {
+      "title": "AuthResponse",
+      "description": "Returned after successful login for any role",
+      "type": "object",
+      "required": ["success", "data"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [true] },
+        "data": {
+          "type": "object",
+          "required": ["accessToken", "user"],
+          "properties": {
+            "accessToken": { "type": "string", "description": "Short-lived JWT — stored in memory, NOT localStorage" },
+            "refreshToken": { "type": ["string", "null"], "description": "Long-lived — stored in HttpOnly cookie" },
+            "user": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "email": { "type": ["string", "null"] },
+                "phone": { "type": ["string", "null"] },
+                "role": { "type": "string" },
+                "schoolId": { "type": ["string", "null"] },
+                "schoolName": { "type": ["string", "null"] },
+                "isPasswordDefault": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "StudentListResponse": {
+      "title": "StudentListResponse",
+      "description": "GET /school/students — paginated student list",
+      "allOf": [{ "$ref": "#/definitions/PaginatedResponse" }],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Partial student — list view fields only",
+            "properties": {
+              "id": { "type": "string" },
+              "firstName": { "type": "string" },
+              "lastName": { "type": "string" },
+              "grade": { "type": ["string", "null"] },
+              "section": { "type": ["string", "null"] },
+              "rollNumber": { "type": ["string", "null"] },
+              "studentId": { "type": ["string", "null"] },
+              "status": { "type": "string" },
+              "photoUrl": { "type": ["string", "null"] },
+              "token": {
+                "type": ["object", "null"],
+                "description": "Latest active token summary",
+                "properties": {
+                  "id": { "type": "string" },
+                  "type": { "type": "string" },
+                  "status": { "type": "string" },
+                  "qrAssetUrl": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "DashboardKpiResponse": {
+      "title": "DashboardKpiResponse",
+      "description": "GET /school/overview — dashboard KPI data",
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "totalStudents": { "type": "integer" },
+            "activeStudents": { "type": "integer" },
+            "todayPresent": { "type": "integer" },
+            "todayAbsent": { "type": "integer" },
+            "todayLate": { "type": "integer" },
+            "attendanceRate": { "type": "number", "description": "Percentage 0-100" },
+            "totalTeachers": { "type": "integer" },
+            "activeDevices": { "type": "integer" },
+            "pendingAnomalies": { "type": "integer" },
+            "unreadNotifications": { "type": "integer" },
+            "recentActivity": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "type": { "type": "string" },
+                  "message": { "type": "string" },
+                  "timestamp": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "QrScanPublicResponse": {
+      "title": "QrScanPublicResponse",
+      "description": "Public response when QR is scanned by emergency responder. Fields filtered by showX visibility controls.",
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "studentName": { "type": "string" },
+            "grade": { "type": ["string", "null"] },
+            "section": { "type": ["string", "null"] },
+            "photoUrl": { "type": ["string", "null"] },
+            "bloodGroup": { "type": ["string", "null"], "description": "Only if showBloodGroup=true" },
+            "allergies": { "type": ["array", "null"] },
+            "medications": { "type": ["array", "null"] },
+            "conditions": { "type": ["array", "null"] },
+            "emergencyInstructions": { "type": ["string", "null"] },
+            "contacts": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "relation": { "type": "string" },
+                  "isPrimary": { "type": "boolean" },
+                  "callEnabled": { "type": "boolean" },
+                  "whatsappEnabled": { "type": "boolean" }
+                }
+              }
+            },
+            "doctorName": { "type": ["string", "null"] },
+            "doctorPhone": { "type": ["string", "null"] },
+            "hospitalName": { "type": ["string", "null"] },
+            "hospitalPhone": { "type": ["string", "null"] },
+            "schoolName": { "type": "string" },
+            "schoolPhone": { "type": ["string", "null"] }
+          }
+        }
+      }
+    }
+  },
+
+  "x-http-status-codes": {
+    "200": "Success",
+    "201": "Created",
+    "400": "Validation error (Zod)",
+    "401": "Unauthenticated",
+    "403": "Insufficient permissions",
+    "404": "Resource not found",
+    "409": "Conflict (duplicate)",
+    "423": "Module not active on subscription",
+    "429": "Rate limit exceeded",
+    "500": "Internal server error"
+  }
+}

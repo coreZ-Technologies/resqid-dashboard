@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/student",
+  "title": "Student",
+  "description": "Core student entity. Tenant-scoped to schoolId. Maps to students table.",
+  "type": "object",
+  "required": ["id", "schoolId", "firstName", "lastName", "status"],
+  "properties": {
+    "id": { "type": "string", "description": "cuid() — primary key" },
+    "schoolId": { "type": "string", "description": "FK → schools.id (tenant scope)" },
+    "firstName": { "type": "string", "minLength": 1, "maxLength": 50 },
+    "lastName": { "type": "string", "minLength": 1, "maxLength": 50 },
+    "dateOfBirth": { "type": ["string", "null"], "format": "date-time" },
+    "gender": {
+      "type": ["string", "null"],
+      "enum": ["MALE", "FEMALE", "OTHER", null]
+    },
+    "bloodGroup": {
+      "type": ["string", "null"],
+      "enum": ["A_POSITIVE", "A_NEGATIVE", "B_POSITIVE", "B_NEGATIVE", "O_POSITIVE", "O_NEGATIVE", "AB_POSITIVE", "AB_NEGATIVE", "UNKNOWN", null],
+      "description": "Prisma maps: A_POSITIVE → 'A+', A_NEGATIVE → 'A-', etc."
+    },
+    "photoUrl": { "type": ["string", "null"], "format": "uri" },
+    "grade": { "type": ["string", "null"], "examples": ["10", "11", "LKG"] },
+    "section": { "type": ["string", "null"], "examples": ["A", "B", "C"] },
+    "rollNumber": { "type": ["string", "null"] },
+    "studentId": { "type": ["string", "null"], "description": "School-issued ID e.g. SCT-2024-001" },
+    "classGroupId": { "type": ["string", "null"], "description": "FK → class_groups.id" },
+    "allergies": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "conditions": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "medications": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "medicalNotes": { "type": ["string", "null"] },
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "INACTIVE", "GRADUATED", "TRANSFERRED", "SUSPENDED"],
+      "default": "ACTIVE"
+    },
+    "isActive": { "type": "boolean", "default": true },
+    "enrolledAt": { "type": "string", "format": "date-time" },
+    "graduatedAt": { "type": ["string", "null"], "format": "date-time" },
+    "cardVisibilityId": { "type": ["string", "null"], "description": "FK → card_visibility.id" },
+    "transportRoute": { "type": ["string", "null"] },
+    "transportStop": { "type": ["string", "null"] },
+    "rfidTagNumber": { "type": ["string", "null"], "description": "Unique — used for RFID attendance tap" },
+    "metadata": { "type": ["object", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "x-prisma-model": "Student",
+  "x-table": "students",
+  "x-create-schema": "createStudentSchema in student.validation.js",
+  "x-relations": {
+    "tokens": "Token[] — QR/RFID cards assigned",
+    "parentLinks": "ParentStudent[] — linked parents",
+    "emergencyProfile": "EmergencyProfile? — one-to-one",
+    "attendanceRecords": "StudentAttendanceRecord[]",
+    "scanAnomalies": "ScanAnomaly[]"
+  }
+}

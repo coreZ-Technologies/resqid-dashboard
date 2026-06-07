@@ -1,0 +1,252 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/timetable",
+  "title": "Timetable Module Schemas",
+  "description": "All timetable-related schemas: Config, Template, Timetable, Assignment, Substitution, Subject, ClassGroup, Room, CrisisEvent.",
+  "x-module": "timetable",
+
+  "definitions": {
+
+    "SchoolTimetableConfig": {
+      "title": "SchoolTimetableConfig",
+      "type": "object",
+      "required": ["id", "schoolId"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "periodsPerDay": { "type": "integer", "default": 8 },
+        "periodDuration": { "type": "integer", "default": 45, "description": "Minutes" },
+        "startTime": { "type": "string", "default": "08:00" },
+        "endTime": { "type": "string", "default": "15:00" },
+        "workingDays": { "type": "array", "items": { "type": "integer" }, "default": [1,2,3,4,5,6] },
+        "breakAfterPeriods": { "type": "array", "items": { "type": "integer" }, "default": [2,4,6] },
+        "breakDurations": { "type": "array", "items": { "type": "integer" }, "default": [15,30,10] },
+        "lunchAfterPeriod": { "type": "integer", "default": 4 },
+        "lunchDuration": { "type": "integer", "default": 30 },
+        "morningPeriodsEnd": { "type": "integer", "default": 4 },
+        "useGradeLevelConfigs": { "type": "boolean", "default": false },
+        "allowSubstitution": { "type": "boolean", "default": true },
+        "maxSubstitutionsPerDay": { "type": "integer", "default": 3 },
+        "substitutionNoticeMins": { "type": "integer", "default": 30 },
+        "autoApproveSubstitution": { "type": "boolean", "default": false },
+        "maxConsecutivePeriods": { "type": "integer", "default": 3 },
+        "minGapBetweenSubjects": { "type": "integer", "default": 1 },
+        "maxSameSubjectPerDay": { "type": "integer", "default": 2 }
+      }
+    },
+
+    "Subject": {
+      "title": "Subject",
+      "type": "object",
+      "required": ["id", "schoolId", "name"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": ["string", "null"] },
+        "category": { "type": ["string", "null"] },
+        "periodsPerWeek": { "type": "integer", "default": 5 },
+        "requiresLab": { "type": "boolean", "default": false },
+        "labPeriodsPerWeek": { "type": "integer", "default": 0 },
+        "isHeavy": { "type": "boolean", "default": false, "description": "Heavy subjects scheduled in morning by solver" },
+        "isPractical": { "type": "boolean", "default": false },
+        "requiredRoomType": { "type": ["string", "null"] },
+        "isActive": { "type": "boolean", "default": true }
+      }
+    },
+
+    "ClassGroup": {
+      "title": "ClassGroup",
+      "description": "A specific class section e.g. Grade 10, Section A. Maps to class_groups table.",
+      "type": "object",
+      "required": ["id", "schoolId", "grade", "section"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "grade": { "type": "string", "examples": ["10", "11", "LKG"] },
+        "section": { "type": "string", "examples": ["A", "B"] },
+        "label": { "type": ["string", "null"] },
+        "teacherId": { "type": ["string", "null"], "description": "Class teacher" },
+        "roomId": { "type": ["string", "null"] },
+        "roomNumber": { "type": ["string", "null"] },
+        "periodsPerDay": { "type": ["integer", "null"] },
+        "startTime": { "type": ["string", "null"] },
+        "endTime": { "type": ["string", "null"] },
+        "breakSchedule": { "type": ["object", "null"] },
+        "maxPeriodsPerDay": { "type": ["integer", "null"] },
+        "maxConsecutivePeriods": { "type": ["integer", "null"] },
+        "allowDoublePeriods": { "type": ["boolean", "null"] },
+        "studentCount": { "type": "integer", "default": 0 },
+        "isActive": { "type": "boolean", "default": true }
+      },
+      "x-unique": ["schoolId", "grade", "section"]
+    },
+
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Teacher with scheduling constraints and wellness data. Maps to teachers table.",
+      "type": "object",
+      "required": ["id", "schoolId", "name"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "userId": { "type": ["string", "null"], "description": "FK → school_users.id (optional link)" },
+        "name": { "type": "string" },
+        "email": { "type": ["string", "null"] },
+        "phone": { "type": ["string", "null"] },
+        "employeeId": { "type": ["string", "null"] },
+        "joiningDate": { "type": ["string", "null"], "format": "date-time" },
+        "subjects": { "type": "array", "items": { "type": "string" } },
+        "qualifications": { "type": "array", "items": { "type": "string" } },
+        "experience": { "type": "integer", "default": 0 },
+        "maxPeriodsPerDay": { "type": "integer", "default": 6 },
+        "maxPeriodsPerWeek": { "type": "integer", "default": 30 },
+        "maxConsecutivePeriods": { "type": "integer", "default": 3 },
+        "isPartTime": { "type": "boolean", "default": false },
+        "availableDays": { "type": "array", "items": { "type": "integer" }, "default": [1,2,3,4,5,6] },
+        "unavailableDays": { "type": "array", "items": { "type": "integer" }, "default": [] },
+        "unavailablePeriods": { "type": ["object", "null"] },
+        "leaveDays": { "type": "array", "items": { "type": "string", "format": "date-time" }, "default": [] },
+        "preferredDays": { "type": "array", "items": { "type": "integer" } },
+        "preferredPeriods": { "type": "array", "items": { "type": "integer" } },
+        "preferredRooms": { "type": "array", "items": { "type": "string" } },
+        "isActive": { "type": "boolean", "default": true },
+        "isOnLeave": { "type": "boolean", "default": false },
+        "leaveStart": { "type": ["string", "null"], "format": "date-time" },
+        "leaveEnd": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+
+    "Timetable": {
+      "title": "Timetable",
+      "description": "Generated timetable instance. Maps to timetables table.",
+      "type": "object",
+      "required": ["id", "schoolId", "templateId", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "templateId": { "type": "string" },
+        "generationType": {
+          "type": "string",
+          "enum": ["FRESH", "INCREMENTAL", "FROM_EXISTING", "MANUAL", "CRISIS_UPDATE"]
+        },
+        "generatedBy": { "type": ["string", "null"] },
+        "sourceTimetableId": { "type": ["string", "null"] },
+        "status": {
+          "type": "string",
+          "enum": ["DRAFT", "GENERATING", "GENERATED", "REVIEWED", "PUBLISHED", "ARCHIVED", "FAILED"]
+        },
+        "statusMessage": { "type": ["string", "null"] },
+        "progressPercent": { "type": "integer", "default": 0 },
+        "totalSlots": { "type": "integer", "default": 0 },
+        "assignedSlots": { "type": "integer", "default": 0 },
+        "conflictsFound": { "type": "integer", "default": 0 },
+        "healthScore": { "type": "integer", "default": 0, "description": "0-100" },
+        "wellnessScore": { "type": "integer", "default": 0, "description": "0-100" },
+        "generatedAt": { "type": ["string", "null"], "format": "date-time" },
+        "publishedAt": { "type": ["string", "null"], "format": "date-time" },
+        "validUntil": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+
+    "TimetableAssignment": {
+      "title": "TimetableAssignment",
+      "description": "One slot in the timetable: which teacher teaches which class, which subject, in which room, on which day/period.",
+      "type": "object",
+      "required": ["id", "timetableId", "dayOfWeek", "periodNumber", "classGroupId", "subjectId", "teacherId"],
+      "properties": {
+        "id": { "type": "string" },
+        "timetableId": { "type": "string" },
+        "dayOfWeek": { "type": "integer", "minimum": 1, "maximum": 7 },
+        "periodNumber": { "type": "integer", "minimum": 1 },
+        "classGroupId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "roomId": { "type": ["string", "null"] },
+        "periodType": {
+          "type": "string",
+          "enum": ["REGULAR", "LAB", "SPORTS", "ASSEMBLY", "DOUBLE_PERIOD", "SUBSTITUTION"]
+        },
+        "isSubstituted": { "type": "boolean", "default": false },
+        "isTemporary": { "type": "boolean", "default": false },
+        "isManuallyPlaced": { "type": "boolean", "default": false },
+        "isLocked": { "type": "boolean", "default": false },
+        "originalTeacherId": { "type": ["string", "null"] },
+        "substitutionId": { "type": ["string", "null"] },
+        "constraintViolations": { "type": "integer", "default": 0 },
+        "penaltyScore": { "type": "integer", "default": 0 },
+        "notes": { "type": ["string", "null"] },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "x-unique": ["timetableId", "dayOfWeek", "periodNumber", "classGroupId"]
+    },
+
+    "Substitution": {
+      "title": "Substitution",
+      "type": "object",
+      "required": ["id", "schoolId", "substituteId", "originalTeacherId", "date", "dayOfWeek", "periodNumber"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "substituteId": { "type": "string" },
+        "originalTeacherId": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "dayOfWeek": { "type": "integer" },
+        "periodNumber": { "type": "integer" },
+        "subjectId": { "type": ["string", "null"] },
+        "classGroupId": { "type": ["string", "null"] },
+        "roomId": { "type": ["string", "null"] },
+        "reason": { "type": ["string", "null"] },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "APPROVED", "REJECTED", "COMPLETED", "CANCELLED"],
+          "default": "PENDING"
+        },
+        "approvedBy": { "type": ["string", "null"] },
+        "approvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "rejectionReason": { "type": ["string", "null"] }
+      }
+    },
+
+    "CrisisEvent": {
+      "title": "CrisisEvent",
+      "type": "object",
+      "required": ["id", "schoolId", "timetableId", "type", "severity", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "timetableId": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["TEACHER_ABSENT", "ROOM_UNAVAILABLE", "PARTIAL_RESCHEDULE", "MASS_LEAVE", "WEATHER_EVENT", "OTHER"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "default": "MEDIUM"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["REPORTED", "ANALYZING", "RESOLVED", "PARTIALLY_RESOLVED", "UNRESOLVED", "ESCALATED"],
+          "default": "REPORTED"
+        },
+        "title": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "affectedSlots": { "type": "array", "default": [] },
+        "affectedTeacherIds": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "affectedClassIds": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "affectedRoomIds": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "totalAffectedSlots": { "type": "integer", "default": 0 },
+        "triggeredBy": { "type": ["string", "null"] },
+        "triggeredAt": { "type": "string", "format": "date-time" },
+        "triggerReason": { "type": ["string", "null"] },
+        "resolvedBy": { "type": ["string", "null"] },
+        "resolvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "resolutionTimeMinutes": { "type": ["integer", "null"] },
+        "resolution": { "type": ["object", "null"] },
+        "unresolvedSlots": { "type": "integer", "default": 0 },
+        "substitutionsCreated": { "type": "integer", "default": 0 }
+      }
+    }
+  }
+}

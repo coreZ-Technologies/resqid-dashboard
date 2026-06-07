@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/school",
+  "title": "School",
+  "description": "Tenant entity. Each school is isolated by schoolId. Maps to schools table.",
+  "type": "object",
+  "required": ["id", "name", "status"],
+  "properties": {
+    "id": { "type": "string", "description": "cuid() — primary key, used as tenant ID in all child records" },
+    "name": { "type": "string" },
+    "code": { "type": ["string", "null"], "description": "Unique short code e.g. RES-KOL-001 — used in schoolAdminLoginSchema" },
+    "board": {
+      "type": "string",
+      "enum": ["ICSE", "CBSE", "WB_BOARD", "STATE_BOARD", "IB", "CAMBRIDGE", "OTHER"],
+      "default": "OTHER"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["PRIMARY", "SECONDARY", "HIGHER_SECONDARY", "K12", "PRE_SCHOOL", "OTHER"],
+      "default": "K12"
+    },
+    "affiliation": {
+      "type": "string",
+      "enum": ["GOVERNMENT", "PRIVATE", "AIDED", "UNAIDED", "INTERNATIONAL", "OTHER"],
+      "default": "PRIVATE"
+    },
+    "estYear": { "type": ["integer", "null"] },
+    "street": { "type": ["string", "null"] },
+    "city": { "type": ["string", "null"] },
+    "state": { "type": ["string", "null"] },
+    "country": { "type": ["string", "null"], "default": "India" },
+    "postalCode": { "type": ["string", "null"] },
+    "latitude": { "type": ["number", "null"] },
+    "longitude": { "type": ["number", "null"] },
+    "email": { "type": ["string", "null"], "format": "email" },
+    "phone": { "type": ["string", "null"] },
+    "website": { "type": ["string", "null"], "format": "uri" },
+    "logoUrl": { "type": ["string", "null"], "format": "uri" },
+    "timezone": { "type": "string", "default": "Asia/Kolkata" },
+    "academicYearStart": { "type": ["string", "null"], "format": "date-time", "description": "e.g. 2024-04-01T00:00:00Z" },
+    "academicYearEnd": { "type": ["string", "null"], "format": "date-time" },
+    "schoolStartTime": { "type": ["string", "null"], "examples": ["08:00"] },
+    "schoolEndTime": { "type": ["string", "null"], "examples": ["15:00"] },
+    "workingDays": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1, "maximum": 7 },
+      "default": [1, 2, 3, 4, 5, 6],
+      "description": "1=Monday … 7=Sunday"
+    },
+    "currentTerm": { "type": ["string", "null"], "examples": ["First Term", "Second Term"] },
+    "planId": { "type": ["string", "null"], "description": "FK → plans.id" },
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "INACTIVE", "SUSPENDED", "TRIAL"],
+      "default": "TRIAL"
+    },
+    "features": {
+      "type": "object",
+      "description": "Module feature toggles per school",
+      "properties": {
+        "emergency": { "type": "boolean" },
+        "attendance": { "type": "boolean" },
+        "timetable": { "type": "boolean" },
+        "parent_communication": { "type": "boolean" }
+      },
+      "additionalProperties": true,
+      "default": {}
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "x-prisma-model": "School",
+  "x-table": "schools",
+  "x-tenant-root": true,
+  "x-note": "features JSON is the per-school feature flag store. Check this before rendering module pages in the frontend."
+}

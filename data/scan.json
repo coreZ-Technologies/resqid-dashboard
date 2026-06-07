@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resqid/scan",
+  "title": "Scan + ScanAnomaly",
+  "description": "Every physical/digital interaction with a student token. Anomalies flagged by anomaly.evaluator.js.",
+
+  "definitions": {
+
+    "Scan": {
+      "title": "Scan",
+      "description": "Records a QR scan or RFID tap event. Maps to scans table.",
+      "type": "object",
+      "required": ["id", "studentId", "schoolId", "type", "status", "timestamp"],
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "tokenId": { "type": ["string", "null"] },
+        "attendanceDeviceId": { "type": ["string", "null"] },
+        "type": {
+          "type": "string",
+          "enum": ["RFID_TAP", "QR_EMERGENCY", "QR_ID_CHECK", "MANUAL_ENTRY"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["SUCCESS", "FAILED", "BLOCKED", "ANOMALOUS"],
+          "default": "SUCCESS"
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "locationLat": { "type": ["number", "null"] },
+        "locationLng": { "type": ["number", "null"] },
+        "initiatedBy": { "type": ["string", "null"], "description": "User/device who initiated the scan" },
+        "deviceId": { "type": ["string", "null"] },
+        "deviceIp": { "type": ["string", "null"] },
+        "userAgent": { "type": ["object", "null"] },
+        "metadata": { "type": ["object", "null"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "ScanAnomaly": {
+      "title": "ScanAnomaly",
+      "description": "Anomaly detected from a scan. Severity drives alerting. Maps to scan_anomalies table.",
+      "type": "object",
+      "required": ["id", "scanId", "studentId", "schoolId", "type", "severity", "description"],
+      "properties": {
+        "id": { "type": "string" },
+        "scanId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "type": {
+          "type": "string",
+          "description": "Matches ANOMALY_TYPE in status.js",
+          "examples": ["RAPID_SCANS", "IMPOSSIBLE_TRAVEL", "UNUSUAL_HOURS", "DEVICE_HOPPING"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "default": "MEDIUM"
+        },
+        "description": { "type": "string" },
+        "metadata": { "type": ["object", "null"] },
+        "detectedAt": { "type": "string", "format": "date-time" },
+        "resolvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "resolvedBy": { "type": ["string", "null"] },
+        "resolution": { "type": ["string", "null"] }
+      }
+    },
+
+    "ScanLog": {
+      "title": "ScanLog",
+      "description": "Detailed log of every scan attempt including bot/risk metadata. Maps to ScanLog (in token.prisma).",
+      "type": "object",
+      "required": ["id", "tokenId", "schoolId", "result", "scannedAt"],
+      "properties": {
+        "id": { "type": "string" },
+        "tokenId": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "scannedAt": { "type": "string", "format": "date-time" },
+        "result": {
+          "type": "string",
+          "enum": ["INVALID", "UNREGISTERED", "ISSUED", "INACTIVE", "REVOKED", "ACTIVE", "BLOCKED", "SUSPICIOUS", "EXPIRED"]
+        },
+        "scanType": { "type": ["string", "null"] },
+        "scanPurpose": { "type": ["string", "null"] },
+        "scannerId": { "type": ["string", "null"] },
+        "scannerName": { "type": ["string", "null"] },
+        "ipAddress": { "type": ["string", "null"] },
+        "city": { "type": ["string", "null"] },
+        "country": { "type": ["string", "null"] },
+        "latitude": { "type": ["number", "null"] },
+        "longitude": { "type": ["number", "null"] },
+        "device": { "type": ["string", "null"] },
+        "deviceModel": { "type": ["string", "null"] },
+        "os": { "type": ["string", "null"] },
+        "browser": { "type": ["string", "null"] },
+        "userAgent": { "type": ["string", "null"] },
+        "isBot": { "type": "boolean", "default": false },
+        "isSuspicious": { "type": "boolean", "default": false },
+        "riskScore": { "type": ["number", "null"] },
+        "responseTimeMs": { "type": ["integer", "null"] },
+        "studentName": { "type": ["string", "null"] },
+        "studentClass": { "type": ["string", "null"] },
+        "studentSection": { "type": ["string", "null"] },
+        "metadata": { "type": ["object", "null"] }
+      }
+    }
+  }
+}
